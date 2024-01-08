@@ -11,6 +11,8 @@
                 <th>Id</th>
                 <th>Title</th>
                 <th>Plot</th>
+                <th>Number of seasons</th>
+                <th>Genres</th>
                 <th>Poster</th>
                 <th>YearStart</th>
                 <th>YearEnd</th>
@@ -23,6 +25,11 @@
                 <td>{{ series.id }}</td>
                 <td>{{ series.title }}</td>
                 <td>{{ series.plot }}</td>
+                <td>{{ series.seasons|length}}</td>
+                <td>
+                    {% for genre in series.genres %}
+                        {{ genre.name }}
+                    {% endfor %}
                 <td><img src="{{ path('app_series_poster', {'id': series.id }) }}"></td>
                 <td>{{ series.yearStart }}</td>
                 {% if series.yearEnd == null %}
