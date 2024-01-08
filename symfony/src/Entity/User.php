@@ -31,8 +31,8 @@ class User
     #[ORM\Column(name: "register_date", type: "datetime", nullable: true)]
     private $registerDate;
 
-    #[ORM\Column(name: "admin", type: "boolean", nullable: false)]
-    private $admin = '0';
+    #[ORM\Column(name: "admin", type: "integer", nullable: false)]
+    private $admin = 0;
 
     #[ORM\Column(name: "user_id", type: "string", length: 128, nullable: true)]
     private $userId;
@@ -121,10 +121,21 @@ class User
 
     public function isAdmin(): ?bool
     {
-        return $this->admin;
+        return $this->admin > 0;
+    }
+    public function getRole(): ?string
+    {
+        switch ($this->admin) {
+            case 1:
+                return 'Administrateur';
+            case 2:
+                return 'Super-Administrateur';
+            default:
+                return 'Utilisateur';
+        }
     }
 
-    public function setAdmin(bool $admin): self
+    public function setAdmin(int $admin): self
     {
         $this->admin = $admin;
 
