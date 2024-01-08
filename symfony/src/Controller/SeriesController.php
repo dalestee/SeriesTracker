@@ -59,7 +59,7 @@ class SeriesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_series_show', methods: ['GET'])]
+    #[Route('/showSerie/{id}', name: 'app_series_show', methods: ['GET'])]
     public function show(Series $series): Response
     {
         return $this->render('series/show.html.twig', [
