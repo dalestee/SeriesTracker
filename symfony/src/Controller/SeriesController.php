@@ -25,6 +25,16 @@ class SeriesController extends AbstractController
         ]);
     }
 
+    #[Route('/poster/{id}', name: 'app_series_poster', methods: ['GET'])]
+    public function poster(Series $series): Response
+    {
+        $response = new Response();
+        $response->headers->set('Content-Type', 'image/jpeg');
+        $response->setContent(stream_get_contents($series->getPoster()));
+
+        return $response;
+    }
+
     #[Route('/new', name: 'app_series_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {

@@ -11,11 +11,7 @@
                 <th>Id</th>
                 <th>Title</th>
                 <th>Plot</th>
-                <th>Imdb</th>
                 <th>Poster</th>
-                <th>Director</th>
-                <th>YoutubeTrailer</th>
-                <th>Awards</th>
                 <th>YearStart</th>
                 <th>YearEnd</th>
                 <th>actions</th>
@@ -27,13 +23,13 @@
                 <td>{{ series.id }}</td>
                 <td>{{ series.title }}</td>
                 <td>{{ series.plot }}</td>
-                <td>{{ series.imdb }}</td>
-                <td>{{ series.poster }}</td>
-                <td>{{ series.director }}</td>
-                <td>{{ series.youtubeTrailer }}</td>
-                <td>{{ series.awards }}</td>
+                <td><img src="{{ path('app_series_poster', {'id': series.id }) }}"></td>
                 <td>{{ series.yearStart }}</td>
+                {% if series.yearEnd == null %}
+                    <td>present</td>
+                {% else %}
                 <td>{{ series.yearEnd }}</td>
+                {% endif %}
                 <td>
                     <a href="{{ path('app_series_show', {'id': series.id}) }}">show</a>
                     <a href="{{ path('app_series_edit', {'id': series.id}) }}">edit</a>
