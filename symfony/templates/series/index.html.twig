@@ -37,14 +37,14 @@
 
                 {% for page in 1..totalPages %}
                     {% if page == current_page %}
-                        <span class="text-white font-bold">{{ page }}</span>
+                        <span class="text-white font-bold pl-5">{{ page }}</span>
                     {% else %}
-                        <a href="{{ path('app_series_index', {'page': page}) }}" class="text-white hover:text-gray-300">{{ page }}</a>
+                        <a href="{{ path('app_series_index', {'page': page}) }}" class="text-white hover:text-gray-300 pl-5">{{ page }}</a>
                     {% endif %}
                 {% endfor %}
 
                 {% if next_page <= totalPages %}
-                    <a href="{{ path('app_series_index', {'page': next_page}) }}" class="text-white hover:text-gray-300 ml-4">Next</a>
+                    <a href="{{ path('app_series_index', {'page': next_page}) }}" class="text-white hover:text-gray-300 pl-5">Next</a>
                 {% endif %}
             </div>
         </div>
