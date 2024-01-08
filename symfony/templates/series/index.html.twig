@@ -11,8 +11,6 @@
                 <th>Id</th>
                 <th>Title</th>
                 <th>Plot</th>
-                <th>Number of seasons</th>
-                <th>Genres</th>
                 <th>Poster</th>
                 <th>YearStart</th>
                 <th>YearEnd</th>
@@ -20,35 +18,51 @@
             </tr>
         </thead>
         <tbody>
-        {% for series in series %}
-            <tr>
-                <td>{{ series.id }}</td>
-                <td>{{ series.title }}</td>
-                <td>{{ series.plot }}</td>
-                <td>{{ series.seasons|length}}</td>
-                <td>
-                    {% for genre in series.genres %}
-                        {{ genre.name }}
-                    {% endfor %}
-                <td><img src="{{ path('app_series_poster', {'id': series.id }) }}"></td>
-                <td>{{ series.yearStart }}</td>
-                {% if series.yearEnd == null %}
-                    <td>present</td>
-                {% else %}
-                <td>{{ series.yearEnd }}</td>
-                {% endif %}
-                <td>
-                    <a href="{{ path('app_series_show', {'id': series.id}) }}">show</a>
-                    <a href="{{ path('app_series_edit', {'id': series.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="11">no records found</td>
-            </tr>
-        {% endfor %}
+            {% for series in series %}
+                <tr>
+                    <td>{{ series.id }}</td>
+                    <td>{{ series.title }}</td>
+                    <td>{{ series.plot }}</td>
+                    <td><img src="{{ path('app_series_poster', {'id': series.id }) }}"></td>
+                    <td>{{ series.yearStart }}</td>
+                    {% if series.yearEnd is null %}
+                        <td>present</td>
+                    {% else %}
+                        <td>{{ series.yearEnd }}</td>
+                    {% endif %}
+                    <td>
+                        <a href="{{ path('app_series_show', {'id': series.id}) }}">show</a>
+                        <a href="{{ path('app_series_edit', {'id': series.id}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="11">no records found</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
+
+    <div class="pagination">
+        {% set prev_page = current_page - 1 %}
+        {% set next_page = current_page + 1 %}
+
+        {% if prev_page > 0 %}
+            <a href="{{ path('app_series_index', {'page': prev_page}) }}">Previous</a>
+        {% endif %}
+
+        {% for page in 1..totalPages %}
+            {% if page == current_page %}
+                <span>{{ page }}</span>
+            {% else %}
+                <a href="{{ path('app_series_index', {'page': page}) }}">{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if next_page <= totalPages %}
+            <a href="{{ path('app_series_index', {'page': next_page}) }}">Next</a>
+        {% endif %}
+    </div>
 
     <a href="{{ path('app_series_new') }}">Create new</a>
 {% endblock %}
