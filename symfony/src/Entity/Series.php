@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: "series", uniqueConstraints: [
@@ -57,6 +56,14 @@ class Series
     #[ORM\ManyToMany(targetEntity: "Country", mappedBy: "series")]
     private $country = array();
 
+    #[ORM\OneToMany(targetEntity: "Season", mappedBy: "series")]
+    #[ORM\OrderBy(["number" => "ASC"])]
+    private $seasons;
+
+    #[ORM\ManyToMany(targetEntity: "Genre", inversedBy: "series")]
+    #[ORM\JoinTable(name: "genre_series")]
+    private $genres;
+
     /**
      * Constructor
      */
@@ -66,6 +73,7 @@ class Series
         $this->genre = new \Doctrine\Common\Collections\ArrayCollection();
         $this->actor = new \Doctrine\Common\Collections\ArrayCollection();
         $this->country = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->seasons = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -285,6 +293,60 @@ class Series
     public function setPoster($poster): static
     {
         $this->poster = $poster;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Season>
+     */
+    public function getSeasons(): Collection
+    {
+        return $this->seasons;
+    }
+
+    public function addSeason(Season $season): static
+    {
+        if (!$this->seasons->contains($season)) {
+            $this->seasons->add($season);
+            $season->setSeries($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSeason(Season $season): static
+    {
+        if ($this->seasons->removeElement($season)) {
+            // set the owning side to null (unless already changed)
+            if ($season->getSeries() === $this) {
+                $season->setSeries(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Genre>
+     */
+    public function getGenres(): Collection
+    {
+        return $this->genres;
+    }
+
+    public function addGenres(Genre $genres): static
+    {
+        if (!$this->genres->contains($genres)) {
+            $this->genres->add($genres);
+        }
+
+        return $this;
+    }
+
+    public function removeGenres(Genre $genres): static
+    {
+        $this->genres->removeElement($genres);
 
         return $this;
     }
