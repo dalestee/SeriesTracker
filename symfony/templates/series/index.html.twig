@@ -3,66 +3,50 @@
 {% block title %}Series index{% endblock %}
 
 {% block body %}
-    <h1>Series index</h1>
+    <div class="bg-black">
+        <div class="container mx-auto py-8">
+            <h1 class="text-4xl text-white font-bold mb-8">Series index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Plot</th>
-                <th>Poster</th>
-                <th>YearStart</th>
-                <th>YearEnd</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for series in series %}
-                <tr>
-                    <td>{{ series.id }}</td>
-                    <td>{{ series.title }}</td>
-                    <td>{{ series.plot }}</td>
-                    <td><img src="{{ path('app_series_poster', {'id': series.id }) }}"></td>
-                    <td>{{ series.yearStart }}</td>
-                    {% if series.yearEnd is null %}
-                        <td>present</td>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {% for series in series %}
+                    <div class="bg-gray-900 rounded-lg shadow-lg">
+                        <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-64 object-cover rounded-t-lg">
+                        <div class="p-4">
+                            <h2 class="text-white text-xl font-bold mb-2">{{ series.title }}</h2>
+                            <p class="text-white mb-2">Year: {{ series.yearStart }} - {% if series.yearEnd is null %}present{% else %}{{ series.yearEnd }}{% endif %}</p>
+                            <div class="flex justify-end">
+                                <a href="{{ path('app_series_show', {'id': series.id}) }}" class="text-blue-500 hover:text-blue-700 mr-2">show</a>
+                                <a href="{{ path('app_series_edit', {'id': series.id}) }}" class="text-blue-500 hover:text-blue-700">edit</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-gray-700">No records found</p>
+                {% endfor %}
+            </div>
+
+            <div class="flex justify-center mt-8">
+                {% set prev_page = current_page - 1 %}
+                {% set next_page = current_page + 1 %}
+
+                {% if prev_page > 0 %}
+                    <a href="{{ path('app_series_index', {'page': prev_page}) }}" class="text-white hover:text-gray-300 mr-4">Previous</a>
+                {% endif %}
+
+                {% for page in 1..totalPages %}
+                    {% if page == current_page %}
+                        <span class="text-white font-bold">{{ page }}</span>
                     {% else %}
-                        <td>{{ series.yearEnd }}</td>
+                        <a href="{{ path('app_series_index', {'page': page}) }}" class="text-white hover:text-gray-300">{{ page }}</a>
                     {% endif %}
-                    <td>
-                        <a href="{{ path('app_series_show', {'id': series.id}) }}">show</a>
-                        <a href="{{ path('app_series_edit', {'id': series.id}) }}">edit</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="11">no records found</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
 
-    <div class="pagination">
-        {% set prev_page = current_page - 1 %}
-        {% set next_page = current_page + 1 %}
+                {% if next_page <= totalPages %}
+                    <a href="{{ path('app_series_index', {'page': next_page}) }}" class="text-white hover:text-gray-300 ml-4">Next</a>
+                {% endif %}
+            </div>
 
-        {% if prev_page > 0 %}
-            <a href="{{ path('app_series_index', {'page': prev_page}) }}">Previous</a>
-        {% endif %}
-
-        {% for page in 1..totalPages %}
-            {% if page == current_page %}
-                <span>{{ page }}</span>
-            {% else %}
-                <a href="{{ path('app_series_index', {'page': page}) }}">{{ page }}</a>
-            {% endif %}
-        {% endfor %}
-
-        {% if next_page <= totalPages %}
-            <a href="{{ path('app_series_index', {'page': next_page}) }}">Next</a>
-        {% endif %}
+            <a href="{{ path('app_series_new') }}" class="text-white hover:text-gray-300 mt-8">Create new</a>
+        </div>
     </div>
-
-    <a href="{{ path('app_series_new') }}">Create new</a>
 {% endblock %}
