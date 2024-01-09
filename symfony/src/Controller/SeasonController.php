@@ -37,10 +37,23 @@ class SeasonController extends AbstractController
         $season = $episode->getSeason();
         $episodes = $season->getEpisodes();
         $episodeNumber = $episode->getNumber();
+        $seriesSeason = $season->getSeries()->getSeasons();
         $episodeViewed = True;
+        foreach ($seriesSeason as $serieSeason) {
+            if ($serieSeason->getNumber() < $season->getNumber()) {
+                foreach ($serieSeason->getEpisodes() as $episode) {
+                    if (!$this->isEpisodeViewed($episode)){
+                        return False;
+                    }
+                }
+            }
+        }
+
         foreach ($episodes as $episode) {
             if ($episode->getNumber() < $episodeNumber) {
-                $episodeViewed = $episodeViewed && $this->isEpisodeViewed($episode);
+                if (!$this->isEpisodeViewed($episode)) {
+                    return False;
+                }
             }
         }
         return $episodeViewed;
@@ -50,6 +63,18 @@ class SeasonController extends AbstractController
         $season = $episode->getSeason();
         $episodes = $season->getEpisodes();
         $episodeNumber = $episode->getNumber();
+        $seriesSeason = $season->getSeries()->getSeasons();
+
+        foreach ($seriesSeason as $serieSeason) {
+            if ($serieSeason->getNumber() < $season->getNumber()) {
+                foreach ($serieSeason->getEpisodes() as $episode) {
+                    if (!$this->isEpisodeViewed($episode)) {
+                        $this->episode_view($entityManager, $request, $episode);
+                    }
+                }
+            }
+        }
+
         foreach ($episodes as $episode) {
             if ($episode->getNumber() < $episodeNumber) {
                 if (!$this->isEpisodeViewed($episode)) {
