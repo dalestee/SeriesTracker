@@ -131,8 +131,8 @@ class Series
 
     public function getYoutubeTrailer(): ?string
     {
-        return $this->youtubeTrailer;
-    }
+        return str_replace("www.youtube.com/watch?v=", "www.youtube.com/embed/", $this->youtubeTrailer);
+    }   
 
     public function setYoutubeTrailer(?string $youtubeTrailer): self
     {
