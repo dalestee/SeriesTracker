@@ -31,8 +31,6 @@ class RegistrationFormType extends AbstractType
             'choice_label' => 'name',
             'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
         ])
-
-
         ->add('agreeTerms', CheckboxType::class, [
             'mapped' => false,
             'constraints' => [
