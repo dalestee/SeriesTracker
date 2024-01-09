@@ -28,6 +28,13 @@ class SeriesController extends AbstractController
             'current_page' => $page,
         ]);
     }
+    
+    private function isUserLoggedIn(): bool
+    {
+        return $this->getUser() !== null;
+    }
+
+
 
     #[Route('/poster/{id}', name: 'app_series_poster', methods: ['GET'])]
     public function poster(Series $series): Response
