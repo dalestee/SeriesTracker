@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -14,7 +15,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
     new ORM\UniqueConstraint(name: "UNIQ_8D93D649E7927C74", columns: ["email"]),
     new ORM\UniqueConstraint(name: "IDX_8D93D649F92F3E70", columns: ["country_id"]),
 ])]
-#[ORM\Entity]
+
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -127,6 +129,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->admin > 0;
     }
+
+    public function isSuperAdmin(): ?bool
+    {
+        return $this->admin > 1;
+    }
+
     public function getRole(): ?string
     {
         switch ($this->admin) {
@@ -224,7 +232,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->getEmail();
     }
     public function getRoles(): array {
-        return ['ROLE_USER'];
+        if ($this->isSuperAdmin()) {
+            return ['ROLE_SUPER_ADMIN'];
+        } else if ($this->isAdmin()) {
+            return ['ROLE_ADMIN'];
+        } else {
+            return ['ROLE_USER'];
+        }
     }
     public function eraseCredentials() { 
 

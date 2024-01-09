@@ -3,35 +3,56 @@
 {% block title %}Hello AdminPanelController!{% endblock %}
 
 {% block body %}
-<style>
-    th, td {
-        padding: 15px;
-        text-align: left;
-        border-bottom: 1px solid black;
-    }
-</style>
-<div>
-    <h1>Panneau d'administration</h1>
 
-    <h2>Liste des utilisateurs : </h2>
-    <ul>
-        <table>
-            <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Date d'inscription</th>
-                <th>Role</th>
-            </tr>
-            {% for user in users %}
-                <tr>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.registerDate }}</td>
-                    <td>{{ user.role }}</td>
-                </tr>
-            {% endfor %}
-        </table>
+<div class="bg-gray-900 text-white">
+    <div class="container mx-auto py-8">
+        <h1 class="text-4xl font-bold mb-8">Panneau d'administration</h1>
 
-    </ul>
+        <h2 class="text-2xl font-bold mb-4">Liste des utilisateurs :</h2>
+        <div class="overflow-x-auto">
+            <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Id</th>
+                        <th class="px-4 py-2">Username</th>
+                        <th class="px-4 py-2">Email</th>
+                        <th class="px-4 py-2">Date d'inscription</th>
+                        <th class="px-4 py-2">Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td class="border px-4 py-2">{{ user.id }}</td>
+                            <td class="border px-4 py-2">{{ user.name }}</td>
+                            <td class="border px-4 py-2">{{ user.email }}</td>
+                            <td class="border px-4 py-2">{{ user.registerDate }}</td>
+                            <td class="border px-4 py-2">{{ user.role }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if form %}
+            <h3 class="text-2xl font-bold mt-8 mb-4">Modification du rôles des utilisateurs</h3>
+            <div class="max-w-md">
+                {{ form_start(form) }}
+                <div class="mb-4 text-white-500">
+                    {{ form_errors(form) }}
+                </div>
+                <div class="mb-4">
+                        {{ form_label(form.user, 'Utilisateur', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
+                        {{ form_widget(form.user, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
+                </div>
+                 <div class="mb-4">
+                        {{ form_label(form.role, 'Rôle', {'label_attr': {'class': 'block text-white-200 text-1xl font-bold mb-2'}}) }}
+                        {{ form_widget(form.role, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Valider</button>
+                {{ form_end(form) }}
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
