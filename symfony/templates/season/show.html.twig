@@ -5,7 +5,7 @@
 {% block body %}
     <div class="bg-black">
         <div class="container mx-auto py-8">
-            <h1 class="text-4xl text-white font-bold mb-8">Season</h1>
+            <h1 class="text-4xl text-white font-bold mb-8">Season {{ season.number }}</h1>
 
             <div class="flex flex-col md:flex-row">
                 <div class="md:w-1/2">
@@ -14,10 +14,6 @@
                             <tr>
                                 <th class="text-white font-bold pr-5">Id:</th>
                                 <td class="text-white font-bold">{{ season.id }}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-white font-bold pr-5">Number:</th>
-                                <td class="text-white font-bold">{{ season.number }}</td>
                             </tr>
                             <tr>
                                 <th class="text-white font-bold pr-5">Episodes:</th>
