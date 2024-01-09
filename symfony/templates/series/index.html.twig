@@ -24,14 +24,14 @@
                         {% if user %}
                                 {% if series in user.series %}
                                     <div class = "flex justify-center pb-4 pt-2 bg-red-600 rounded-b-lg font-bold">
-                                    <form action="{{ path('app_series_unfollow', {'id': series.id,'page': current_page}) }}" method="post">
-                                        <button type="submit" class="text-white hover:text-gray-300">Unfollow</button>
+                                    <form action="{{ path('app_series_unfollow', {'id': series.id,'page': current_page}) }}" method="post" class = "w-full h-full">
+                                        <button type="submit" class="text-white hover:text-gray-300 w-full h-full">Unfollow</button>
                                     </form>
                                     </div>
                                 {% else %}
                                     <div class = "flex justify-center pb-4 pt-2 bg-green-600 rounded-b-lg font-bold">
-                                    <form action="{{ path('app_series_follow', {'id': series.id,'page': current_page}) }}" method="post">
-                                        <button type="submit" class="text-white hover:text-gray-300">Follow</button>
+                                    <form action="{{ path('app_series_follow', {'id': series.id,'page': current_page}) }}" method="post" class = "w-full h-full">
+                                        <button type="submit" class="text-white hover:text-gray-300 w-full h-full">Follow</button>
                                     </form>
                                     </div>
                                 {% endif %}
