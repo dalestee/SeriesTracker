@@ -21,6 +21,7 @@
                 <li><a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 hover:text-red-500 ">Liste des séries suivis</a></li>
                 {% if app.user.isAdmin() %}
                 <li><a href="{{ path('app_admin_panel') }}" class="text-white px-4 py-2 hover:text-red-500 ">Admin Panel</a></li>
+                {% endif %} 
             {% else %}
                 <li><a href="{{ path('app_login') }}" class="text-white px-4 py-2 hover:text-red-500 ">Connexion</a></li>
                 <li><a href="{{ path('app_register') }}" class="text-white px-4 py-2 hover:text-red-500 ">Inscription</a></li>
