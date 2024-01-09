@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/series')]
+#[Route('/')]
 class SeriesController extends AbstractController
 {
     public function isUserLoggedIn(): bool
@@ -35,13 +35,6 @@ class SeriesController extends AbstractController
             'current_page' => $page,
         ]);
     }
-    
-    private function isUserLoggedIn(): bool
-    {
-        return $this->getUser() !== null;
-    }
-
-
 
     public function isfollow(User $user, Series $series): bool
     {
@@ -53,8 +46,8 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/follow/{id}', name:'app_series_follow', methods: ['POST'])]
-    public function follow(EntityManagerInterface $entityManager, Series $series): Response
+    #[Route('/{page}/follow/{id}', name:'app_series_follow', methods: ['POST'], requirements: ['page' => '\d+'])]
+    public function follow(EntityManagerInterface $entityManager,int $page,Series $series): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
@@ -66,12 +59,12 @@ class SeriesController extends AbstractController
                 $user->addSeries($series);
                 $entityManager ->flush();
             }
-            return $this->redirectToRoute('app_series_index');
+            return $this->redirectToRoute('app_series_index', ['page' => $page]);
         }
     }
 
-    #[Route('/unfollow/{id}', name:'app_series_unfollow', methods: ['POST'])]
-    public function unfollow(EntityManagerInterface $entityManager, Series $series): Response
+    #[Route('/{page}/unfollow/{id}', name:'app_series_unfollow', methods: ['POST'], requirements: ['page' => '\d+'])]
+    public function unfollow(EntityManagerInterface $entityManager,int $page, Series $series): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
@@ -83,7 +76,7 @@ class SeriesController extends AbstractController
                 $user->removeSeries($series);
                 $entityManager ->flush();
             }
-            return $this->redirectToRoute('app_series_index');
+            return $this->redirectToRoute('app_series_index', ['page' => $page]);
         }
     }
 
