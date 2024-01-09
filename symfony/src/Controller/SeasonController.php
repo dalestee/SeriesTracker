@@ -27,11 +27,45 @@ class SeasonController extends AbstractController
         ]);
     }
 
-    #[Route('/view/{id}', name: 'episode_view', methods: ['POST'])]
-    public function episode_view(EntityManagerInterface $entityManager, Request $request ,  Episode $episode): Response
+    public function isEpisodeViewed(Episode $episode): bool
     {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-        
+        $user = $this->getUser();
+        return $user->isEpisodeViewed($episode);
+    }
+    public function isAllPrecendentViewed(EntityManagerInterface $entityManager, Request $request, Episode $episode): bool
+    {
+        $season = $episode->getSeason();
+        $episodes = $season->getEpisodes();
+        $episodeNumber = $episode->getNumber();
+        $episodeViewed = True;
+        foreach ($episodes as $episode) {
+            if ($episode->getNumber() < $episodeNumber) {
+                $episodeViewed = $episodeViewed && $this->isEpisodeViewed($episode);
+            }
+        }
+        return $episodeViewed;
+    }
+    public function allPrecendentViewed(EntityManagerInterface $entityManager, Request $request, Episode $episode): void
+    {
+        $season = $episode->getSeason();
+        $episodes = $season->getEpisodes();
+        $episodeNumber = $episode->getNumber();
+        foreach ($episodes as $episode) {
+            if ($episode->getNumber() < $episodeNumber) {
+                if (!$this->isEpisodeViewed($episode)) {
+                    $this->episode_view($entityManager, $request, $episode);
+                }
+            }
+        }
+    }
+
+    #[Route('/view/{id}', name: 'episode_view', methods: ['POST'])]
+    public function episode_view(EntityManagerInterface $entityManager, Request $request,  Episode $episode): Response
+    {
+        if (!$this->isAllPrecendentViewed($entityManager, $request, $episode)) {
+            $this->allPrecendentViewed($entityManager, $request, $episode);
+        }
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);  
         $user->addEpisode($episode);
         $entityManager->flush();
 

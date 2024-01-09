@@ -247,4 +247,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->series->contains($series);
     }
+
+    public function isEpisodeViewed(Episode $episode): bool
+    {
+        return $this->episode->contains($episode);
+    }
 }
