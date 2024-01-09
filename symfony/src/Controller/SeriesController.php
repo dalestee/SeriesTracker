@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Series;
+use App\Entity\User;
 use App\Form\SeriesType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,6 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/series')]
 class SeriesController extends AbstractController
 {
+    public function isUserLoggedIn(): bool
+    {
+        return $this->getUser() != null;
+    }
+    
     #[Route('/{page}', name: 'app_series_index', methods: ['GET'], requirements: ['page' => '\d+'])]
     public function index(EntityManagerInterface $entityManager, $page = 1): Response
     {
@@ -35,6 +41,48 @@ class SeriesController extends AbstractController
     }
 
 
+
+    public function isfollow(User $user, Series $series): bool
+    {
+        if (!$this->isUserLoggedIn()) {
+            return False;
+        }
+        else{
+            return $user->isfollowingSeries($series);
+        }
+    }
+
+    #[Route('/follow/{id}', name:'app_series_follow', methods: ['POST'])]
+    public function follow(EntityManagerInterface $entityManager, Series $series): Response
+    {
+        if (!$this->isUserLoggedIn()) {
+            return $this->redirectToRoute('app_login');
+        }
+        else{
+            $user = $entityManager ->getRepository(User::class)->findOneBy(['id' => $this->getUser()->getUserIdentifier()]);
+            $suivies = $this->isfollow($user, $series);
+            if (!$suivies) {
+                $user->addSeries($series);
+            }
+            return $this->redirectToRoute('app_series_index');
+        }
+    }
+
+    #[Route('/unfollow/{id}', name:'app_series_unfollow', methods: ['POST'])]
+    public function unfollow(EntityManagerInterface $entityManager, Series $series): Response
+    {
+        if (!$this->isUserLoggedIn()) {
+            return $this->redirectToRoute('app_login');
+        }
+        else{
+            $user = $entityManager ->getRepository(User::class)->findOneBy(['id' => $this->getUser()->getUserIdentifier()]);
+            $suivies = $this->isfollow($user, $series);
+            if ($suivies) {
+                $user->removeSeries($series);
+            }
+            return $this->redirectToRoute('app_series_index');
+        }
+    }
 
     #[Route('/poster/{id}', name: 'app_series_poster', methods: ['GET'])]
     public function poster(Series $series): Response

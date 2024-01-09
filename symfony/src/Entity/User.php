@@ -243,4 +243,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials() { 
 
     }
+    public function isFollowingSeries(Series $series): bool
+    {
+        return $this->series->contains($series);
+    }
 }
