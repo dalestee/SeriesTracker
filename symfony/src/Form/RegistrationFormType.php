@@ -6,11 +6,13 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use App\Entity\Country;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 class RegistrationFormType extends AbstractType
@@ -22,6 +24,11 @@ class RegistrationFormType extends AbstractType
             'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
         ])
         ->add('email', TextType::class, [
+            'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
+        ])
+        ->add('country', EntityType::class, [
+            'class' => Country::class,
+            'choice_label' => 'name',
             'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
         ])
         ->add('agreeTerms', CheckboxType::class, [

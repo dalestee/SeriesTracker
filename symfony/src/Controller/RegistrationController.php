@@ -32,14 +32,11 @@ class RegistrationController extends AbstractController
                 )
             );
             $user->setName($form->get('name')->getData());
-            // if ($form->get('country')->getData() != null) {
-            //     $user->setCountry($form->get('country')->getData());
-            // }
+            $user->setRegisterDate(new \DateTime());
             $entityManager->persist($user);
             $entityManager->flush();
             // do anything else you need here, like send an email
 
-            //return $this->redirectToRoute('_profiler_home');
             return $userAuthenticator->authenticateUser(
                 $user,
                 $authenticator,

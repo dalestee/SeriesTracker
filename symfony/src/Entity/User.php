@@ -118,6 +118,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->registerDate;
     }
 
+    public function registerDate_toString(){
+        if ($this->getRegisterDate()){
+            return $this->getRegisterDate()->format('Y-m-d H:i:s');
+        }
+        return null;
+        
+    }
+
     public function setRegisterDate($registerDate): self
     {
         $this->registerDate = $registerDate;
