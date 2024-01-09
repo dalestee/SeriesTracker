@@ -29,6 +29,7 @@ class SeriesController extends AbstractController
         $series = $seriesRepository->findBy([], null, $limit, $offset);
         $totalPages = ceil($totalSeries / $limit);
         return $this->render('series/index.html.twig', [
+            'user' => $this->getUser(),
             'series' => $series,
             'totalPages' => $totalPages,
             'current_page' => $page,
@@ -59,10 +60,11 @@ class SeriesController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         else{
-            $user = $entityManager ->getRepository(User::class)->findOneBy(['id' => $this->getUser()->getUserIdentifier()]);
+            $user = $entityManager ->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $suivies = $this->isfollow($user, $series);
             if (!$suivies) {
                 $user->addSeries($series);
+                $entityManager ->flush();
             }
             return $this->redirectToRoute('app_series_index');
         }
@@ -75,10 +77,11 @@ class SeriesController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         else{
-            $user = $entityManager ->getRepository(User::class)->findOneBy(['id' => $this->getUser()->getUserIdentifier()]);
+            $user = $entityManager ->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $suivies = $this->isfollow($user, $series);
             if ($suivies) {
                 $user->removeSeries($series);
+                $entityManager ->flush();
             }
             return $this->redirectToRoute('app_series_index');
         }
