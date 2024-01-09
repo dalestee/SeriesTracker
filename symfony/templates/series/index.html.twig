@@ -7,11 +7,11 @@
         <div class="container mx-auto py-8">
             <h1 class="text-4xl text-white font-bold mb-8">Series</h1>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                 {% for series in series %}
                 <a href="{{ path('app_series_show', {'id': series.id}) }}">
-                    <div class="bg-gray-900 rounded-lg shadow-lg">
-                        <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-64 object-cover rounded-t-lg">
+                    <div class="transform transition-transform duration-300 hover:scale-105 bg-gray-900 rounded-lg hover:border-red-500 border-2 border-transparent h-full">
+                        <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-fit object-cover rounded-t-lg">
                         <div class="p-4">
                             <h2 class="text-white text-xl font-bold mb-2">{{ series.title }}</h2>
                             <p class="text-white mb-2">Seasons: {{ series.seasons|length }}</p>
@@ -37,9 +37,9 @@
 
                 {% for page in 1..totalPages %}
                     {% if page == current_page %}
-                        <span class="text-white font-bold pl-5">{{ page }}</span>
+                        <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
                     {% else %}
-                        <a href="{{ path('app_series_index', {'page': page}) }}" class="text-white hover:text-gray-300 pl-5">{{ page }}</a>
+                        <a href="{{ path('app_series_index', {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
                     {% endif %}
                 {% endfor %}
 

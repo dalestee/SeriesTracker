@@ -3,29 +3,32 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+<form class="w-full h-screen flex align-center justify-center items-center bg-black">
+    <div class="bg-white p-10 rounded-lg shadow-lg h-auto w-1/3 ">
+        <h1 class="text-black text-center text-3xl mb-8">Connexion</h1>
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% endif %}
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+        {% if app.user %}
+            <div class="mb-3">
+                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+            </div>
+        {% endif %}
 
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+        <label for="inputEmail" class="text-black">Email :</label>
+        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="bg-gray-800 w-full rounded-full text-white p-4 my-4 mx-2" autocomplete="email" required autofocus>
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
+        <label for="inputPassword" class="text-black">Mot de passe :</label>
+        <input type="password" name="password" id="inputPassword" class="bg-gray-800 w-full rounded-full text-white p-4 my-4 mx-2" autocomplete="current-password" required>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button class="btn bg-red-500 text-white p-2 border-2 rounded-full focus:outline-none focus:border-red-700 p-3 mt-8">
+            Connexion
+        </button>
+    </div>
 </form>
 {% endblock %}
+
