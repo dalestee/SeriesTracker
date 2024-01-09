@@ -14,10 +14,6 @@
                 <div class="w-2/3 ml-8 bg-gray-900 rounded-lg shadow-lg p-5">
                     <div class="flex flex-col">
                         <div class="flex mb-2">
-                            <span class="text-white font-bold">Id:</span>
-                            <span class="text-white ml-2">{{ series.id }}</span>
-                        </div>
-                        <div class="flex mb-2">
                             <span class="text-white font-bold">Title:</span>
                             <span class="text-white ml-2">{{ series.title }}</span>
                         </div>
@@ -41,6 +37,25 @@
                             <span class="text-white ml-2">{{ series.yearEnd }}</span>
                         </div>
                         <div class="flex mb-2">
+                            {% set seriesnWatched = true %}
+                            {% for season in series.seasons %}
+                                {% for episode in season.episodes %}
+                                    {% if episode not in app.user.episode %}
+                                        {% set seriesnWatched = false %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                            {% if seriesnWatched %}
+                                <div class="bg-green-500 rounded-lg ml-5 mr-5">
+                                    <span class="text-white px-4 py-2 justify-center">view all seasons</span>
+                                </div>
+                            {% else %}
+                                <a href="{{ path('app_series_view_all', {'id': series.id}) }}">
+                                    <div class="bg-red-500 rounded-lg ml-5 mr-5">
+                                        <span class="text-white px-4 py-2 justify-center">view all seasons</span>
+                                    </div>
+                                </a>
+                            {% endif %}
                             <span class="text-white font-bold">Seasons:</span>
                             {% for season in series.seasons %}
                             <a href="{{ path('app_season_show', {'id': season.id}) }}">

@@ -111,6 +111,23 @@ class SeriesController extends AbstractController
         }
     }
 
+    #[Route ('/viewAllSeries/{id}', name: 'app_series_view_all', methods: ['GET'])]
+    public function viewAllSeries(EntityManagerInterface $entityManager, Request $request, Series $series): Response
+    {
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $seriesSeasons = $series->getSeasons();
+        foreach ($seriesSeasons as $season) {
+            $seasonEpisodes = $season->getEpisodes();
+            foreach ($seasonEpisodes as $episode) {
+                if (!$user->isEpisodeViewed($episode)) {
+                    $user->addEpisode($episode);
+                }
+            }
+        }
+        $entityManager->flush();
+        return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
+    }
+
     #[Route('/poster/{id}', name: 'app_series_poster', methods: ['GET'])]
     public function poster(Series $series): Response
     {
