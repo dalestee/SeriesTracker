@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Season;
-use App\Entity\Series;
 use App\Form\SeasonType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,6 +47,19 @@ class SeasonController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('app_season_show', ['id' => $episode->getSeason()->getId()], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/view/{id}', name: 'season_view_season', methods: ['POST'])]
+    public function season_view(EntityManagerInterface $entityManager, Request $request, Season $season): Response
+    {
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        
+        foreach ($season->getEpisodes() as $episode) {
+            $user->addEpisode($episode);
+        }
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_season_show', ['id' => $season->getId()], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/new', name: 'app_season_new', methods: ['GET', 'POST'])]
