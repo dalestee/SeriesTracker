@@ -48,7 +48,7 @@ class SeriesController extends AbstractController
     }
 
     #[Route('/{page}/follow/{id}', name:'app_series_follow', methods: ['POST'], requirements: ['page' => '\d+'])]
-    public function follow(EntityManagerInterface $entityManager,int $page,Series $series): Response
+    public function follow(EntityManagerInterface $entityManager, Request $request,int $page,Series $series): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
@@ -60,12 +60,14 @@ class SeriesController extends AbstractController
                 $user->addSeries($series);
                 $entityManager ->flush();
             }
-            return $this->redirectToRoute('app_series_index', ['page' => $page]);
+
+            $route = $request->headers->get('referer');
+            return $this->redirect($route);
         }
     }
 
     #[Route('/{page}/unfollow/{id}', name:'app_series_unfollow', methods: ['POST'], requirements: ['page' => '\d+'])]
-    public function unfollow(EntityManagerInterface $entityManager,int $page, Series $series): Response
+    public function unfollow(EntityManagerInterface $entityManager, Request $request,int $page, Series $series): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
@@ -77,7 +79,9 @@ class SeriesController extends AbstractController
                 $user->removeSeries($series);
                 $entityManager ->flush();
             }
-            return $this->redirectToRoute('app_series_index', ['page' => $page]);
+
+            $route = $request->headers->get('referer');
+            return $this->redirect($route);
         }
     }
 
