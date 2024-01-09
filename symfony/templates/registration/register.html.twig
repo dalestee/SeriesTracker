@@ -11,6 +11,9 @@
 
     {{ form_start(registrationForm, {'attr': {'class': ' formulaire_register flex flex-col justify-center items-center'}}) }}
         {{ form_row(registrationForm.name, { 'label':'Nom : ' ,'attr': {'class': 'bg-gray-800 w-full rounded-full text-white p-4 my-4 mx-2'} }) }}
+        {{ form_row(registrationForm.country,  {'label':'Country : ' ,'attr': {'class': 'bg-gray-800 w-full rounded-full text-white p-4 my-4 mx-2'} }) }}
+            
+        
         {{ form_row(registrationForm.email, { 'label':'Email : ' ,'attr': {'class': 'bg-gray-800 w-full rounded-full text-white p-4 my-4 mx-2'} }) }}
         {{ form_row(registrationForm.plainPassword, {
             'label': 'Mot de passe : ',
