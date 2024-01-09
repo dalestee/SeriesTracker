@@ -6,13 +6,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Table(name: "user", uniqueConstraints: [
     new ORM\UniqueConstraint(name: "UNIQ_8D93D649E7927C74", columns: ["email"]),
     new ORM\UniqueConstraint(name: "IDX_8D93D649F92F3E70", columns: ["country_id"]),
 ])]
 #[ORM\Entity]
-class User
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column(name: "id", type: "integer", nullable: false)]
     #[ORM\Id]
@@ -212,5 +216,17 @@ class User
         $this->episode->removeElement($episode);
 
         return $this;
+    }
+
+
+
+    public function getUserIdentifier(): string {
+        return $this->getEmail();
+    }
+    public function getRoles(): array {
+        return ['ROLE_USER'];
+    }
+    public function eraseCredentials() { 
+
     }
 }
