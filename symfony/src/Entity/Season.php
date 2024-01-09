@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Table(name: "season", indexes: [
     new ORM\Index(name: "IDX_F0E45BA95278319C", columns: ["series_id"])
@@ -21,6 +22,10 @@ class Season
     #[ORM\ManyToOne(targetEntity: "Series")]
     #[ORM\JoinColumn(name: "series_id", referencedColumnName: "id")]
     private $series;
+
+    #[ORM\OneToMany(targetEntity: "Episode", mappedBy: "season")]
+    #[ORM\OrderBy(["number" => "ASC"])]
+    private $episodes;
 
     public function getId(): ?int
     {
@@ -47,6 +52,37 @@ class Season
     public function setSeries(?Series $series): self
     {
         $this->series = $series;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Episode>
+     */
+
+    public function getEpisodes(): Collection
+    {
+        return $this->episodes;
+    }
+
+    public function addEpisode(Episode $episode): self
+    {
+        if (!$this->episodes->contains($episode)) {
+            $this->episodes[] = $episode;
+            $episode->setSeason($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEpisode(Episode $episode): self
+    {
+        if ($this->episodes->removeElement($episode)) {
+            // set the owning side to null (unless already changed)
+            if ($episode->getSeason() === $this) {
+                $episode->setSeason(null);
+            }
+        }
 
         return $this;
     }
