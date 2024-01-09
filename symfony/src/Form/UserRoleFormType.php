@@ -19,7 +19,7 @@ class UserRoleFormType extends AbstractType
             ->setMethod('POST')
             ->add('user', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'name',
+                'choice_label' => 'email',
                 'label' => 'Utilisateur',
                 'query_builder' => function (UserRepository $userRepository) {
                     return $userRepository->createQueryBuilder('u')
