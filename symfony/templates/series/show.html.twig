@@ -44,9 +44,21 @@
                             <span class="text-white font-bold">Seasons:</span>
                             {% for season in series.seasons %}
                             <a href="{{ path('app_season_show', {'id': season.id}) }}">
-                                <div class="bg-red-500 rounded-lg ml-5">
-                                    <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
-                                </div>
+                                {% set seasonWatched = true %}
+                                {% for episode in season.episodes %}
+                                    {% if episode not in app.user.episode %}
+                                        {% set seasonWatched = false %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if seasonWatched %}
+                                    <div class="bg-green-500 rounded-lg ml-5">
+                                        <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
+                                    </div>
+                                {% else %}
+                                    <div class="bg-red-500 rounded-lg ml-5">
+                                        <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
+                                    </div>
+                                {% endif %}
                             </a>
                             {% endfor %}
                         </div>                        
