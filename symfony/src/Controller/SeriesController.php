@@ -30,6 +30,7 @@ class SeriesController extends AbstractController
         $totalPages = ceil($totalSeries / $limit);
         return $this->render('series/index.html.twig', [
             'user' => $this->getUser(),
+            'app_action' => 'app_series_index',
             'series' => $series,
             'totalPages' => $totalPages,
             'current_page' => $page,
@@ -77,6 +78,32 @@ class SeriesController extends AbstractController
                 $entityManager ->flush();
             }
             return $this->redirectToRoute('app_series_index', ['page' => $page]);
+        }
+    }
+
+    #[Route('/ListSeriesFollow/{page}', name: 'app_series_list_follow', methods: ['GET'])]
+    public function ListFollow(EntityManagerInterface $entityManager, int $page = 1): Response
+    {
+        if (!$this->isUserLoggedIn()) {
+            return $this->redirectToRoute('app_login');
+        }
+        else{
+            $user = $entityManager ->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+            $series = $user->getSeries();
+
+            $limit = 10;
+            $offset = ($page - 1) * $limit;
+            $totalSeries = $series->count();
+            $series = $series->slice($offset, $limit);
+            $totalPages = ceil($totalSeries / $limit);
+
+            return $this->render('series/index.html.twig', [
+                'user' => $this->getUser(),
+                'app_action' => 'app_series_list_follow',
+                'series' => $series,
+                'totalPages' => $totalPages,
+                'current_page' => $page,
+            ]);
         }
     }
 

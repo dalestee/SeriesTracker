@@ -47,19 +47,19 @@
                 {% set next_page = current_page + 1 %}
 
                 {% if prev_page > 0 %}
-                    <a href="{{ path('app_series_index', {'page': prev_page}) }}" class="text-white hover:text-gray-300 mr-4">Previous</a>
+                    <a href="{{ path(app_action, {'page': prev_page}) }}" class="text-white hover:text-gray-300 mr-4">Previous</a>
                 {% endif %}
 
                 {% for page in 1..totalPages %}
                     {% if page == current_page %}
                         <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
                     {% else %}
-                        <a href="{{ path('app_series_index', {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+                        <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
                     {% endif %}
                 {% endfor %}
 
                 {% if next_page <= totalPages %}
-                    <a href="{{ path('app_series_index', {'page': next_page}) }}" class="text-white hover:text-gray-300 pl-5">Next</a>
+                    <a href="{{ path(app_action, {'page': next_page}) }}" class="text-white hover:text-gray-300 pl-5">Next</a>
                 {% endif %}
             </div>
         </div>
