@@ -27,7 +27,7 @@ class SeasonController extends AbstractController
         ]);
     }
 
-    #[Route('{id}', name: 'episode_view', methods: ['POST'])]
+    #[Route('/view/{id}', name: 'episode_view', methods: ['POST'])]
     public function episode_view(EntityManagerInterface $entityManager, Request $request): Response
     {
         $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
@@ -39,7 +39,7 @@ class SeasonController extends AbstractController
         return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('{id}', name: 'episode_unview', methods: ['POST'])]
+    #[Route('/unview/{id}', name: 'episode_unview', methods: ['POST'])]
     public function episode_unview(EntityManagerInterface $entityManager, Request $request): Response
     {
         $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
