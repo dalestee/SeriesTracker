@@ -10,8 +10,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                 {% for series in series %}
                     <div class="flex justify-between flex-col transform transition-transform duration-300 hover:scale-105 bg-gray-900 rounded-lg hover:border-red-500 border-2 border-transparent h-full">
-                        <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-fit object-cover rounded-t-lg">
                         <a href="{{ path('app_series_show', {'id': series.id}) }}">
+                            <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-fit object-cover rounded-t-lg">
                             <div class="p-4">
                                     <h2 class="text-white text-xl font-bold mb-2">{{ series.title }}</h2>
                                     <p class="text-white mb-2">Seasons: {{ series.seasons|length }}</p>

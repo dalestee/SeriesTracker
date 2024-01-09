@@ -9,6 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Episode;
+use App\Entity\User;
 
 #[Route('/season')]
 class SeasonController extends AbstractController
@@ -23,6 +25,30 @@ class SeasonController extends AbstractController
         return $this->render('season/index.html.twig', [
             'seasons' => $seasons,
         ]);
+    }
+
+    #[Route('{id}', name: 'episode_view', methods: ['POST'])]
+    public function episode_view(EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $episode = $entityManager->getRepository(Episode::class)->findOneBy(['id' => $request->request->get('episode_id')]);
+        
+        $user->addEpisode($episode);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('{id}', name: 'episode_unview', methods: ['POST'])]
+    public function episode_unview(EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $episode = $entityManager->getRepository(Episode::class)->findOneBy(['id' => $request->request->get('episode_id')]);
+        
+        $user->removeEpisode($episode);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/new', name: 'app_season_new', methods: ['GET', 'POST'])]

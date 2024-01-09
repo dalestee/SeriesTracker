@@ -7,31 +7,34 @@
         <div class="container mx-auto py-8">
             <h1 class="text-4xl text-white font-bold mb-8">Season {{ season.number }}</h1>
 
-            <div class="flex flex-col md:flex-row">
-                <div class="md:w-1/2">
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <th class="text-white font-bold pr-5">Id:</th>
-                                <td class="text-white font-bold">{{ season.id }}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-white font-bold pr-5">Episodes:</th>
-                                <td>
-                                    {% for episode in season.episodes %}
-                                        <span class="text-white px-4 py-2 ml-2">{{ episode.number }}</span>
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <a href="{{ path('app_season_index') }}" class="text-white px-4 py-2 hover:text-red-500">back to list</a>
-                </div>
-
-                <div class="md:w-1/2">
-                    {{ include('season/_delete_form.html.twig') }}
-                </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xl font-bold mr-4">Id: {{season.id}}</span>
+                <span class="text-white text-xl font-bold mr-4">Episodes:</span>
+                {% for episode in season.episodes %}
+                    <div class="bg-gray-800 rounded-lg p-4 my-4 flex justify-between w-2/6">
+                        <span class="text-white text-xl font-bold mr-4">{{ episode.number }} {{episode.title }}</span>
+                        {# button if episode is viewed #}
+                        {% if app.user %}
+                            {% if episode in app.user.episode %}
+                                <form action="{{ path('episode_unview', {'id': episode.id}) }}" method="post">
+                                    <input name="episode_id" value="{{ episode.id }}">
+                                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                        Unview
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form action="{{ path('episode_view', {'id': episode.id}) }}" method="post">
+                                    <input name="episode_id" value="{{ episode.id }}">
+                                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                        View
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                </form>
+                
             </div>
         </div>
     </div>
