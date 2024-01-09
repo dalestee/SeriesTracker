@@ -22,14 +22,6 @@
                         </div>
                     </div>
                 </a>
-                <div>
-                    <form action="{{ path('app_series_follow', {'id': series.id}) }}" method="post">
-                        <button type="submit" class="text-white hover:text-gray-300">Follow</button>
-                    </form>
-                    <form action="{{ path('app_series_unfollow', {'id': series.id}) }}" method="post">
-                        <button type="submit" class="text-white hover:text-gray-300">Unfollow</button>
-                    </form>
-                </div>
                 {% else %}
                     <p class="text-gray-700">No records found</p>
                 {% endfor %}
