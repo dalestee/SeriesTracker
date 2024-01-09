@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Season;
+use App\Entity\Series;
 use App\Form\SeasonType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,27 +29,25 @@ class SeasonController extends AbstractController
     }
 
     #[Route('/view/{id}', name: 'episode_view', methods: ['POST'])]
-    public function episode_view(EntityManagerInterface $entityManager, Request $request): Response
+    public function episode_view(EntityManagerInterface $entityManager, Request $request ,  Episode $episode): Response
     {
         $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-        $episode = $entityManager->getRepository(Episode::class)->findOneBy(['id' => $request->request->get('episode_id')]);
         
         $user->addEpisode($episode);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_season_show', ['id' => $episode->getSeason()->getId()], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/unview/{id}', name: 'episode_unview', methods: ['POST'])]
-    public function episode_unview(EntityManagerInterface $entityManager, Request $request): Response
+    public function episode_unview(EntityManagerInterface $entityManager, Request $request, Episode $episode): Response
     {
         $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-        $episode = $entityManager->getRepository(Episode::class)->findOneBy(['id' => $request->request->get('episode_id')]);
         
         $user->removeEpisode($episode);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_season_show', ['id' => $episode->getSeason()->getId()], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/new', name: 'app_season_new', methods: ['GET', 'POST'])]
