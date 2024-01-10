@@ -15,11 +15,12 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use App\Entity\Country;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
-{
-    $builder
+    {
+        $builder
         ->add('name', TextType::class, [
             'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
         ])
@@ -56,7 +57,7 @@ class RegistrationFormType extends AbstractType
                 ]),
             ],
         ]);
-}
+    }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
