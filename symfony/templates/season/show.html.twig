@@ -5,27 +5,31 @@
 {% block body %}
     <div class="bg-black">
         <div class="container mx-auto py-8">
-            <h1 class="text-4xl text-white font-bold mb-8">Season {{ season.number }}</h1>
-            {% set allSeasonEpisodesView = true %}
-            {% for episode in season.episodes %}
-                {% if episode not in app.user.episode %}
-                    {% set allSeasonEpisodesView = false %}
+            <a href="{{ path('app_series_show', {'id': season.series.id}) }}">
+                <h1 class="text-4xl text-white font-bold mb-8 hover:text-red-500">Season {{ season.number }}</h1>
+            </a>
+            {% if app.user %}
+                {% set allSeasonEpisodesView = true %}
+                {% for episode in season.episodes %}
+                    {% if episode not in app.user.episode %}
+                        {% set allSeasonEpisodesView = false %}
+                    {% endif %}
+                {% endfor %}
+                {% if app.user and allSeasonEpisodesView %}
+                    <form action="{{ path('season_unview', {'id': season.id}) }}" method="post">
+                        <button type="submit" class="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Unview all episodes season</button>
+                    </form>
+                {% else %}
+                    <form action="{{ path('season_view', {'id': season.id}) }}" method="post">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">View all episodes season</button>
+                    </form>
                 {% endif %}
-            {% endfor %}
-            {% if app.user and allSeasonEpisodesView %}
-                <form action="{{ path('season_unview', {'id': season.id}) }}" method="post">
-                    <button type="submit" class="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Unview all episodes season</button>
-                </form>
-            {% else %}
-                <form action="{{ path('season_view', {'id': season.id}) }}" method="post">
-                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">View all episodes season</button>
-                </form>
             {% endif %}
             <div class="flex flex-col">
                 <span class="text-white text-xl font-bold mr-4">Episodes:</span>
                 {% for episode in season.episodes %}
                     <div class="bg-gray-800 rounded-lg p-4 my-4 flex justify-between w-2/6">
-                        <span class="text-white text-xl font-bold mr-4">{{ episode.number }} {{episode.title }}</span>
+                        <span class="text-white text-xl font-bold mr-4">#{{ episode.number }} {{episode.title }}</span>
                         {# button if episode is viewed #}
                         {% if app.user %}
                             {% if episode in app.user.episode %}
