@@ -46,12 +46,14 @@
                                 {% endfor %}
                             {% endfor %}
                             {% if seriesnWatched %}
-                                <div class="bg-green-500 rounded-lg ml-5 mr-5">
-                                    <span class="text-white px-4 py-2 justify-center">view all seasons</span>
-                                </div>
+                                <a href="{{ path('app_series_unview_all', {'id': series.id}) }}">
+                                    <div class="bg-green-500 rounded-lg ml-5 mr-5 hover:bg-red-500">
+                                        <span class="text-white px-4 py-2 justify-center">unview all seasons</span>
+                                    </div>
+                                </a>
                             {% else %}
                                 <a href="{{ path('app_series_view_all', {'id': series.id}) }}">
-                                    <div class="bg-red-500 rounded-lg ml-5 mr-5">
+                                    <div class="bg-red-500 rounded-lg ml-5 mr-5 hover:bg-green-500">
                                         <span class="text-white px-4 py-2 justify-center">view all seasons</span>
                                     </div>
                                 </a>
