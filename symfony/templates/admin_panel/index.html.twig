@@ -6,9 +6,9 @@
 
 <div class="bg-gray-900 text-white">
     <div class="container mx-auto py-8">
-        <h1 class="text-4xl font-bold mb-8">Panneau d'administration</h1>
+        <h1 class="text-4xl font-bold mb-8">Admin Panel</h1>
 
-        <h2 class="text-2xl font-bold mb-4">Liste des utilisateurs :</h2>
+        <h2 class="text-2xl font-bold mb-4">User List:</h2>
         <div class="overflow-x-auto">
             <table class="table-auto w-full">
                 <thead>
@@ -16,7 +16,7 @@
                         <th class="px-4 py-2">Id</th>
                         <th class="px-4 py-2">Username</th>
                         <th class="px-4 py-2">Email</th>
-                        <th class="px-4 py-2">Date d'inscription</th>
+                        <th class="px-4 py-2">Registration Date</th>
                         <th class="px-4 py-2">Role</th>
                     </tr>
                 </thead>
@@ -34,37 +34,37 @@
             </table>
         </div>
         {% if form_impersonation %}
-            <h3 class="text-2xl font-bold mt-8 mb-4">Users embodiment</h3>
+            <h3 class="text-2xl font-bold mt-8 mb-4">User Impersonation</h3>
             <div class="max-w-md">
                 {{ form_start(form_impersonation) }}
                 <div class="mb-4 text-white-500">
                     {{ form_errors(form_impersonation) }}
                 </div>
                 <div class="mb-4">
-                        {{ form_label(form_impersonation.user, 'Utilisateur', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
+                        {{ form_label(form_impersonation.user, 'User', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
                         {{ form_widget(form_impersonation.user, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
                 </div>
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Valider</button>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
                 {{ form_end(form_impersonation) }}
             </div>
         {% endif %}
 
         {% if form_role %}
-            <h3 class="text-2xl font-bold mt-8 mb-4">Modification du rôles des utilisateurs</h3>
+            <h3 class="text-2xl font-bold mt-8 mb-4">User Role Modification</h3>
             <div class="max-w-md">
                 {{ form_start(form_role) }}
                 <div class="mb-4 text-white-500">
                     {{ form_errors(form_role) }}
                 </div>
                 <div class="mb-4">
-                        {{ form_label(form_role.user, 'Utilisateur', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
+                        {{ form_label(form_role.user, 'User', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
                         {{ form_widget(form_role.user, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
                 </div>
                  <div class="mb-4">
-                        {{ form_label(form_role.role, 'Rôle', {'label_attr': {'class': 'block text-white-200 text-1xl font-bold mb-2'}}) }}
+                        {{ form_label(form_role.role, 'Role', {'label_attr': {'class': 'block text-white-200 text-1xl font-bold mb-2'}}) }}
                         {{ form_widget(form_role.role, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
                 </div>
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Valider</button>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
                 {{ form_end(form_role) }}
             </div>
         {% endif %}
