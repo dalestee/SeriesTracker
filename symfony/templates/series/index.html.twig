@@ -15,9 +15,6 @@
                             <div class="p-4">
                                     <h2 class="text-white text-xl font-bold mb-2">{{ series.title }}</h2>
                                     <p class="text-white mb-2">Seasons: {{ series.seasons|length }}</p>
-                                    {% for genre in series.genres %}
-                                        <span class="inline-block bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold text-gray-300 mr-2 mb-2">{{ genre.name }}</span>
-                                    {% endfor %}
                                     <p class="text-white mb-2">Year: {{ series.yearStart }} - {% if series.yearEnd is null %}present{% else %}{{ series.yearEnd }}{% endif %}</p>
                                     <p class="text-white mb-2">IMDb rating:</p>
                                     {% set rating = series.externalRatings|first %}
@@ -27,6 +24,9 @@
                                         </div>
                                     </div>
                             </div>
+                            {% for genre in series.genres %}
+                                        <span class="inline-block bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold text-gray-300 mr-2 mb-2">{{ genre.name }}</span>
+                            {% endfor %}
                         </a>
                         {% if user %}
                                 {% if series in user.series %}
