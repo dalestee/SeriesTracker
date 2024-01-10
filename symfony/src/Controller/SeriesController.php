@@ -40,21 +40,20 @@ class SeriesController extends AbstractController
     public function isfollow(User $user, Series $series): bool
     {
         if (!$this->isUserLoggedIn()) {
-            return False;
-        }
-        else{
+            return false;
+        } else {
             return $user->isfollowingSeries($series);
         }
     }
 
     #[Route('/{page}/follow/{id}', name:'app_series_follow', methods: ['POST'], requirements: ['page' => '\d+'])]
-    public function follow(EntityManagerInterface $entityManager, Request $request,int $page,Series $series): Response
+    public function follow(EntityManagerInterface $entityManager, Request $request, int $page, Series $series): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
-        }
-        else{
-            $user = $entityManager ->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        } else {
+            $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $suivies = $this->isfollow($user, $series);
             if (!$suivies) {
                 $user->addSeries($series);
@@ -67,13 +66,17 @@ class SeriesController extends AbstractController
     }
 
     #[Route('/{page}/unfollow/{id}', name:'app_series_unfollow', methods: ['POST'], requirements: ['page' => '\d+'])]
-    public function unfollow(EntityManagerInterface $entityManager, Request $request,int $page, Series $series): Response
-    {
+    public function unfollow(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        int $page,
+        Series $series
+    ): Response {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
-        }
-        else{
-            $user = $entityManager ->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        } else {
+            $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $suivies = $this->isfollow($user, $series);
             if ($suivies) {
                 $user->removeSeries($series);
@@ -85,14 +88,14 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/ListSeriesFollow/{page}', name: 'app_series_list_follow', methods: ['GET'])]
-    public function ListFollow(EntityManagerInterface $entityManager, int $page = 1): Response
+    #[Route('/listSeriesFollow/{page}', name: 'app_series_list_follow', methods: ['GET'])]
+    public function listFollow(EntityManagerInterface $entityManager, int $page = 1): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
-        }
-        else{
-            $user = $entityManager ->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        } else {
+            $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $series = $user->getSeries();
 
             $limit = 10;
@@ -111,10 +114,11 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route ('/viewAllSeries/{id}', name: 'app_series_view_all', methods: ['GET'])]
+    #[Route('/viewAllSeries/{id}', name: 'app_series_view_all', methods: ['GET'])]
     public function viewAllSeries(EntityManagerInterface $entityManager, Request $request, Series $series): Response
     {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $seriesSeasons = $series->getSeasons();
         foreach ($seriesSeasons as $season) {
             $seasonEpisodes = $season->getEpisodes();
@@ -128,10 +132,11 @@ class SeriesController extends AbstractController
         return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route ('/unviewAllSeries/{id}', name: 'app_series_unview_all', methods: ['GET'])]
+    #[Route('/unviewAllSeries/{id}', name: 'app_series_unview_all', methods: ['GET'])]
     public function unviewAllSeries(EntityManagerInterface $entityManager, Request $request, Series $series): Response
     {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $seriesSeasons = $series->getSeasons();
         foreach ($seriesSeasons as $season) {
             $seasonEpisodes = $season->getEpisodes();
