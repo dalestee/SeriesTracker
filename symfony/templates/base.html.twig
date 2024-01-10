@@ -19,6 +19,10 @@
             {% if app.user %}
                 <li><a href="{{ path('app_logout') }}" class="text-white px-4 py-2 hover:text-red-500 ">Logout</a></li>
                 <li><a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 hover:text-red-500 ">List of followed series</a></li>
+                {% if is_granted('IS_IMPERSONATOR') %}
+                    <li><a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-white px-4 py-2 hover:text-red-500 ">Exit Embodiment</a></li>
+                {% endif %}
+                
                 {% if app.user.isAdmin() %}
                 <li><a href="{{ path('app_admin_panel') }}" class="text-white px-4 py-2 hover:text-red-500 ">Admin Panel</a></li>
                 {% endif %} 
