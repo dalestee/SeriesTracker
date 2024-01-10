@@ -30,6 +30,8 @@ class RegistrationFormType extends AbstractType
             'class' => Country::class,
             'choice_label' => 'name',
             'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
+            'placeholder' => 'Select your country',
+            'required' => false,
         ])
         ->add('agreeTerms', CheckboxType::class, [
             'mapped' => false,
