@@ -39,17 +39,31 @@
                                     </button>
                                 </form>
                             {% else %}
-                                <form action="{{ path('episode_view', {'id': episode.id}) }}" method="post">
-                                    <button type="submit" class="bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                <form id="episode_view_form_{{episode.id}}" action="{{ path('episode_view', {'id': episode.id}) }}" method="post">
+                                    <button type="submit" class="bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="return confirmAndSubmit('{{ episode.id }}');">
                                         View
                                     </button>
+                                </form>
+                                <form id="episode_view_precedent_form_{{episode.id}}" action="{{ path('episode_view_precedent', {'id': episode.id}) }}" method="post" style="display: none;">
+                                    <button type="submit"></button>
                                 </form>
                             {% endif %}
                         {% endif %}
                     </div>
-                {% endfor %}
-                </form>             
+                {% endfor %}           
             </div>
         </div>
     </div>
+<script>
+function confirmAndSubmit(id) {
+    if (confirm('Did you see all precedent episodes?')) {
+        document.getElementById('episode_view_precedent_form_'+id).submit();
+        return true;
+    }
+    else {
+        document.getElementById('episode_view_form_'+id).submit();
+    }
+    return false;
+}
+</script>
 {% endblock %}
