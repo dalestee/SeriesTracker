@@ -63,9 +63,11 @@
                             <span class="text-white font-bold">Seasons:</span>
                             {% if not app.user %}
                                 {% for season in series.seasons %}
-                                    <div class="bg-green-500 rounded-lg ml-5">
-                                            <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
-                                    </div>
+                                    <a href="{{ path('app_season_show', {'id': season.id}) }}">
+                                        <div class="bg-red-500 rounded-lg ml-5">
+                                                <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
+                                        </div>
+                                    </a>    
                                 {% endfor %}
                             {% else %}
                                 {% for season in series.seasons %}
