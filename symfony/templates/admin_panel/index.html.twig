@@ -33,24 +33,39 @@
                 </tbody>
             </table>
         </div>
-
-        {% if form %}
-            <h3 class="text-2xl font-bold mt-8 mb-4">Modification du rôles des utilisateurs</h3>
+        {% if form_impersonation %}
+            <h3 class="text-2xl font-bold mt-8 mb-4">Users embodiment</h3>
             <div class="max-w-md">
-                {{ form_start(form) }}
+                {{ form_start(form_impersonation) }}
                 <div class="mb-4 text-white-500">
-                    {{ form_errors(form) }}
+                    {{ form_errors(form_impersonation) }}
                 </div>
                 <div class="mb-4">
-                        {{ form_label(form.user, 'Utilisateur', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
-                        {{ form_widget(form.user, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
-                </div>
-                 <div class="mb-4">
-                        {{ form_label(form.role, 'Rôle', {'label_attr': {'class': 'block text-white-200 text-1xl font-bold mb-2'}}) }}
-                        {{ form_widget(form.role, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
+                        {{ form_label(form_impersonation.user, 'Utilisateur', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
+                        {{ form_widget(form_impersonation.user, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
                 </div>
                 <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Valider</button>
-                {{ form_end(form) }}
+                {{ form_end(form_impersonation) }}
+            </div>
+        {% endif %}
+
+        {% if form_role %}
+            <h3 class="text-2xl font-bold mt-8 mb-4">Modification du rôles des utilisateurs</h3>
+            <div class="max-w-md">
+                {{ form_start(form_role) }}
+                <div class="mb-4 text-white-500">
+                    {{ form_errors(form_role) }}
+                </div>
+                <div class="mb-4">
+                        {{ form_label(form_role.user, 'Utilisateur', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
+                        {{ form_widget(form_role.user, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
+                </div>
+                 <div class="mb-4">
+                        {{ form_label(form_role.role, 'Rôle', {'label_attr': {'class': 'block text-white-200 text-1xl font-bold mb-2'}}) }}
+                        {{ form_widget(form_role.role, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Valider</button>
+                {{ form_end(form_role) }}
             </div>
         {% endif %}
     </div>
