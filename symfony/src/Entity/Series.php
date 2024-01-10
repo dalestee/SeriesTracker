@@ -64,6 +64,9 @@ class Series
     #[ORM\JoinTable(name: "genre_series")]
     private $genres;
 
+    #[ORM\OneToMany(mappedBy: "series", targetEntity: "ExternalRating")]
+    private $externalRatings;
+
     /**
      * Constructor
      */
@@ -175,6 +178,11 @@ class Series
         $this->yearEnd = $yearEnd;
 
         return $this;
+    }
+
+    public function getExternalRatings(): Collection
+    {
+        return $this->externalRatings;
     }
 
     /**
