@@ -118,12 +118,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->registerDate;
     }
 
-    public function registerDate_toString(){
-        if ($this->getRegisterDate()){
+    public function registerDateToString()
+    {
+        if ($this->getRegisterDate()) {
             return $this->getRegisterDate()->format('Y-m-d H:i:s');
         }
         return null;
-        
     }
 
     public function setRegisterDate($registerDate): self
@@ -236,20 +236,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
 
-    public function getUserIdentifier(): string {
+    public function getUserIdentifier(): string
+    {
         return $this->getEmail();
     }
-    public function getRoles(): array {
+    public function getRoles(): array
+    {
         if ($this->isSuperAdmin()) {
             return ['ROLE_SUPER_ADMIN'];
-        } else if ($this->isAdmin()) {
+        } elseif ($this->isAdmin()) {
             return ['ROLE_ADMIN'];
         } else {
             return ['ROLE_USER'];
         }
     }
-    public function eraseCredentials() : void { 
-
+    public function eraseCredentials() : void
+    {
     }
     public function isfollowingSeries(Series $series): bool
     {

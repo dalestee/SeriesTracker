@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+
 class UserRoleFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -51,7 +52,7 @@ class UserRoleFormType extends AbstractType
             $context->buildViolation('Il est impossible de changer le rôle d\'un super administrateur.')
                 ->addViolation();
         }
-        if ($user && $user->isAdmin() == ($context->getRoot()->getData()['role'] > 0) ) {
+        if ($user && $user->isAdmin() == ($context->getRoot()->getData()['role'] > 0)) {
             $context->buildViolation('Le rôle de l\'utilisateur est déjà celui-ci.')
                 ->addViolation();
         }

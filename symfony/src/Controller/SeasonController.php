@@ -44,7 +44,7 @@ class SeasonController extends AbstractController
             if ($serieSeason->getNumber() < $season->getNumber()) {
                 foreach ($serieSeason->getEpisodes() as $episode) {
                     if (!$this->isEpisodeViewed($episode)) {
-                        $this->episode_view($entityManager, $request, $episode);
+                        $this->viewEpisode($entityManager, $episode);
                     }
                 }
             }
@@ -53,48 +53,73 @@ class SeasonController extends AbstractController
         foreach ($episodes as $episode) {
             if ($episode->getNumber() < $episodeNumber) {
                 if (!$this->isEpisodeViewed($episode)) {
-                    $this->episode_view($entityManager, $request, $episode);
+                    $this->viewEpisode($entityManager, $episode);
                 }
             }
         }
     }
 
-    #[Route('/allPrecedentView/{id}', name: 'episode_view_precedent', methods: ['POST'])]
-    public function episode_view_precedent(EntityManagerInterface $entityManager, Request $request, Episode $episode): Response
-    {
+    #[Route('/viewAllPrevious/{id}', name: 'episode_view_precedent', methods: ['POST'])]
+    public function episodeViewPrevious(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Episode $episode
+    ): Response {
         $this->allPrecendentViewed($entityManager, $request, $episode);
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $user = $entityManager->getRepository(User::class)
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $user->addEpisode($episode);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_season_show', ['id' => $episode->getSeason()->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_season_show',
+            ['id' => $episode->getSeason()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/view/{id}', name: 'episode_view', methods: ['POST'])]
-    public function episode_view(EntityManagerInterface $entityManager, Request $request, Episode $episode): Response
-    {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+    public function viewEpisode(
+        EntityManagerInterface $entityManager,
+        Episode $episode
+    ): Response {
+        $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $user->addEpisode($episode);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_season_show', ['id' => $episode->getSeason()->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_season_show',
+            ['id' => $episode->getSeason()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/unview/{id}', name: 'episode_unview', methods: ['POST'])]
-    public function episode_unview(EntityManagerInterface $entityManager, Request $request, Episode $episode): Response
-    {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+    public function unviewEpisode(
+        EntityManagerInterface $entityManager,
+        Episode $episode
+    ): Response {
+        $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
 
         $user->removeEpisode($episode);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_season_show', ['id' => $episode->getSeason()->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_season_show',
+            ['id' => $episode->getSeason()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
-    #[Route('/allSeasonEpisodesView/{id}', name: 'season_view', methods: ['POST'])]
-    public function allViewSeasonEpisodes(EntityManagerInterface $entityManager, Request $request, Season $season): Response
-    {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+    #[Route('/viewAllSeasonEpisodes/{id}', name: 'season_view', methods: ['POST'])]
+    public function viewAllSeasonEpisodes(
+        EntityManagerInterface $entityManager,
+        Season $season
+    ): Response {
+        $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
 
         foreach ($season->getEpisodes() as $episode) {
             if (!$user->isEpisodeViewed($episode)) {
@@ -103,13 +128,20 @@ class SeasonController extends AbstractController
         }
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_season_show', ['id' => $season->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_season_show',
+            ['id' => $episode->getSeason()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
-    #[Route('/allSeasonEpisodesUnview/{id}', name: 'season_unview', methods: ['POST'])]
-    public function allUnviewSeasonEpisodes(EntityManagerInterface $entityManager, Request $request, Season $season): Response
-    {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+    #[Route('/unviewAllSeasonEpisodes/{id}', name: 'season_unview', methods: ['POST'])]
+    public function unviewAllSeasonEpisodes(
+        EntityManagerInterface $entityManager,
+        Season $season
+    ): Response {
+        $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
 
         foreach ($season->getEpisodes() as $episode) {
             if ($user->isEpisodeViewed($episode)) {
@@ -122,9 +154,12 @@ class SeasonController extends AbstractController
     }
 
     #[Route('/view/{id}', name: 'season_view_season', methods: ['POST'])]
-    public function season_view(EntityManagerInterface $entityManager, Request $request, Season $season): Response
-    {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+    public function viewSeason(
+        EntityManagerInterface $entityManager,
+        Season $season
+    ): Response {
+        $user = $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
 
         foreach ($season->getEpisodes() as $episode) {
             $user->addEpisode($episode);

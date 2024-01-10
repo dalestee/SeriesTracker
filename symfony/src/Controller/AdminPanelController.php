@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminPanelController extends AbstractController
 {
-    #[Route('/admin', name: 'app_admin_panel' , methods: ['GET'])]
+    #[Route('/admin', name: 'app_admin_panel', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response
     {
         $users = $entityManager
@@ -28,7 +28,7 @@ class AdminPanelController extends AbstractController
             $formRole = $this->createForm(UserRoleFormType::class, null, [
                 'action' => $this->generateUrl('app_admin_change_role'),
             ])->createView();
-        }else {
+        } else {
             $formRole = null;
         }
         
@@ -48,11 +48,10 @@ class AdminPanelController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-                
                 $user = $form->getData()['user'];
-                if ($user){
-                    return $this->redirectToRoute('app_series_index',['_switch_user' => $user->getUserIdentifier()]);
-                }
+            if ($user) {
+                return $this->redirectToRoute('app_series_index', ['_switch_user' => $user->getUserIdentifier()]);
+            }
         }
         return $this->redirectToRoute('app_admin_panel');
     }
@@ -67,7 +66,6 @@ class AdminPanelController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $user = $form->getData()['user'];
             $user->setAdmin($form->getData()['role']);
             $entityManager->flush();

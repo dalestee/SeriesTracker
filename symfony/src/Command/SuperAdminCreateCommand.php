@@ -57,12 +57,9 @@ class SuperAdminCreateCommand extends Command
 
             $io->success("User changed ".$user->getUserIdentifier()." to super admin");
             return Command::SUCCESS;
-        }
-        else {
+        } else {
             $io->error('Need to specify a user');
             return Command::FAILURE;
         }
-        
-        
     }
 }
