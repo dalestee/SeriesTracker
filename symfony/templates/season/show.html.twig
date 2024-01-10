@@ -5,7 +5,9 @@
 {% block body %}
     <div class="bg-black">
         <div class="container mx-auto py-8">
-            <h1 class="text-4xl text-white font-bold mb-8">Season {{ season.number }}</h1>
+            <a href="{{ path('app_series_show', {'id': season.series.id}) }}">
+                <h1 class="text-4xl text-white font-bold mb-8 hover:text-red-500">Season {{ season.number }}</h1>
+            </a>
             {% set allSeasonEpisodesView = true %}
             {% for episode in season.episodes %}
                 {% if episode not in app.user.episode %}

@@ -15,6 +15,9 @@
     <body>
     <nav class=" h-10 text-3xl flex items-center justify-around py-10 bg-gray-900">
         <ul class="flex justify-center items-center">
+            {% if app.user %}
+                <li><span class="text-white px-4 py-2">{{ app.user.name }}</span></li>
+            {% endif %}
             <li><a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 hover:text-red-500 ">Home</a></li>
             {% if app.user %}
                 <li><a href="{{ path('app_logout') }}" class="text-white px-4 py-2 hover:text-red-500 ">Logout</a></li>
