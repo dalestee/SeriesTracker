@@ -9,7 +9,7 @@ use Symfony\Component\Security\Http\SecurityEvents;
 
 class SwitchUserSubscriber implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents() : array
     {
         return [
             SecurityEvents::SWITCH_USER => 'onSwitchUser',
