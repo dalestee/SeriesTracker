@@ -71,17 +71,22 @@
                 <a href="{{ path(app_action, {'page': current_page - 1}) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
             {% endif %}
 
-                {% for page in 1..totalPages %}
-                    {% if page == current_page %}
-                        <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
-                    {% else %}
-                        <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if next_page <= totalPages %}
-                    <a href="{{ path(app_action, {'page': next_page}) }}" class="text-white hover:text-gray-300 pl-5">Next</a>
+            {% for page in 1..total_pages %}
+                {% if page == current_page %}
+                    <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
+                {% elseif page == current_page - 1 or page == current_page + 1 %}
+                    <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+                {% elseif page == 1 or page == total_pages %}
+                    <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+                {% elseif page == current_page - 2 or page == current_page + 2 %}
+                    <span class="text-white px-5">...</span>
                 {% endif %}
+            {% endfor %}
+
+            {% if current_page != total_pages %}
+                <a href="{{ path(app_action, {'page': current_page + 1}) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+            {% endif %}
+
             </div>
         </div>
     </div>
