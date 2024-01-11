@@ -91,7 +91,11 @@ class SeriesController extends AbstractController
     }
 
     #[Route('/listSeriesFollow/{page}', name: 'app_series_list_follow', methods: ['GET'])]
-    public function listFollow(EntityManagerInterface $entityManager, PaginatorInterface $paginator, int $page = 1): Response
+    public function listFollow(
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+        int $page = 1
+        ): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
