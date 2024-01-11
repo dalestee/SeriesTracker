@@ -19,31 +19,114 @@
 		<style>
 			.bigSearchBar {
 				position: absolute;
-				z-index: 10;
+				z-index: 15;
 				width: 80vw;
 				height: 50vh;
 				left: 0;
 				top: 0;
 				background-color: rgb(17 24 39);
-				border-radius: 9999px;
+				
 				transition: all 2s ease-in-out;
 				border-radius: 5px;
 				padding: 20px!important;
 				
 			}
+			.mobileMenu{
+				position: absolute;
+				z-index: 15;
+				width: 80vw;
+				height: 100vh;
+				right: 0;
+				top: 0;
+				background-color: rgb(17 24 39);
+				
+				transition: all 2s ease-in-out;
+				border-radius: 5px;
+
+			}
 		</style>
 	</head>
 	<body class="w-screen bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-center">
-		<nav class=" h-10 text-xl flex items-center py-10 bg-gray-900">
+		<nav class="flex sticky top-0 z-150 md:hidden w-full h-10 items-center py-10 bg-gray-900">
+			<ul class="flex justify-around items-center w-full">
+				<li>
+				<button id="mobilSearch">
+					<img src="{{ asset('img/loupe.png') }}" alt="logo" class="h-20">
+				</button>
+				</li>
+				<li>
+					<img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32">
+				</li>
+				<li>
+					<button id="mobilMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
+						<img src="{{ asset('img/burger.png') }}" alt="logo" class="h-20">
+						<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+					</button>
+				</li>
+			</ul>
+		</nav>
+		<div id="formMobileHidden" class="hidden w-full h-[80vh] flex flex-col items-center justify-center">
+							<h1 class="text-white text-2xl">Recherche</h1>
+						<form class="w-full flex items-center justify-center" action="" method="get">
+							<input type="text" name="search" class="w-10/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
+						</form>
+						</div>
+
+
+		<div id="mobileMenu" class="hidden fixed flex items-center flex-col w-[80vw] rounded-sm border border-red-500 bg-gray-900 top-0 right-0 h-full z-10 p-8" >
+		<button id="mobileMenuClose" class="text-white px-4 py-2 absolute top-4 left-4 inline-block group focus:outline-none">
+						<img src="{{ asset('img/close.png') }}" alt="logo" class="h-20">
+						<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+					</button>
+		<ul> 
+		<li>
+					<a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 relative inline-block group">
+						Home
+					</a>
+
+				</li>
+				{% if app.user %}
+				
+
+				<li>
+					<a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 relative inline-block group">
+						List of followed series
+					</a>
+				</li>
+				<li>
+				<a href="{{ path('app_logout') }}" class="text-white px-4 py-2 relative inline-block group ">
+								Logout
+								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+							</a>
+				</li>
+				{% else %}
+				<li>
+						<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
+					</li>
+
+
+
+
+				{% endif %}
+
+				
+		</ul>
+			
+		</div>
+
+
+
+
+		<nav class="hidden sticky top-0 z-15 md:flex h-10 text-xl flex items-center py-10 bg-gray-900">
 			<ul class="flex justify-around items-center w-full">
 				<li class="flex item-center ">
 					<img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32">
-					{% if app.user %}
-
-						{# <span class="flex items-center px-4 text-white text-center text-xl ">Bonjour
-						{{ app.user.name }}</span> #}
-
-					{% endif %}
+					
 				</li>
 				<li>
 					{% if app.request.attributes.get('_route') == 'app_series_index' %}
@@ -89,7 +172,7 @@
 					</li>
 					<li>
 						<button id="accountMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
-							Account Menu
+							<img src="{{ asset('img/account.png') }}" alt="logo" class="h-10">
 							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 						</button>
 					</li>
@@ -146,7 +229,9 @@
 
 	var accountMenuBtn = document.getElementById('accountMenuBtn');
 	var accountMenu = document.getElementById('accountMenu');
-
+	var mobileMenu = document.getElementById('mobileMenu');
+	var mobilMenuBtn = document.getElementById('mobilMenuBtn');
+	var mobileMenuClose = document.getElementById('mobileMenuClose');
 
 
     var searchBar = document.getElementById('searchBar');
@@ -154,6 +239,22 @@
     var formHidden = document.getElementById('formHidden');
     var boutonClose = document.getElementById('boutonClose');
 
+	var formMobileHidden = document.getElementById('formMobileHidden');
+	var mobilSearch = document.getElementById('mobilSearch');
+
+	mobilSearch.addEventListener('click', function (event) {
+		formMobileHidden.classList.toggle('hidden');
+				
+	});
+
+	mobilMenuBtn.addEventListener('click', function (event) {
+		mobileMenu.classList.remove('hidden');
+				
+	});
+	mobileMenuClose.addEventListener('click', function (event) {
+		mobileMenu.classList.add('hidden');
+
+	});
     searchBar.addEventListener('click', function (event) {
         if (!searchBar.classList.contains('bigSearchBar')) {
             searchBar.classList.add('bigSearchBar');
@@ -188,6 +289,9 @@
 		// Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
 		event.stopPropagation();
 	});	
+	
+
+
 </script>
 
 
