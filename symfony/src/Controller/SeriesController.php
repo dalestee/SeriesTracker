@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/')]
 class SeriesController extends AbstractController
@@ -20,20 +21,21 @@ class SeriesController extends AbstractController
     }
     
     #[Route('/{page}', name: 'app_series_index', methods: ['GET'], requirements: ['page' => '\d+'])]
-    public function index(EntityManagerInterface $entityManager, $page = 1): Response
+    public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
     {
-        $limit = 10;
-        $offset = ($page - 1) * $limit;
         $seriesRepository = $entityManager->getRepository(Series::class);
-        $totalSeries = $seriesRepository->count([]);
-        $series = $seriesRepository->findBy([], null, $limit, $offset);
-        $totalPages = ceil($totalSeries / $limit);
+        $query = $seriesRepository->createQueryBuilder('p')->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query, /* query NOT result */
+            $page/*page number*/,
+            10/*limit per page*/
+        );
+
         return $this->render('series/index.html.twig', [
             'user' => $this->getUser(),
             'app_action' => 'app_series_index',
-            'series' => $series,
-            'totalPages' => $totalPages,
-            'current_page' => $page,
+            'pagination' => $pagination
         ]);
     }
 
