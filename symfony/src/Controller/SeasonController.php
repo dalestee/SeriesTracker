@@ -71,9 +71,11 @@ class SeasonController extends AbstractController
         $user->addEpisode($episode);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_series_show', 
-        ['id' => $episode->getSeason()->getSeries()->getId()], 
-        Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_series_show',
+            ['id' => $episode->getSeason()->getSeries()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/view/{id}', name: 'episode_view', methods: ['POST'])]
@@ -89,9 +91,11 @@ class SeasonController extends AbstractController
         }
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_series_show', 
-        ['id' => $episode->getSeason()->getSeries()->getId()], 
-        Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_series_show',
+            ['id' => $episode->getSeason()->getSeries()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/unview/{id}', name: 'episode_unview', methods: ['POST'])]
@@ -105,9 +109,11 @@ class SeasonController extends AbstractController
         $user->removeEpisode($episode);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_series_show', 
-        ['id' => $episode->getSeason()->getSeries()->getId()], 
-        Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_series_show',
+            ['id' => $episode->getSeason()->getSeries()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/viewAllSeasonEpisodes/{id}', name: 'season_view', methods: ['POST'])]
@@ -128,9 +134,11 @@ class SeasonController extends AbstractController
         }
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_series_show', 
-        ['id' => $season->getSeries()->getId()], 
-        Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_series_show',
+            ['id' => $season->getSeries()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/unviewAllSeasonEpisodes/{id}', name: 'season_unview', methods: ['POST'])]
@@ -148,9 +156,11 @@ class SeasonController extends AbstractController
         }
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_series_show', 
-        ['id' => $season->getSeries()->getId()], 
-        Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_series_show',
+            ['id' => $season->getSeries()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/view/{id}', name: 'season_view_season', methods: ['POST'])]
@@ -166,9 +176,11 @@ class SeasonController extends AbstractController
         }
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_series_show', 
-        ['id' => $season->getSeries()->getId()], 
-        Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_series_show',
+            ['id' => $season->getSeries()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/new', name: 'app_season_new', methods: ['GET', 'POST'])]
