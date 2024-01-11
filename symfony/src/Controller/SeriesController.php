@@ -19,7 +19,7 @@ class SeriesController extends AbstractController
     {
         return $this->getUser() != null;
     }
-    
+
     #[Route('/{page}', name: 'app_series_index', methods: ['GET'], requirements: ['page' => '\d+'])]
     public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
     {
@@ -95,8 +95,7 @@ class SeriesController extends AbstractController
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
         int $page = 1
-        ): Response
-    {
+    ): Response {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
         } else {
@@ -216,7 +215,7 @@ class SeriesController extends AbstractController
     #[Route('/{id}', name: 'app_series_delete', methods: ['POST'])]
     public function delete(Request $request, Series $series, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$series->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $series->getId(), $request->request->get('_token'))) {
             $entityManager->remove($series);
             $entityManager->flush();
         }
