@@ -16,16 +16,32 @@
 				{{ importmap('app') }}
 			{% endblock %}
 		{% endblock %}
+		<style>
+			.bigSearchBar {
+				position: absolute;
+				z-index: 10;
+				width: 80vw;
+				height: 50vh;
+				left: 0;
+				top: 0;
+				background-color: rgb(17 24 39);
+				border-radius: 9999px;
+				transition: all 2s ease-in-out;
+				border-radius: 5px;
+				padding: 20px!important;
+				
+			}
+		</style>
 	</head>
 	<body class="w-screen bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-center">
-			<nav class=" h-10 text-3xl flex items-center py-10 bg-gray-900">
+		<nav class=" h-10 text-xl flex items-center py-10 bg-gray-900">
 			<ul class="flex justify-around items-center w-full">
 				<li class="flex item-center ">
 					<img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32">
 					{% if app.user %}
 
 						{# <span class="flex items-center px-4 text-white text-center text-xl ">Bonjour
-							{{ app.user.name }}</span> #}
+																																																	{{ app.user.name }}</span> #}
 
 					{% endif %}
 				</li>
@@ -36,6 +52,20 @@
 					</a>
 
 				</li>
+				<li class="w-96 h-full bg-black rounded-full">
+					<div id="searchBar" class="flex items-start justify-center w-full text-white p-3 z-2 transition-all duration-800 ease-in-out bg-grey-900">
+						<button id="boutonClose" class="hidden absolute right-4 top-4 w-10 h-10 bg-red-500 rounded-full focus:outline-none">
+							<p class="text-white text-2xl border-2 border-white rounded-full w-10 h-10 flex items-center justify-center">X</p>
+						</button>
+						<p id="pSearch">Recherche</p>
+						<div id="formHidden" class="hidden w-full flex flex-col items-center justify-center">
+							<h1 class="text-white text-2xl">Recherche</h1>
+						<form class="w-full flex items-center justify-center" action="" method="get">
+							<input type="text" name="search" class="w-10/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
+						</form>
+						</div>
+					</div>
+				</li>
 
 				{% if app.user %}
 					<li>
@@ -44,32 +74,48 @@
 							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 						</a>
 					</li>
-					{% if is_granted('IS_IMPERSONATOR') %}
-						<li>
-							<a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-white px-4 py-2 relative inline-block group">
-								Exit Embodiment
+					<li>
+						<button id="accountMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
+							Account Menu
+							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</button>
+					</li>
+
+
+					<div
+						class="hidden absolute flex items-center flex-col w-auto rounded-sm border border-red-500 bg-white top-24 right-4 h-40 z-10 p-8" id="accountMenu">
+						<!-- Liens pour le compte -->
+						{% if app.user %}
+
+
+							{% if is_granted('IS_IMPERSONATOR') %}
+								<a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-black px-4 py-2 relative inline-block group">
+									Exit Embodiment
+									<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+								</a>
+							{% endif %}
+
+							{% if app.user.isAdmin() %}
+								<a href="{{ path('app_admin_panel') }}" class="text-black px-4 py-2 relative inline-block group">
+									Admin Panel
+									<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+								</a>
+							{% endif %}
+							<a href="{{ path('app_logout') }}" class="text-black px-4 py-2 relative inline-block group ">
+								Logout
 								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 							</a>
+						{% endif %}
+					</div>
 
-
-						</li>
-					{% endif %}
-
-					{% if app.user.isAdmin() %}
-						<li>
-							<a href="{{ path('app_admin_panel') }}" class="text-white px-4 py-2 relative inline-block group">Admin Panel<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
-                            
-                        </li>
-					{% endif %}
-					<li>
-						<a href="{{ path('app_logout') }}" class="text-white px-4 py-2 relative inline-block group ">Logout<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
-					</li>
 				{% else %}
 					<li>
-						<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+						<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
 					</li>
 					<li>
-						<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+						<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
 					</li>
 				{% endif %}
 
@@ -77,4 +123,53 @@
 		</nav>
 		{% block body %}{% endblock %}
 	</body>
+	<script>
+
+	var accountMenuBtn = document.getElementById('accountMenuBtn');
+	var accountMenu = document.getElementById('accountMenu');
+
+
+
+    var searchBar = document.getElementById('searchBar');
+    var pSearch = document.getElementById('pSearch');
+    var formHidden = document.getElementById('formHidden');
+    var boutonClose = document.getElementById('boutonClose');
+
+    searchBar.addEventListener('click', function (event) {
+        if (!searchBar.classList.contains('bigSearchBar')) {
+            searchBar.classList.add('bigSearchBar');
+            pSearch.classList.add('hidden');
+            formHidden.classList.remove('hidden');
+            boutonClose.classList.remove('hidden');
+        } else {
+            // Ajoutez ici le code pour le comportement lorsque searchBar a déjà la classe bigSearchBar
+        }
+        // Empêche la propagation de l'événement pour éviter d'activer le clic du boutonClose immédiatement
+        event.stopPropagation();
+    });
+
+
+
+    boutonClose.addEventListener('click', function (event) {
+        searchBar.classList.remove('bigSearchBar');
+        pSearch.classList.remove('hidden');
+        formHidden.classList.add('hidden');
+        boutonClose.classList.add('hidden');
+        // Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
+        event.stopPropagation();
+    });
+	accountMenuBtn.addEventListener('click', function (event) {
+		if (!accountMenu.classList.contains('block')) {
+			accountMenu.classList.remove('hidden');
+			accountMenu.classList.add('block');
+		} else {
+			accountMenu.classList.remove('block');
+			accountMenu.classList.add('hidden');
+		}
+		// Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
+		event.stopPropagation();
+	});	
+</script>
+
+
 </html>
