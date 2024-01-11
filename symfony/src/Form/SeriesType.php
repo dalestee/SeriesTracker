@@ -28,23 +28,23 @@ class SeriesType extends AbstractType
             ->add('yearEnd')
             ->add('user', EntityType::class, [
                 'class' => User::class,
-'choice_label' => 'id',
-'multiple' => true,
+        'choice_label' => 'id',
+        'multiple' => true,
             ])
             ->add('genre', EntityType::class, [
                 'class' => Genre::class,
-'choice_label' => 'id',
-'multiple' => true,
+        'choice_label' => 'id',
+        'multiple' => true,
             ])
             ->add('actor', EntityType::class, [
                 'class' => Actor::class,
-'choice_label' => 'id',
-'multiple' => true,
+        'choice_label' => 'id',
+        'multiple' => true,
             ])
             ->add('country', EntityType::class, [
                 'class' => Country::class,
-'choice_label' => 'id',
-'multiple' => true,
+        'choice_label' => 'id',
+        'multiple' => true,
             ])
         ;
     }

@@ -1,0 +1,46 @@
+# This file is a template, and might need editing before it works on your project.
+# You can copy and paste this template into a new `.gitlab-ci.yml` file.
+# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+#
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/PHP.gitlab-ci.yml
+
+# Select image from https://hub.docker.com/_/php/
+
+image: composer:latest
+
+stages:
+  - test_prog_rules
+
+# Select what we should cache between builds
+cache:
+  paths:
+    - vendor/
+
+before_script:
+  - cd symfony
+  - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+
+phpcs:
+  stage: test_prog_rules
+  script:
+    - vendor/bin/phpcs --standard=PSR2 src
+ 
+# Set any variables we need
+variables:
+  # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
+  MYSQL_DATABASE: etu_igabarra
+  MYSQL_ROOT_PASSWORD: j7SYSytx
+
+# Run our tests
+# If Xdebug was installed you can generate a coverage report and see code coverage metrics.
+#test:
+#  script:
+#    - vendor/bin/phpunit --configuration phpunit.xml --coverage-text --colors=never
+
+#deploy:
+  #stage: deploy
+  #script: echo "Define your deployment script!"
+  #environment: production
