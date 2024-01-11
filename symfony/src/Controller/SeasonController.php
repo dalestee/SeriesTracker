@@ -86,6 +86,9 @@ class SeasonController extends AbstractController
         $user = $user = $entityManager->getRepository(User::class)
                     ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $user->addEpisode($episode);
+        if (!$user->isfollowingSeries($episode->getSeason()->getSeries())) {
+            $user->addSeries($episode->getSeason()->getSeries());
+        }
         $entityManager->flush();
 
         return $this->redirectToRoute(
@@ -125,6 +128,9 @@ class SeasonController extends AbstractController
             if (!$user->isEpisodeViewed($episode)) {
                 $user->addEpisode($episode);
             }
+        }
+        if (!$user->isfollowingSeries($season->getSeries())) {
+            $user->addSeries($season->getSeries());
         }
         $entityManager->flush();
 
