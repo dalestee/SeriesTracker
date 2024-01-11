@@ -9,6 +9,8 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Faker\Factory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -29,15 +31,24 @@ class CreateUserCommand extends Command
         $this->userPasswordHasher = $userPasswordHasher;
     }
 
+    protected function configure(): void
+    {
+        $this
+            ->addArgument('nbUsers', InputArgument::OPTIONAL, 'Number of users to create', 100)
+        ;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $faker = Factory::create();
 
+        $nbUsers = $input->getArgument('nbUsers');
+
         // Récupérez tous les pays de la base de données
         $countries = $this->entityManager->getRepository(Country::class)->findAll();
 
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < $nbUsers; $i++) {
             $user = new User();
             $email = $faker->unique()->safeEmail;
             $user->setEmail($email);
@@ -58,7 +69,7 @@ class CreateUserCommand extends Command
 
         $this->entityManager->flush();
 
-        $io->success('100 users have been successfully generated.');
+        $io->success(sprintf('[OK] %s users have been successfully generated.', $nbUsers));
 
         return Command::SUCCESS;
     }
