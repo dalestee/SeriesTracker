@@ -31,11 +31,11 @@ class SeriesController extends AbstractController
             $page/*page number*/,
             10/*limit per page*/
         );
-
+        dump($pagination);
         return $this->render('series/index.html.twig', [
             'user' => $this->getUser(),
             'app_action' => 'app_series_index',
-            'pagination' => $pagination
+            'pagination' => $pagination,
         ]);
     }
 
@@ -91,27 +91,25 @@ class SeriesController extends AbstractController
     }
 
     #[Route('/listSeriesFollow/{page}', name: 'app_series_list_follow', methods: ['GET'])]
-    public function listFollow(EntityManagerInterface $entityManager, int $page = 1): Response
+    public function listFollow(EntityManagerInterface $entityManager, PaginatorInterface $paginator, int $page = 1): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
         } else {
-            $user = $user = $entityManager->getRepository(User::class)
+            $user = $entityManager->getRepository(User::class)
                     ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-            $series = $user->getSeries();
+            $seriesQuery = $user->getSeries();
 
-            $limit = 10;
-            $offset = ($page - 1) * $limit;
-            $totalSeries = $series->count();
-            $series = $series->slice($offset, $limit);
-            $totalPages = ceil($totalSeries / $limit);
+            $pagination = $paginator->paginate(
+                $seriesQuery, /* query NOT result */
+                $page/*page number*/,
+                10/*limit per page*/
+            );
 
             return $this->render('series/index.html.twig', [
                 'user' => $this->getUser(),
                 'app_action' => 'app_series_list_follow',
-                'series' => $series,
-                'totalPages' => $totalPages,
-                'current_page' => $page,
+                'pagination' => $pagination,
             ]);
         }
     }
