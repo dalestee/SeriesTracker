@@ -3,11 +3,11 @@
 {% block title %}Series{% endblock %}
 
 {% block body %}
-    <div class="bg-black">
+    <div class="">
         <div class="container mx-auto py-8">
-            <h1 class="text-4xl text-white font-bold mb-8">Series</h1>
+            <h1 class="text-4xl text-center text-white font-bold mb-12">Series</h1>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            <div class="grid mx-8 sm:grid-cols-2 md:grid-cols-3 md:mx-0 lg:grid-cols-4 xl:grid-cols-5 gap-8">
                 {% for series in series %}
                     <div class="flex justify-between flex-col transform transition-transform duration-300 hover:scale-105 bg-gray-900 rounded-lg hover:border-red-500 border-2 border-transparent h-full">
                         <a href="{{ path('app_series_show', {'id': series.id}) }}">
@@ -49,7 +49,7 @@
                 {% endfor %}
             </div>
 
-            <div class="flex justify-center mt-8">
+            <div class="flex sm:overflow-auto overflow-scroll justify-center mt-8">
                 {% set prev_page = current_page - 1 %}
                 {% set next_page = current_page + 1 %}
 

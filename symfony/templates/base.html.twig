@@ -1,41 +1,80 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        <script src="https://cdn.tailwindcss.com"></script>
-        {% block stylesheets %}
-        {% endblock %}
+<html class="w-screen">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+		<script src="https://cdn.tailwindcss.com"></script>
+		{% block stylesheets %}{% endblock %}
 
-        {% block javascripts %}
-{% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-    <nav class=" h-10 text-3xl flex items-center justify-around py-10 bg-gray-900">
-        <ul class="flex justify-center items-center">
-            {% if app.user %}
-                <li><span class="text-white px-4 py-2">{{ app.user.name }}</span></li>
-            {% endif %}
-            <li><a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 hover:text-red-500 ">Home</a></li>
-            {% if app.user %}
-                <li><a href="{{ path('app_logout') }}" class="text-white px-4 py-2 hover:text-red-500 ">Logout</a></li>
-                <li><a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 hover:text-red-500 ">List of followed series</a></li>
-                {% if is_granted('IS_IMPERSONATOR') %}
-                    <li><a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-white px-4 py-2 hover:text-red-500 ">Exit Embodiment</a></li>
-                {% endif %}
-                
-                {% if app.user.isAdmin() %}
-                <li><a href="{{ path('app_admin_panel') }}" class="text-white px-4 py-2 hover:text-red-500 ">Admin Panel</a></li>
-                {% endif %} 
-            {% else %}
-                <li><a href="{{ path('app_login') }}" class="text-white px-4 py-2 hover:text-red-500 ">Login</a></li>
-                <li><a href="{{ path('app_register') }}" class="text-white px-4 py-2 hover:text-red-500 ">Register</a></li>
-            {% endif %}
-            
-        </ul>
-    </nav>
-        {% block body %}{% endblock %}
-    </body>
+		{% block javascripts %}
+			{% block importmap %}
+				{{ importmap('app') }}
+			{% endblock %}
+		{% endblock %}
+	</head>
+	<body class="w-screen bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-center">
+			<nav class=" h-10 text-3xl flex items-center py-10 bg-gray-900">
+			<ul class="flex justify-around items-center w-full">
+				<li class="flex item-center ">
+					<img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32">
+					{% if app.user %}
+
+						{# <span class="flex items-center px-4 text-white text-center text-xl ">Bonjour
+							{{ app.user.name }}</span> #}
+
+					{% endif %}
+				</li>
+				<li>
+					<a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 relative inline-block group">
+						Home
+						<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+					</a>
+
+				</li>
+
+				{% if app.user %}
+					<li>
+						<a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 relative inline-block group">
+							List of followed series
+							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
+					</li>
+					{% if is_granted('IS_IMPERSONATOR') %}
+						<li>
+							<a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-white px-4 py-2 relative inline-block group">
+								Exit Embodiment
+								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+							</a>
+
+
+						</li>
+					{% endif %}
+
+					{% if app.user.isAdmin() %}
+						<li>
+							<a href="{{ path('app_admin_panel') }}" class="text-white px-4 py-2 relative inline-block group">Admin Panel<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+                            
+                        </li>
+					{% endif %}
+					<li>
+						<a href="{{ path('app_logout') }}" class="text-white px-4 py-2 relative inline-block group ">Logout<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+					</li>
+				{% else %}
+					<li>
+						<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+					</li>
+					<li>
+						<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+					</li>
+				{% endif %}
+
+			</ul>
+		</nav>
+		{% block body %}{% endblock %}
+	</body>
 </html>
