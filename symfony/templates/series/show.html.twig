@@ -18,6 +18,10 @@
                             <span class="text-white ml-2">{{ series.title }}</span>
                         </div>
                         <div class="flex mb-2">
+                            <span class="text-white font-bold">IMDb ID:</span>
+                            <span class="text-white ml-2">{{ series.imdb}}</span>
+                        </div>
+                        <div class="flex mb-2 flox-col">
                             <span class="text-white font-bold">Plot:</span>
                             <span class="text-white ml-2">{{ series.plot }}</span>
                         </div>
@@ -32,32 +36,31 @@
                             <span class="text-white font-bold">Date:</span>
                             <span class="text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
                         </div>
-
-                        <div class="flex mb-2">
-                            {% if app.user %}
-                                {% set seriesnWatched = true %}
-                                {% for season in series.seasons %}
-                                    {% for episode in season.episodes %}
-                                        {% if episode not in app.user.episode %}
-                                            {% set seriesnWatched = false %}
-                                        {% endif %}
-                                    {% endfor %}
+                        {% if app.user %}
+                            {% set seriesnWatched = true %}
+                            {% for season in series.seasons %}
+                                {% for episode in season.episodes %}
+                                    {% if episode not in app.user.episode %}
+                                        {% set seriesnWatched = false %}
+                                    {% endif %}
                                 {% endfor %}
-                                {% if seriesnWatched %}
-                                    <a href="{{ path('app_series_unview_all', {'id': series.id}) }}">
-                                        <div class="bg-green-500 rounded-lg ml-5 mr-5 hover:bg-red-500">
-                                            <span class="text-white px-4 py-2 justify-center">unview all seasons</span>
-                                        </div>
-                                    </a>
-                                {% else %}
-                                    <a href="{{ path('app_series_view_all', {'id': series.id}) }}">
-                                        <div class="bg-red-500 rounded-lg ml-5 mr-5 hover:bg-green-500">
-                                            <span class="text-white px-4 py-2 justify-center">view all seasons</span>
-                                        </div>
-                                    </a>
-                                {% endif %}
+                            {% endfor %}
+                            {% if seriesnWatched %}
+                                <a href="{{ path('app_series_unview_all', {'id': series.id}) }}">
+                                    <div class="inline-block bg-green-500 rounded-lg ml-5 mr-5 hover:bg-red-500">
+                                        <span class="text-white px-4 py-2 justify-center">unview all seasons</span>
+                                    </div>
+                                </a>
+                            {% else %}
+                                <a href="{{ path('app_series_view_all', {'id': series.id}) }}">
+                                    <div class="inline-block bg-red-500 rounded-lg ml-5 mr-5 hover:bg-red-500">
+                                        <span class="text-white px-4 py-2 justify-center">view all seasons</span>
+                                    </div>
+                                </a>
                             {% endif %}
-                            <span class="text-white font-bold">Seasons:</span>
+                        {% endif %}
+                        <div class="flex mb-2 flex-wrap space-y-5">
+                            <span class="text-white font-bold">Seasons:</span>  
                             {% if not app.user %}
                                 {% for season in series.seasons %}
                                     <a href="{{ path('app_season_show', {'id': season.id}) }}">
@@ -91,8 +94,6 @@
                     </div>
                 </div>
             </div>
-
-            {{ include('series/_delete_form.html.twig') }}
         </div>
     </div>
 {% endblock %}
