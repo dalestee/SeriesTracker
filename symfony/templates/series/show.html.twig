@@ -13,29 +13,17 @@
                 </div>
                 <div class="w-2/3 ml-8 bg-gray-900 rounded-lg shadow-lg p-5">
                     <div class="flex flex-col">
-                        <div class="flex mb-2">
-                            <span class="text-white font-bold">Title:</span>
-                            <span class="text-white ml-2">{{ series.title }}</span>
-                        </div>
-                        <div class="flex mb-2">
-                            <span class="text-white font-bold">IMDb ID:</span>
-                            <span class="text-white ml-2">{{ series.imdb}}</span>
-                        </div>
-                        <div class="flex mb-2 flox-col">
-                            <span class="text-white font-bold">Plot:</span>
-                            <span class="text-white ml-2">{{ series.plot }}</span>
-                        </div>
-                        <div class="flex mb-2">
-                            <iframe width="560" id="trailer" height="315"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
-                        </div>
-                        <div class="flex mb-2">
-                            <span class="text-white font-bold">Awards:</span>
-                            <span class="text-white ml-2">{{ series.awards }}</span>
-                        </div>
-                        <div class="flex mb-2">
-                            <span class="text-white font-bold">Date:</span>
-                            <span class="text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
-                        </div>
+                        <span class="text-white font-bold">Title:</span>
+                        <span class="text-white ml-2">{{ series.title }}</span>
+                        <span class="text-white font-bold">IMDb ID:</span>
+                        <span class="text-white ml-2">{{ series.imdb}}</span>
+                        <span class="text-white font-bold">Plot:</span>
+                        <span class="text-white ml-2">{{ series.plot }}</span>
+                        <iframe width="560" id="trailer" height="315"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
+                        <span class="text-white font-bold">Awards:</span>
+                        <span class="text-white ml-2">{{ series.awards }}</span>
+                        <span class="text-white font-bold">Date:</span>
+                        <span class="text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
                         {% if app.user %}
                             {% set seriesnWatched = true %}
                             {% for season in series.seasons %}
@@ -59,35 +47,87 @@
                                 </a>
                             {% endif %}
                         {% endif %}
-                        <div class="flex mb-2 flex-wrap space-y-5">
-                            <span class="text-white font-bold">Seasons:</span>  
+                        <span class="text-white font-bold">Seasons:</span> 
+                        <div class="flex mb-2 flex-wrap"> 
                             {% if not app.user %}
                                 {% for season in series.seasons %}
                                     <a href="{{ path('app_season_show', {'id': season.id}) }}">
-                                        <div class="bg-red-500 rounded-lg ml-5">
+                                        <div class="bg-red-500 rounded-lg ml-5 mb-4">
                                                 <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
                                         </div>
                                     </a>    
                                 {% endfor %}
                             {% else %}
                                 {% for season in series.seasons %}
-                                <a href="{{ path('app_season_show', {'id': season.id}) }}">
                                     {% set seasonWatched = true %}
                                     {% for episode in season.episodes %}
                                         {% if episode not in app.user.episode %}
                                             {% set seasonWatched = false %}
                                         {% endif %}
                                     {% endfor %}
-                                    {% if seasonWatched %}
-                                        <div class="bg-green-500 rounded-lg ml-5">
-                                            <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
+                                    <details>
+                                        {% if seasonWatched %}
+                                            <summary class="bg-green-500 rounded-lg ml-5 mb-4">
+                                                <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
+                                            </summary>
+                                        {% else %}
+                                            <summary class="bg-red-500 rounded-lg ml-5 mb-4">
+                                                <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
+                                            </summary>
+                                        {% endif %}
+                                        <div>
+                                            <p>
+                                                {% if app.user %}
+                                                    {% set allSeasonEpisodesView = true %}
+                                                    {% for episode in season.episodes %}
+                                                        {% if episode not in app.user.episode %}
+                                                            {% set allSeasonEpisodesView = false %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {% if app.user and allSeasonEpisodesView %}
+                                                        <form action="{{ path('season_unview', {'id': season.id}) }}" method="post">
+                                                            <button type="submit" class="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Unview all episodes season</button>
+                                                        </form>
+                                                    {% else %}
+                                                        <form action="{{ path('season_view', {'id': season.id}) }}" method="post">
+                                                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">View all episodes season</button>
+                                                        </form>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% for episode in season.episodes %}
+                                                    <li class="text-white px-4 py-2 list-none flex items-center">
+                                                        <div>
+                                                            {% for episode2 in season.episodes %}
+                                                                {% if episode == episode2 %}
+                                                                    <div class="bg-gray rounded-lg p-4">
+                                                                        {% if episode in app.user.episode %}
+                                                                            <form action="{{ path('episode_unview', {'id': episode.id}) }}" method="post">
+                                                                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex">
+                                                                                    Unview
+                                                                                </button>
+                                                                            </form>
+                                                                        {% else %}
+                                                                            <form id="episode_view_form_{{episode.id}}" action="{{ path('episode_view', {'id': episode.id}) }}" method="post">
+                                                                                <button type="submit" class="bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex" onclick="return confirmAndSubmit('{{ episode.id }}');">
+                                                                                    View
+                                                                                </button>
+                                                                            </form>
+                                                                            <form id="episode_view_precedent_form_{{episode.id}}" action="{{ path('episode_view_precedent', {'id': episode.id}) }}" method="post" style="display: none;">
+                                                                                <button type="submit"></button>
+                                                                            </form>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                        <div class="text-center h-full">
+                                                            #{{ episode.number }} {{episode.title }}
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </p>
                                         </div>
-                                    {% else %}
-                                        <div class="bg-red-500 rounded-lg ml-5">
-                                            <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
-                                        </div>
-                                    {% endif %}
-                                </a>
+                                    </details>
                                 {% endfor %}
                             {% endif %}
                         </div>                        
@@ -96,4 +136,16 @@
             </div>
         </div>
     </div>
+<script>
+function confirmAndSubmit(id) {
+    if (confirm('Have you already seen the previous episodes?')) {
+        document.getElementById('episode_view_precedent_form_'+id).submit();
+        return true;
+    }
+    else {
+        document.getElementById('episode_view_form_'+id).submit();
+    }
+    return false;
+}
+</script>
 {% endblock %}

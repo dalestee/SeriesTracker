@@ -72,8 +72,8 @@ class SeasonController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute(
-            'app_season_show',
-            ['id' => $episode->getSeason()->getId()],
+            'app_series_show',
+            ['id' => $episode->getSeason()->getSeries()->getId()],
             Response::HTTP_SEE_OTHER
         );
     }
@@ -92,8 +92,8 @@ class SeasonController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute(
-            'app_season_show',
-            ['id' => $episode->getSeason()->getId()],
+            'app_series_show',
+            ['id' => $episode->getSeason()->getSeries()->getId()],
             Response::HTTP_SEE_OTHER
         );
     }
@@ -110,8 +110,8 @@ class SeasonController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute(
-            'app_season_show',
-            ['id' => $episode->getSeason()->getId()],
+            'app_series_show',
+            ['id' => $episode->getSeason()->getSeries()->getId()],
             Response::HTTP_SEE_OTHER
         );
     }
@@ -135,8 +135,8 @@ class SeasonController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute(
-            'app_season_show',
-            ['id' => $episode->getSeason()->getId()],
+            'app_series_show',
+            ['id' => $season->getSeries()->getId()],
             Response::HTTP_SEE_OTHER
         );
     }
@@ -156,7 +156,11 @@ class SeasonController extends AbstractController
         }
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_season_show', ['id' => $season->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_series_show',
+            ['id' => $season->getSeries()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/view/{id}', name: 'season_view_season', methods: ['POST'])]
@@ -172,7 +176,11 @@ class SeasonController extends AbstractController
         }
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_season_show', ['id' => $season->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_series_show',
+            ['id' => $season->getSeries()->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
     #[Route('/new', name: 'app_season_new', methods: ['GET', 'POST'])]
