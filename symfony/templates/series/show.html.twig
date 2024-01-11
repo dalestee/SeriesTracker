@@ -29,13 +29,10 @@
                             <span class="text-white ml-2">{{ series.awards }}</span>
                         </div>
                         <div class="flex mb-2">
-                            <span class="text-white font-bold">YearStart:</span>
-                            <span class="text-white ml-2">{{ series.yearStart }}</span>
+                            <span class="text-white font-bold">Date:</span>
+                            <span class="text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
                         </div>
-                        <div class="flex mb-2">
-                            <span class="text-white font-bold">YearEnd:</span>
-                            <span class="text-white ml-2">{{ series.yearEnd }}</span>
-                        </div>
+
                         <div class="flex mb-2">
                             {% if app.user %}
                                 {% set seriesnWatched = true %}
