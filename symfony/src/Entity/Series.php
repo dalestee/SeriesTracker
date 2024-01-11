@@ -67,6 +67,9 @@ class Series
     #[ORM\OneToMany(mappedBy: "series", targetEntity: "ExternalRating")]
     private $externalRatings;
 
+    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating")]
+    private $ratings;
+
     /**
      * Constructor
      */
@@ -183,6 +186,11 @@ class Series
     public function getExternalRatings(): Collection
     {
         return $this->externalRatings;
+    }
+
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
     }
 
     /**
