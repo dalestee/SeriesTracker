@@ -41,16 +41,22 @@
 					{% if app.user %}
 
 						{# <span class="flex items-center px-4 text-white text-center text-xl ">Bonjour
-																																																	{{ app.user.name }}</span> #}
+						{{ app.user.name }}</span> #}
 
 					{% endif %}
 				</li>
 				<li>
-					<a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 relative inline-block group">
-						Home
-						<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
-					</a>
-
+					{% if app.request.attributes.get('_route') == 'app_series_index' %}
+						<a href="{{ path('app_series_index') }}" class="text-red-500	 px-4 py-2 relative inline-block group">
+							Home
+							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
+					{% else %}
+						<a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 relative inline-block group">
+							Home
+							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
+					{% endif %}
 				</li>
 				<li class="w-96 h-full bg-black rounded-full">
 					<div id="searchBar" class="flex items-start justify-center w-full text-white p-3 z-2 transition-all duration-800 ease-in-out bg-grey-900">
@@ -69,10 +75,17 @@
 
 				{% if app.user %}
 					<li>
-						<a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 relative inline-block group">
-							List of followed series
-							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
-						</a>
+						{% if app.request.attributes.get('_route') == 'app_series_list_follow' %}
+							<a href="{{ path('app_series_list_follow') }}" class="text-red-500 px-4 py-2 relative inline-block group">
+								List of followed series
+								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+							</a>
+						{% else %}
+							<a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 relative inline-block group">
+								List of followed series
+								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+							</a>
+						{% endif %}
 					</li>
 					<li>
 						<button id="accountMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
@@ -110,12 +123,18 @@
 
 				{% else %}
 					<li>
-						<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
-						</a>
+						{% if app.request.attributes.get('_route') == 'app_login' %}
+						<a href="{{ path('app_login') }}" class="text-red-500 px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+						{% else %}
+						<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+						{% endif %}
 					</li>
 					<li>
-						<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
-						</a>
+						{% if app.request.attributes.get('_route') == 'app_register' %}
+							<a href="{{ path('app_register') }}" class="text-red-500 px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+						{% else %}
+							<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
+						{% endif %}
 					</li>
 				{% endif %}
 
