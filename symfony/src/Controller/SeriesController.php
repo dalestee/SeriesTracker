@@ -130,6 +130,9 @@ class SeriesController extends AbstractController
                 }
             }
         }
+        if (!$user->isfollowingSeries($series)) {
+            $user->addSeries($series);
+        }
         $entityManager->flush();
         return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
     }
