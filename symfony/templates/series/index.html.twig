@@ -4,8 +4,8 @@
 {% endblock %}
 
 {% block body %}
-	<div class="">
-		<div class="container mx-auto py-8">
+	<div class="flex items-center w-full flex-col py-8 mx-4 md:mx-0">
+		<div class="container flex items-center w-full flex-col ">
 			<h1 class="text-4xl text-center text-white font-bold mb-12">Series</h1>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
@@ -67,6 +67,7 @@
                     <h1 class="text-4xl text-white font-bold mb-8">No series found</h1>
                 {% endfor %}
             </div>
+            <div class="flex justify-center mt-8">
             {% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
             {% set current_page = pagination.getCurrentPageNumber() %}
 
@@ -89,6 +90,7 @@
             {% if current_page != total_pages %}
                 <a href="{{ path(app_action, {'page': current_page + 1}) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
             {% endif %}
+            </div>
 
             </div>
         </div>
