@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "episode", indexes: [
     new ORM\Index(name: "IDX_DDAA1CDA4EC001D1", columns: ["season_id"])
 ])]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: "App\Repository\EpisodeRepository")]
 class Episode
 {
     #[ORM\Column(name: "id", type: "integer", nullable: false)]
@@ -33,12 +33,12 @@ class Episode
     #[ORM\Column(name: "number", type: "integer", nullable: false)]
     private $number;
 
-    #[ORM\ManyToOne(targetEntity: "Season")]
+    #[ORM\ManyToOne(targetEntity: "Season", inversedBy: "episodes")]
     #[ORM\JoinColumn(name: "season_id", referencedColumnName: "id")]
     private $season;
 
     #[ORM\ManyToMany(targetEntity: "User", mappedBy: "episode")]
-    private $user = array();
+    private $user;
 
     /**
      * Constructor

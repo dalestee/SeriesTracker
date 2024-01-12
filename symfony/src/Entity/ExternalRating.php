@@ -26,7 +26,7 @@ class ExternalRating
     #[ORM\JoinColumn(name:"source_id", referencedColumnName:"id")]
     private $source;
 
-    #[ORM\ManyToOne(targetEntity:"Series")]
+    #[ORM\ManyToOne(targetEntity:"Series", inversedBy:"externalRatings")]
     #[ORM\JoinColumn(name:"series_id", referencedColumnName:"id")]
     private $series;
 

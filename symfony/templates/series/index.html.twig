@@ -43,7 +43,7 @@
                                     <p class="text-white mb-2">Users rating: {{ usersRating|number_format(1, '.', '') }}/5 </p>
                                     <p class="text-white mb-2">Number of votes: {{ series.ratings|length }}</p>
                             </div>
-                            {% for genre in series.genres %}
+                            {% for genre in series.genre %}
                                         <span class="inline-block bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold text-gray-300 mr-2 mb-2">{{ genre.name }}</span>
                             {% endfor %}
                         </a>

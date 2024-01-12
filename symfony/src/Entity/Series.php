@@ -4,12 +4,13 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: "series", uniqueConstraints: [
     new ORM\UniqueConstraint(name: "UNIQ_3A10012D85489131", columns: ["imdb"])
 ])]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: "App\Repository\SeriesRepository")]
 class Series
 {
     #[ORM\Column(name: "id", type: "integer", nullable: false)]
@@ -47,7 +48,8 @@ class Series
     #[ORM\ManyToMany(targetEntity: "User", mappedBy: "series")]
     private $user = array();
 
-    #[ORM\ManyToMany(targetEntity: "Genre", mappedBy: "series")]
+    #[ORM\ManyToMany(targetEntity: "Genre", mappedBy: "series", fetch:"EAGER")]
+    #[ORM\JoinTable(name: "genre_series")]
     private $genre = array();
 
     #[ORM\ManyToMany(targetEntity: "Actor", mappedBy: "series")]
@@ -56,18 +58,14 @@ class Series
     #[ORM\ManyToMany(targetEntity: "Country", mappedBy: "series")]
     private $country = array();
 
-    #[ORM\OneToMany(targetEntity: "Season", mappedBy: "series")]
+    #[ORM\OneToMany(targetEntity: "Season", mappedBy: "series", fetch:"EAGER")]
     #[ORM\OrderBy(["number" => "ASC"])]
     private $seasons;
-
-    #[ORM\ManyToMany(targetEntity: "Genre", inversedBy: "series")]
-    #[ORM\JoinTable(name: "genre_series")]
-    private $genres;
 
     #[ORM\OneToMany(mappedBy: "series", targetEntity: "ExternalRating")]
     private $externalRatings;
 
-    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating")]
+    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating", fetch:"EAGER")]
     private $ratings;
 
     /**
@@ -76,10 +74,12 @@ class Series
     public function __construct()
     {
         $this->user = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->genre = new \Doctrine\Common\Collections\ArrayCollection();
         $this->actor = new \Doctrine\Common\Collections\ArrayCollection();
         $this->country = new \Doctrine\Common\Collections\ArrayCollection();
         $this->seasons = new ArrayCollection();
+        $this->genre = new ArrayCollection();
+        $this->externalRatings = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -221,33 +221,6 @@ class Series
     }
 
     /**
-     * @return Collection<int, Genre>
-     */
-    public function getGenre(): Collection
-    {
-        return $this->genre;
-    }
-
-    public function addGenre(Genre $genre): self
-    {
-        if (!$this->genre->contains($genre)) {
-            $this->genre->add($genre);
-            $genre->addSeries($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGenre(Genre $genre): self
-    {
-        if ($this->genre->removeElement($genre)) {
-            $genre->removeSeries($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Actor>
      */
     public function getActor(): Collection
@@ -343,26 +316,73 @@ class Series
         return $this;
     }
 
-    /**
-     * @return Collection<int, Genre>
-     */
-    public function getGenres(): Collection
+    public function addExternalRating(ExternalRating $externalRating): static
     {
-        return $this->genres;
-    }
-
-    public function addGenres(Genre $genres): static
-    {
-        if (!$this->genres->contains($genres)) {
-            $this->genres->add($genres);
+        if (!$this->externalRatings->contains($externalRating)) {
+            $this->externalRatings->add($externalRating);
+            $externalRating->setSeries($this);
         }
 
         return $this;
     }
 
-    public function removeGenres(Genre $genres): static
+    public function removeExternalRating(ExternalRating $externalRating): static
     {
-        $this->genres->removeElement($genres);
+        if ($this->externalRatings->removeElement($externalRating)) {
+            // set the owning side to null (unless already changed)
+            if ($externalRating->getSeries() === $this) {
+                $externalRating->setSeries(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addRating(Rating $rating): static
+    {
+        if (!$this->ratings->contains($rating)) {
+            $this->ratings->add($rating);
+            $rating->setSeries($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRating(Rating $rating): static
+    {
+        if ($this->ratings->removeElement($rating)) {
+            // set the owning side to null (unless already changed)
+            if ($rating->getSeries() === $this) {
+                $rating->setSeries(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Genre>
+     */
+    public function getGenre(): Collection
+    {
+        return $this->genre;
+    }
+
+    public function addGenre(Genre $genre): static
+    {
+        if (!$this->genre->contains($genre)) {
+            $this->genre->add($genre);
+            $genre->addSeries($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGenre(Genre $genre): static
+    {
+        if ($this->genre->removeElement($genre)) {
+            $genre->removeSeries($this);
+        }
 
         return $this;
     }

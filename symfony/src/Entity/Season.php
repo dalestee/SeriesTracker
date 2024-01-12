@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 
@@ -19,13 +20,18 @@ class Season
     #[ORM\Column(name: "number", type: "integer", nullable: false)]
     private $number;
 
-    #[ORM\ManyToOne(targetEntity: "Series")]
+    #[ORM\ManyToOne(targetEntity: "Series", inversedBy: "seasons")]
     #[ORM\JoinColumn(name: "series_id", referencedColumnName: "id")]
     private $series;
 
-    #[ORM\OneToMany(targetEntity: "Episode", mappedBy: "season")]
+    #[ORM\OneToMany(targetEntity: "Episode", mappedBy: "season", fetch:"EAGER")]
     #[ORM\OrderBy(["number" => "ASC"])]
     private $episodes;
+
+    public function __construct()
+    {
+        $this->episodes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
