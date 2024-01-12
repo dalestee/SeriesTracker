@@ -75,7 +75,11 @@
 				color: black;
 			}
 			#listeNavMobile li{
-				
+				width: 100%;
+				border-bottom: 1px solid white;
+				font-size: 2rem;
+				padding-top: 10px;
+				padding-bottom: 10px;
 			}
 		</style>
 	</head>
@@ -88,7 +92,7 @@
 				</button>
 				</li>
 				<li>
-					<img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32">
+					<a href="{{ path('app_series_index') }}"><img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32"></a>
 				</li>
 				<li>
 					<button id="mobilMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
@@ -110,7 +114,7 @@
 		<button id="mobileMenuClose" class="text-white px-4 py-2 absolute top-4 left-4 inline-block group focus:outline-none">
 						<img src="{{ asset('img/close.png') }}" alt="logo" class="h-20">
 					</button>
-		<ul id="listeNavMobile" class="relative top-20 w-full ml-8"> 
+		<ul id="listeNavMobile" class="relative top-20 h-full w-full ml-8"> 
 		<li>
 					<a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 relative inline-block group">
 						Home
@@ -126,7 +130,7 @@
 					</a>
 				</li>
 				<li>
-				<a href="{{ path('app_logout') }}" class="text-white px-4 py-2 relative inline-block group ">
+				<a href="{{ path('app_logout') }}" class="text-white px-4 py-2 self-end relative inline-block group ">
 								Logout
 								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 							</a>
