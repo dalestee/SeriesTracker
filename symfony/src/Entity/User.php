@@ -47,7 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(name: "country_id", referencedColumnName: "id")]
     private $country;
 
-    #[ORM\ManyToMany(targetEntity: "Series", inversedBy: "genre")]
+    #[ORM\ManyToMany(targetEntity: "Series", inversedBy: "user")]
     #[ORM\JoinTable(
         name: "user_series",
         joinColumns: [new ORM\JoinColumn(name: "user_id", referencedColumnName: "id")],
@@ -55,7 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private $series = array();
 
-    #[ORM\ManyToMany(targetEntity: "Episode", inversedBy: "genre")]
+    #[ORM\ManyToMany(targetEntity: "Episode", inversedBy: "user")]
     #[ORM\JoinTable(
         name: "user_episode",
         joinColumns: [new ORM\JoinColumn(name: "user_id", referencedColumnName: "id")],
@@ -261,5 +261,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isEpisodeViewed(Episode $episode): bool
     {
         return $this->episode->contains($episode);
+    }
+
+    public function getAdmin(): ?int
+    {
+        return $this->admin;
     }
 }
