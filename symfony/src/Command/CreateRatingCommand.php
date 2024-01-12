@@ -61,7 +61,9 @@ class CreateRatingCommand extends Command
 
             // Trouver une série que l'utilisateur n'a pas encore notée
             foreach ($series as $key => $serie) {
-                $rating = $this->entityManager->getRepository(Rating::class)->findOneBy(['user' => $user, 'series' => $serie]);
+                $rating = $this->entityManager
+                ->getRepository(Rating::class)
+                ->findOneBy(['user' => $user, 'series' => $serie]);
                 if (!$rating) {
                     // Créer une note pour la série
                     $rating = new Rating();
