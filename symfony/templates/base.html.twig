@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="w-screen">
+<html>
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta charset="UTF-8">
@@ -19,31 +19,144 @@
 		<style>
 			.bigSearchBar {
 				position: absolute;
-				z-index: 10;
-				width: 80vw;
+				z-index: 15;
+				width: 100%;
 				height: 50vh;
 				left: 0;
 				top: 0;
 				background-color: rgb(17 24 39);
-				border-radius: 9999px;
-				transition: all 2s ease-in-out;
+
+
 				border-radius: 5px;
-				padding: 20px!important;
-				
+				padding: 20px !important;
+
+			}
+			.mobileMenu {
+				position: absolute;
+				z-index: 15;
+				width: 80vw;
+				height: 100vh;
+				right: 0;
+				top: 0;
+				background-color: rgb(17 24 39);
+
+				transition: all 2s ease-out;
+				border-radius: 5px;
+
+			}
+			.anim {
+				transition: width 0.8s ease-in-out, height 0.8s ease-in-out;
+			}
+			.initialSize {
+				width: 100%;
+				height: 70%;
+
+			}
+			#accountMenu {
+				transition: all 2s ease-out;
+				text-align: right;
+				border: 1px solid black;
+			}
+			#accountMenu a {
+
+
+				padding: 5px;
+				margin-bottom: 10px;
+				border-radius: 5px;
+
+
+				color: white;
+				width: 100%;
+			}
+			#accountMenu a:hover {
+				background-color: white;
+				color: black;
+			}
+			#listeNavMobile li {
+				width: 100%;
+				border-bottom: 1px solid white;
+				font-size: 2rem;
+				padding-top: 10px;
+				padding-bottom: 10px;
 			}
 		</style>
 	</head>
-	<body class="w-screen bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-center">
-		<nav class=" h-10 text-xl flex items-center py-10 bg-gray-900">
+	<body class=" bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-center">
+		<nav class="flex sticky top-0 z-20 lg:hidden w-full h-fit items-center py-0 bg-gray-900">
+			<ul class="flex justify-around items-center w-full">
+				<li>
+					<button id="mobilSearch">
+						<img src="{{ asset('img/loupe.png') }}" alt="logo" class="h-20">
+					</button>
+				</li>
+				<li>
+					<a href="{{ path('app_series_index') }}"><img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32"></a>
+				</li>
+				<li>
+					<button id="mobilMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
+						<img src="{{ asset('img/burger.png') }}" alt="logo" class="h-20">
+						<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+					</button>
+				</li>
+			</ul>
+		</nav>
+		<div id="formMobileHidden" class="hidden w-full h-[80vh] flex flex-col items-center justify-center">
+			<h1 class="text-white text-2xl">Recherche</h1>
+			<form class="w-full flex items-center justify-center" action="" method="get">
+				<input type="text" name="search" class="w-10/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
+			</form>
+		</div>
+
+
+		<div id="mobileMenu" class="hidden fixed flex items-center flex-col w-[80vw] rounded-sm border border-red-500 bg-gray-900 top-0 right-0 h-full z-50 p-8">
+			<button id="mobileMenuClose" class="text-white px-4 py-2 absolute top-4 left-4 inline-block group focus:outline-none">
+				<img src="{{ asset('img/close.png') }}" alt="logo" class="h-20">
+			</button>
+			<ul id="listeNavMobile" class="relative top-20 h-full w-full ">
+				<li>
+					<a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 relative inline-block group">
+						Home
+					</a>
+
+				</li>
+				{% if app.user %}
+
+
+					<li>
+						<a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 relative inline-block group">
+							List of followed series
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('app_logout') }}" class="text-white px-4 py-2 self-end relative inline-block group ">
+							Logout
+							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
+					</li>
+				{% else %}
+					<li>
+						<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+						</a>
+					</li>
+
+
+				{% endif %}
+
+
+			</ul>
+
+		</div>
+
+
+		<nav class="hidden sticky top-0 z-20 lg:flex h-10 text-xl flex items-center py-10 bg-gray-900">
 			<ul class="flex justify-around items-center w-full">
 				<li class="flex item-center ">
 					<img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32">
-					{% if app.user %}
 
-						{# <span class="flex items-center px-4 text-white text-center text-xl ">Bonjour
-						{{ app.user.name }}</span> #}
-
-					{% endif %}
 				</li>
 				<li>
 					{% if app.request.attributes.get('_route') == 'app_series_index' %}
@@ -58,138 +171,164 @@
 						</a>
 					{% endif %}
 				</li>
+
 				{% if "/admin" not in app.request.uri %}
 					<li class="w-96 h-full bg-black rounded-full">
-						<div id="searchBar" class="flex items-start justify-center w-full text-white p-3 z-2 transition-all duration-800 ease-in-out bg-grey-900">
+						<div id="searchBar" class="flex anim initialSize items-start justify-center text-white p-3 bg-grey-900">
 							<button id="boutonClose" class="hidden absolute right-4 top-4 w-10 h-10 bg-red-500 rounded-full focus:outline-none">
 								<p class="text-white text-2xl border-2 border-white rounded-full w-10 h-10 flex items-center justify-center">X</p>
 							</button>
 							<p id="pSearch">Recherche</p>
 							<div id="formHidden" class="hidden w-full flex flex-col items-center justify-center">
 								<h1 class="text-white text-2xl">Recherche</h1>
-							<form class="w-full flex items-center justify-center" action="" method="get">
-								<input type="text" name="search" class="w-10/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
-							</form>
+								<form class="w-full flex items-center justify-center" action="" method="get">
+									<input type="text" name="search" class="w-10/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
+								</form>
 							</div>
+							{% endif %}
 						</div>
 					</li>
-				{% endif %}
-				{% if app.user %}
-					<li>
-						{% if app.request.attributes.get('_route') == 'app_series_list_follow' %}
-							<a href="{{ path('app_series_list_follow') }}" class="text-red-500 px-4 py-2 relative inline-block group">
-								List of followed series
-								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
-							</a>
-						{% else %}
-							<a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 relative inline-block group">
-								List of followed series
-								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
-							</a>
-						{% endif %}
-					</li>
-					<li>
-						<button id="accountMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
-							Account Menu
-							<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
-						</button>
-					</li>
 
-
-					<div
-						class="hidden absolute flex items-center flex-col w-auto rounded-sm border border-red-500 bg-white top-24 right-4 h-40 z-10 p-8" id="accountMenu">
-						<!-- Liens pour le compte -->
-						{% if app.user %}
-
-
-							{% if is_granted('IS_IMPERSONATOR') %}
-								<a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-black px-4 py-2 relative inline-block group">
-									Exit Embodiment
+					{% if app.user %}
+						<li>
+							{% if app.request.attributes.get('_route') == 'app_series_list_follow' %}
+								<a href="{{ path('app_series_list_follow') }}" class="text-red-500 px-4 py-2 relative inline-block group">
+									List of followed series
+									<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+								</a>
+							{% else %}
+								<a href="{{ path('app_series_list_follow') }}" class="text-white px-4 py-2 relative inline-block group">
+									List of followed series
 									<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 								</a>
 							{% endif %}
+						</li>
+						<li>
+							<button id="accountMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
+								<img src="{{ asset('img/account.png') }}" alt="logo" class="h-10">
+								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+							</button>
+						</li>
 
-							{% if app.user.isAdmin() %}
-								<a href="{{ path('app_admin_panel') }}" class="text-black px-4 py-2 relative inline-block group">
-									Admin Panel
+
+						<div
+							class="hidden absolute flex items-center flex-col w-fit shadow-2xl shadow-inner h-fit rounded-xl border border-red-500 bg-red-500 top-24 right-12 h-40 z-10 p-4" id="accountMenu">
+							<!-- Liens pour le compte -->
+							{% if app.user %}
+
+
+								{% if is_granted('IS_IMPERSONATOR') %}
+									<a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-black px-4 py-2 relative inline-block group">
+										Exit Embodiment
+										<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+									</a>
+								{% endif %}
+
+								{% if app.user.isAdmin() %}
+									<a href="{{ path('app_admin_panel') }}" class="text-black px-4 py-2 relative inline-block group">
+										Admin Panel
+										<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+									</a>
+								{% endif %}
+								<a href="{{ path('app_logout') }}" class="text-black px-4 py-2 relative inline-block group ">
+									Logout
 									<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 								</a>
 							{% endif %}
-							<a href="{{ path('app_logout') }}" class="text-black px-4 py-2 relative inline-block group ">
-								Logout
-								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
-							</a>
-						{% endif %}
-					</div>
+						</div>
 
-				{% else %}
-					<li>
-						{% if app.request.attributes.get('_route') == 'app_login' %}
-						<a href="{{ path('app_login') }}" class="text-red-500 px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
-						{% else %}
-						<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
-						{% endif %}
-					</li>
-					<li>
-						{% if app.request.attributes.get('_route') == 'app_register' %}
-							<a href="{{ path('app_register') }}" class="text-red-500 px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
-						{% else %}
-							<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span></a>
-						{% endif %}
-					</li>
-				{% endif %}
+					{% else %}
+						<li>
+							{% if app.request.attributes.get('_route') == 'app_login' %}
+								<a href="{{ path('app_login') }}" class="text-red-500 px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+								</a>
+							{% else %}
+								<a href="{{ path('app_login') }}" class="text-white px-4 py-2 relative inline-block group">Login<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+								</a>
+							{% endif %}
+						</li>
+						<li>
+							{% if app.request.attributes.get('_route') == 'app_register' %}
+								<a href="{{ path('app_register') }}" class="text-red-500 px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+								</a>
+							{% else %}
+								<a href="{{ path('app_register') }}" class="text-white px-4 py-2 relative inline-block group ">Register<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
+								</a>
+							{% endif %}
+						</li>
+					{% endif %}
 
-			</ul>
-		</nav>
-		{% block body %}{% endblock %}
+				</ul>
+			</nav>
+			{% block body %}{% endblock %}
+		</body>
+		<script>
+
+			var accountMenuBtn = document.getElementById('accountMenuBtn');
+var accountMenu = document.getElementById('accountMenu');
+var mobileMenu = document.getElementById('mobileMenu');
+var mobilMenuBtn = document.getElementById('mobilMenuBtn');
+var mobileMenuClose = document.getElementById('mobileMenuClose');
+
+
+var searchBar = document.getElementById('searchBar');
+var pSearch = document.getElementById('pSearch');
+var formHidden = document.getElementById('formHidden');
+var boutonClose = document.getElementById('boutonClose');
+
+var formMobileHidden = document.getElementById('formMobileHidden');
+var mobilSearch = document.getElementById('mobilSearch');
+
+mobilSearch.addEventListener('click', function (event) {
+formMobileHidden.classList.toggle('hidden');
+
+});
+
+mobilMenuBtn.addEventListener('click', function (event) {
+mobileMenu.classList.remove('hidden');
+
+});
+mobileMenuClose.addEventListener('click', function (event) {
+mobileMenu.classList.add('hidden');
+
+});
+searchBar.addEventListener('click', function (event) {
+if (! searchBar.classList.contains('bigSearchBar')) {
+searchBar.classList.remove('initialSize');
+searchBar.classList.add('bigSearchBar');
+pSearch.classList.add('hidden');
+formHidden.classList.remove('hidden');
+boutonClose.classList.remove('hidden');
+searchBar.offsetHeight;
+}
+
+// Empêche la propagation de l'événement pour éviter d'activer le clic du boutonClose immédiatement
+event.stopPropagation();
+});
+
+
+boutonClose.addEventListener('click', function (event) {
+searchBar.classList.add('initialSize');
+searchBar.classList.remove('bigSearchBar');
+
+pSearch.classList.remove('hidden');
+formHidden.classList.add('hidden');
+boutonClose.classList.add('hidden');
+searchBar.offsetHeight;
+// Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
+event.stopPropagation();
+});
+accountMenuBtn.addEventListener('click', function (event) {
+if (! accountMenu.classList.contains('block')) {
+accountMenu.classList.remove('hidden');
+accountMenu.classList.add('block');
+} else {
+accountMenu.classList.remove('block');
+accountMenu.classList.add('hidden');
+}
+// Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
+event.stopPropagation();
+});
+		</script>
 	</body>
-	<script>
-
-	var accountMenuBtn = document.getElementById('accountMenuBtn');
-	var accountMenu = document.getElementById('accountMenu');
-
-
-
-    var searchBar = document.getElementById('searchBar');
-    var pSearch = document.getElementById('pSearch');
-    var formHidden = document.getElementById('formHidden');
-    var boutonClose = document.getElementById('boutonClose');
-
-    searchBar.addEventListener('click', function (event) {
-        if (!searchBar.classList.contains('bigSearchBar')) {
-            searchBar.classList.add('bigSearchBar');
-            pSearch.classList.add('hidden');
-            formHidden.classList.remove('hidden');
-            boutonClose.classList.remove('hidden');
-        } else {
-            // Ajoutez ici le code pour le comportement lorsque searchBar a déjà la classe bigSearchBar
-        }
-        // Empêche la propagation de l'événement pour éviter d'activer le clic du boutonClose immédiatement
-        event.stopPropagation();
-    });
-
-
-
-    boutonClose.addEventListener('click', function (event) {
-        searchBar.classList.remove('bigSearchBar');
-        pSearch.classList.remove('hidden');
-        formHidden.classList.add('hidden');
-        boutonClose.classList.add('hidden');
-        // Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
-        event.stopPropagation();
-    });
-	accountMenuBtn.addEventListener('click', function (event) {
-		if (!accountMenu.classList.contains('block')) {
-			accountMenu.classList.remove('hidden');
-			accountMenu.classList.add('block');
-		} else {
-			accountMenu.classList.remove('block');
-			accountMenu.classList.add('hidden');
-		}
-		// Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
-		event.stopPropagation();
-	});	
-</script>
-
-
 </html>

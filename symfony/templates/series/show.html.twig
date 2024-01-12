@@ -3,15 +3,15 @@
 {% block title %}Series{% endblock %}
 
 {% block body %}
-    <div class="bg-black">
+    <div class="">
         <div class="container mx-auto py-8">
-            <h1 class="text-4xl text-white font-bold mb-8">Series</h1>
+            <h1 class="text-4xl text-white font-bold mb-8 text-center">{{series.title}}</h1>
 
-            <div class="flex">
-                <div class="w-1/3">
-                    <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="object-cover rounded-t-lg">
+            <div class="flex lg:flex-row items-center flex-col">
+                <div class="w-2/3 flex flex-col item-center lg:w-1/3">
+                    <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="pb-20 object-cover rounded-t-lg">
                 </div>
-                <div class="w-2/3 ml-8 bg-gray-900 rounded-lg shadow-lg p-5">
+                <div class="w-full  lg:ml-8 bg-gray-900 rounded-lg shadow-lg p-5">
                     <div class="flex flex-col">
                         <span class="text-white font-bold">Title:</span>
                         <span class="text-white ml-2">{{ series.title }}</span>
@@ -151,7 +151,7 @@
                         <span class="text-white ml-2">{{ series.imdb}}</span>
                         <span class="text-white font-bold">Plot:</span>
                         <span class="text-white ml-2">{{ series.plot }}</span>
-                        <iframe width="560" id="trailer" height="315"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
+                        <iframe width="100%" id="trailer" height="auto"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
                         <span class="text-white font-bold">Awards:</span>
                         <span class="text-white ml-2">{{ series.awards }}</span>
                         <span class="text-white font-bold">Date:</span>
@@ -180,7 +180,7 @@
                             {% endif %}
                         {% endif %}
                         <span class="text-white font-bold">Seasons:</span> 
-                        <div class="flex mb-2 flex-wrap"> 
+                        <div class="flex mb-2 flex-col lg:w-2/3"> 
                             {% if not app.user %}
                                 {% for season in series.seasons %}
                                     <a href="{{ path('app_season_show', {'id': season.id}) }}">
@@ -199,15 +199,15 @@
                                     {% endfor %}
                                     <details>
                                         {% if seasonWatched %}
-                                            <summary class="bg-green-500 rounded-lg ml-5 mb-4">
+                                            <summary class="bg-green-500 rounded-lg ml-5 mb-4 px-4 w-1/3">
                                                 <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
                                             </summary>
                                         {% else %}
-                                            <summary class="bg-red-500 rounded-lg ml-5 mb-4">
+                                            <summary class="bg-red-500 rounded-lg ml-5 mb-4 px-4 w-1/3">
                                                 <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
                                             </summary>
                                         {% endif %}
-                                        <div>
+                                        <div w-full>
                                             <p>
                                                 {% if app.user %}
                                                     {% set allSeasonEpisodesView = true %}
