@@ -34,7 +34,7 @@ class CreateUserCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('nbUsers', InputArgument::OPTIONAL, 'Number of users to create', 100)
+            ->addArgument('nbUsers', InputArgument::OPTIONAL, 'Number of users to create', 10)
         ;
     }
 
@@ -51,12 +51,13 @@ class CreateUserCommand extends Command
         for ($i = 0; $i < $nbUsers; $i++) {
             $user = new User();
             $email = $faker->unique()->safeEmail;
-            $user->setEmail($email);
+            $uniqueEmail = str_replace('@', $i.'@', $email); // Ajoutez l'index à l'e-mail
+            $user->setEmail($uniqueEmail);
             $user->setName($faker->name);
             $user->setPassword(
                 $this->userPasswordHasher->hashPassword(
                     $user,
-                    $email
+                    $uniqueEmail // Utilisez l'e-mail unique pour le mot de passe
                 )
             );
             $user->setAdmin(-1);
@@ -65,11 +66,15 @@ class CreateUserCommand extends Command
             $user->setCountry($country);
             $user->setRegisterDate(new \DateTime());
             $this->entityManager->persist($user);
+             // flush tout les 10 utilisateurs créers
+            if (($i + 1) % 50 == 0) {
+                $this->entityManager->flush();
+            }
         }
 
         $this->entityManager->flush();
 
-        $io->success(sprintf('[OK] %s users have been successfully generated.', $nbUsers));
+        $io->success(sprintf('%s users have been successfully generated.', $nbUsers));
 
         return Command::SUCCESS;
     }

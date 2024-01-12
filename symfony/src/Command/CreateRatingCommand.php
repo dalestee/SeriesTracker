@@ -36,65 +36,87 @@ class CreateRatingCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('nbComms', InputArgument::OPTIONAL, 'Number of comments to create', 10);
+            ->addArgument(
+                'ecartType',
+                InputArgument::OPTIONAL,
+                'Standard deviation for the ratings',
+                1
+            );
         $this
-            ->addArgument('ecartType', InputArgument::OPTIONAL, 'Standard deviation for the ratings', 1);
+            ->addArgument(
+                'nbRatingsMin',
+                InputArgument::OPTIONAL,
+                'Minimum number of ratings to create for each series',
+                10
+            );
+
+        $this
+            ->addArgument(
+                'nbRatingsMax',
+                InputArgument::OPTIONAL,
+                'Maximum number of ratings to create for each series',
+                150
+            );
     }
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ecartType = $input->getArgument('ecartType');
         $io = new SymfonyStyle($input, $output);
-        $nbComms = $input->getArgument('nbComms');
+        $nbRatingMin = $input->getArgument('nbRatingsMin');
+        $nbRatingMax = $input->getArgument('nbRatingsMax');
         $users = $this->entityManager->getRepository(User::class)->findBy(['admin' => -1]);
         $series = $this->entityManager->getRepository(Series::class)->findAll();
 
-        // Mélanger la liste des utilisateurs
-        shuffle($users);
+        $totalCreatedRatings = 0;
+        // Mélanger la liste des series
+        shuffle($series);
 
-        $ratingsCreated = 0;
-        while ($ratingsCreated < $nbComms && !empty($users)) {
-            // Prendre un utilisateur de la liste
-            $user = array_pop($users);
+        while (!empty($series)) {
+            $serie = array_pop($series);
 
-            // Mélanger la liste des séries
-            shuffle($series);
+            $nbRatings = $this->faker->numberBetween($nbRatingMin, $nbRatingMax);
+            $ratingsCreated = 0;
 
-            // Trouver une série que l'utilisateur n'a pas encore notée
-            foreach ($series as $key => $serie) {
+            $averageRatings = $this->faker->randomFloat(2, 0, 6);
+            
+            shuffle($users);
+
+            foreach ($users as $key => $user) {
                 $rating = $this->entityManager
                 ->getRepository(Rating::class)
                 ->findOneBy(['user' => $user, 'series' => $serie]);
                 if (!$rating) {
-                    // Créer une note pour la série
                     $rating = new Rating();
                     $rating->setUser($user);
                     $rating->setSeries($serie);
                     $rating->setDate(new \DateTime());
-                    $average = $this->faker->randomFloat(2, 2, 5); // Génère une moyenne aléatoire entre 0 et 5
-                    $ratingValue = $this->faker->randomFloat(
-                        2,
-                        max(0, $average - $ecartType),
-                        min(5, $average + $ecartType)
-                    ); // Génère une note suivant une loi normale
+                    $ratingValue = $this->randomNormal($averageRatings, $ecartType);
+                    $ratingValue = max(0, min(5, $ratingValue));
                     $rating->setValue($ratingValue);
                     $rating->setComment($this->faker->text);
                     $this->entityManager->persist($rating);
 
                     $ratingsCreated++;
-                    if ($ratingsCreated >= $nbComms) {
-                        break 2; // Sortir de la boucle while et de la boucle foreach
+                    if ($ratingsCreated >= $nbRatings) {
+                        break;
                     }
-                } else {
-                    // Si l'utilisateur a déjà noté cette série, la retirer de la liste
-                    unset($series[$key]);
                 }
             }
+            $totalCreatedRatings += $ratingsCreated;
         }
-
         $this->entityManager->flush();
 
-        $io->success(sprintf('Successfully created %d ratings.', $ratingsCreated));
+
+        
+
+        $io->success(sprintf('Successfully created %d ratings.', $totalCreatedRatings));
 
         return Command::SUCCESS;
+    }
+    public function randomNormal($mean, $sd)
+    {
+        $x = mt_rand() / mt_getrandmax();
+        $y = mt_rand() / mt_getrandmax();
+        return sqrt(-2 * log($x)) * cos(2 * pi() * $y) * $sd + $mean;
     }
 }
