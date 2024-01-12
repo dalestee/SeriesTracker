@@ -8,7 +8,7 @@
 		<div class="container flex items-center px-8 w-full flex-col ">
 			<h1 class="text-4xl text-center text-white font-bold mb-12">Series</h1>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
                 {% for series in pagination.items %}
                     {% if user %}
                         {% set nb_episodes = 0 %}
