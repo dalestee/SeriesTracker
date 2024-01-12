@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+
+{% if user %}
+    Fiche de l'utilisateur {{ user.name }}
+{% else %}
+    Impossible de trouver cet utilisateur
+{% endif %}
+
+{% endblock %}
+
+{% block body %}
+
+    {% if user %}
+        <div class="container mx-auto py-8">
+            <h1 class="text-4xl text-white font-bold mb-8">Fiche de l'utilisateur {{ user.name }}</h1>
+        </div>
+        
+        <div class="container mx-auto py-8">
+                <h1 class="text-4xl text-center text-white font-bold mb-12">Séries suivies</h1>
+                {% include 'series/_show_series.html.twig' with { 
+                    'user': user,
+                    'app_action' : "app_user",
+                    'param_action' : {'id_user' : user.id},
+                    'pagination' : series_suivies
+                    }
+                %}
+        </div>
+    {% else %}
+        <div class="container mx-auto py-8">
+            <h1 class="text-4xl text-white font-bold mb-8">Il n'existe aucun utilisateur avec cet identifiant</h1>
+        </div>
+    {% endif %}
+{% endblock %}
+
