@@ -101,9 +101,11 @@
                                 </div>
                             {% else %}
                                 {% set userRateComment = "" %}
+                                {% set userRate = null %}
                                 {% for rating in app.user.getRatings() %}
                                     {% if rating.getSeries() == series %}
                                         {% set userRateComment = rating.getComment() %}
+                                        {% set userRate = rating %}
                                     {% endif %}
                                 {% endfor %}
                                 <div class="flex group">
@@ -168,6 +170,9 @@
                                         </div>
                                     </p>
                                 {% endif %}
+                                {% set dateRate = userRate.date|time_diff %}
+                                <p class="text-white font-bold" >{{ dateRate }}</p>
+
                             {% endif %}
                         {% endif %}
                         <span class="text-white font-bold">IMDb ID:</span>
