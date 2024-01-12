@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+
 use App\Entity\Series;
 use App\Entity\User;
 use App\Form\SeriesType;
@@ -188,7 +189,7 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route ('{id}/unrate', name: 'app_series_unrate', methods: ['POST'])]
+    #[Route('{id}/unrate', name: 'app_series_unrate', methods: ['POST'])]
     public function unrate(EntityManagerInterface $entityManager, Request $request, Series $series): Response
     {
         if (!$this->isUserLoggedIn()) {
