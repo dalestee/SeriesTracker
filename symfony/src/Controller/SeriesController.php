@@ -42,7 +42,7 @@ class SeriesController extends AbstractController
 
         $pagination = $paginator->paginate(
             $query, /* query NOT result */
-            $page/*page number*/,
+            $page_serie/*page number*/,
             10/*limit per page*/
         );
         return $this->render('series/index.html.twig', [
@@ -61,8 +61,8 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/{page}/follow/{id}', name:'app_series_follow', methods: ['POST'], requirements: ['page' => '\d+'])]
-    public function follow(EntityManagerInterface $entityManager, Request $request, int $page, Series $series): Response
+    #[Route('/series/follow/{id}', name:'app_series_follow', methods: ['POST'])]
+    public function follow(EntityManagerInterface $entityManager, Request $request, Series $series): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
@@ -80,11 +80,10 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/{page}/unfollow/{id}', name:'app_series_unfollow', methods: ['POST'], requirements: ['page' => '\d+'])]
+    #[Route('/series/unfollow/{id}', name:'app_series_unfollow', methods: ['POST'])]
     public function unfollow(
         EntityManagerInterface $entityManager,
         Request $request,
-        int $page,
         Series $series
     ): Response {
         if (!$this->isUserLoggedIn()) {
@@ -103,11 +102,11 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/listSeriesFollow/{page}', name: 'app_series_list_follow', methods: ['GET'])]
+    #[Route('/listSeriesFollow/{page_serie}', name: 'app_series_list_follow', methods: ['GET'])]
     public function listFollow(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
-        int $page = 1
+        int $page_serie = 1
     ): Response {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
@@ -118,7 +117,7 @@ class SeriesController extends AbstractController
 
             $pagination = $paginator->paginate(
                 $seriesQuery, /* query NOT result */
-                $page/*page number*/,
+                $page_serie/*page number*/,
                 10/*limit per page*/
             );
 
