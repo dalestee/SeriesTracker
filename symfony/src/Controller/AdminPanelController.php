@@ -31,7 +31,7 @@ class AdminPanelController extends AbstractController
         } else {
             $formRole = null;
         }
-        
+
         return $this->render('admin_panel/index.html.twig', [
             'users' => $users,
             'form_impersonation' => $formImpersonation->createView(),

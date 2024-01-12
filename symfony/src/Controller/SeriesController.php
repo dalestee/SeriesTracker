@@ -25,7 +25,7 @@ class SeriesController extends AbstractController
     public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
     {
         $seriesRepository = $entityManager->getRepository(Series::class);
-        
+
         $query = $seriesRepository->createQueryBuilder('s')->getQuery();
 
         $pagination = $paginator->paginate(

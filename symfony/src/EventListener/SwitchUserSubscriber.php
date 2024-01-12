@@ -9,7 +9,7 @@ use Symfony\Component\Security\Http\SecurityEvents;
 
 class SwitchUserSubscriber implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents() : array
+    public static function getSubscribedEvents(): array
     {
         return [
             SecurityEvents::SWITCH_USER => 'onSwitchUser',
@@ -33,7 +33,8 @@ class SwitchUserSubscriber implements EventSubscriberInterface
 
         // If the current user is not a super admin and the target user is an admin, throw an exception
         if (!in_array('ROLE_SUPER_ADMIN', $currentUser->getRoles())
-                && in_array('ROLE_ADMIN', $targetUser->getRoles())) {
+                && in_array('ROLE_ADMIN', $targetUser->getRoles())
+        ) {
             throw new AccessDeniedException();
         }
     }
