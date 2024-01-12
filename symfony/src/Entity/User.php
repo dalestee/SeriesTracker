@@ -63,6 +63,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private $episode = array();
 
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: "Rating")]
+    private $ratings;
+
     /**
      * Constructor
      */
@@ -184,6 +187,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->country = $country;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Series>
+     */
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
     }
 
     /**

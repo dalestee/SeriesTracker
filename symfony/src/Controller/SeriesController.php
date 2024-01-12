@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Series;
 use App\Entity\User;
 use App\Form\SeriesType;
+use App\Entity\Rating;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +61,7 @@ class SeriesController extends AbstractController
             $suivies = $this->isfollow($user, $series);
             if (!$suivies) {
                 $user->addSeries($series);
-                $entityManager ->flush();
+                $entityManager->flush();
             }
 
             $route = $request->headers->get('referer');
@@ -83,7 +84,7 @@ class SeriesController extends AbstractController
             $suivies = $this->isfollow($user, $series);
             if ($suivies) {
                 $user->removeSeries($series);
-                $entityManager ->flush();
+                $entityManager->flush();
             }
 
             $route = $request->headers->get('referer');
@@ -165,6 +166,62 @@ class SeriesController extends AbstractController
         $response->setContent(stream_get_contents($series->getPoster()));
 
         return $response;
+    }
+
+    #[Route('{id}/rate/{note}', name: 'app_series_rate', methods: ['POST'])]
+    public function rate(EntityManagerInterface $entityManager, Request $request, Series $series, int $note): Response
+    {
+        if (!$this->isUserLoggedIn()) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+
+            $rating = new Rating();
+            $rating->setUser($user);
+            $rating->setSeries($series);
+            $rating->setValue($note);
+            $rating->setDate(new \DateTime());
+            $entityManager->persist($rating);
+
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
+        }
+    }
+
+    #[Route('{id}/unrate', name: 'app_series_unrate', methods: ['POST'])]
+    public function unrate(EntityManagerInterface $entityManager, Request $request, Series $series): Response
+    {
+        if (!$this->isUserLoggedIn()) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+            $rating = $entityManager->getRepository(Rating::class)
+                    ->findOneBy(['user' => $user, 'series' => $series]);
+            $entityManager->remove($rating);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
+        }
+    }
+
+    #[Route('{id}/rateComment', name: 'app_series_rate_comment', methods: ['POST'])]
+    public function rateComment(EntityManagerInterface $entityManager, Request $request, Series $series): Response
+    {
+        if (!$this->isUserLoggedIn()) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            $user = $entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+            $rating = $entityManager->getRepository(Rating::class)
+                    ->findOneBy(['user' => $user, 'series' => $series]);
+            $rating->setComment($request->request->get('comment'));
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
+        }
     }
 
     #[Route('/new', name: 'app_series_new', methods: ['GET', 'POST'])]

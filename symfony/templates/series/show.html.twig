@@ -15,6 +15,72 @@
                     <div class="flex flex-col">
                         <span class="text-white font-bold">Title:</span>
                         <span class="text-white ml-2">{{ series.title }}</span>
+                        {% if app.user %}
+                            <span class="text-white font-bold">Noter la série:</span>
+                            {% set userAlreadyRateSerie = false %}
+                            {% set userSerieRating = 0 %}
+                            {% for rating in app.user.getRatings() %}
+                                {% if rating.getSeries() == series %}
+                                    {% set userAlreadyRateSerie = true %}
+                                    {% set userSerieRating = rating.getValue() %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if not userAlreadyRateSerie %}
+                                <div class="flex">
+                                    {% for note in 1..5 %}
+                                        <form action="{{ path('app_series_rate', {'id': series.id, 'note': note}) }}" method="post" class="rating-form">
+                                            <button class="star text-white hover:text-yellow-500 focus:outline-none" data-note="{{ note }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="inline-block fill-current">
+                                                    <path class="h-6 w-6" 
+                                                        d="m354-247 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-80l65-281L80-550l288-25 112-265 112 265 288 25-218 189 65 281-247-149L233-80Zm247-350Z"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {% set userRateComment = "" %}
+                                {% for rating in app.user.getRatings() %}
+                                    {% if rating.getSeries() == series %}
+                                        {% set userRateComment = rating.getComment() %}
+                                    {% endif %}
+                                {% endfor %}
+                                <div class="flex group">
+                                    {% for note in 1..5 %}
+                                        {% if note <= userSerieRating %}
+                                            <button class="text-white focus:outline-none" data-note="{{ note }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="inline-block fill-current text-yellow-500 cursor-default">
+                                                    <path class="h-6 w-6" 
+                                                        d="m354-247 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-80l65-281L80-550l288-25 112-265 112 265 288 25-218 189 65 281-247-149L233-80Zm247-350Z"/>
+                                                </svg>
+                                            </button>
+                                        {% else %}
+                                            <button class="text-white focus:outline-none" data-note="{{ note }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="inline-block fill-current focus:outline-none cursor-default">
+                                                    <path class="h-6 w-6" 
+                                                        d="m354-247 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-80l65-281L80-550l288-25 112-265 112 265 288 25-218 189 65 281-247-149L233-80Zm247-350Z"/>
+                                                </svg>
+                                            </button>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <form action="{{ path('app_series_unrate', {'id': series.id}) }}" method="post" class="ml-4">
+                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">unrate</button>
+                                    </form>
+                                </div>
+                                {% if userRateComment == NULL %}
+                                    <form action="{{ path('app_series_rate_comment', {'id': series.id}) }}" method="post" class="mt-4 flex items-center">
+                                        <textarea id="comment" name="comment" class="rounded py-2 px-3 text-gray-700 leading-tight focus:shadow-outline w-1/2"></textarea>
+                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-4">comment</button>
+                                    </form>
+                                {% else %}
+                                    <p class="text-white">Comment  :
+                                        <div class="text-white font-bold mb-2">
+                                            {{ userRateComment }}
+                                        </div>
+                                    </p>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
                         <span class="text-white font-bold">IMDb ID:</span>
                         <span class="text-white ml-2">{{ series.imdb}}</span>
                         <span class="text-white font-bold">Plot:</span>
@@ -137,6 +203,26 @@
         </div>
     </div>
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const stars = document.querySelectorAll(".star");
+
+    stars.forEach((star, index) => {
+        star.addEventListener("mouseover", function() {
+            // Remove active class from all stars
+            stars.forEach(s => s.classList.remove("text-yellow-500"));
+
+            // Add active class to this star and all previous stars
+            for (let i = 0; i <= index; i++) {
+                stars[i].classList.add("text-yellow-500");
+            }
+        });
+
+        star.addEventListener("mouseout", function() {
+            // Remove active class from all stars
+            stars.forEach(s => s.classList.remove("text-yellow-500"));
+        });
+    });
+});
 function confirmAndSubmit(id) {
     if (confirm('Have you already seen the previous episodes?')) {
         document.getElementById('episode_view_precedent_form_'+id).submit();
