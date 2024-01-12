@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Entity\User;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -55,7 +54,7 @@ class SuperAdminCreateCommand extends Command
             $user->setAdmin(2);
             $this->entityManager->flush();
 
-            $io->success("User changed ".$user->getUserIdentifier()." to super admin");
+            $io->success("User changed " . $user->getUserIdentifier() . " to super admin");
             return Command::SUCCESS;
         } else {
             $io->error('Need to specify a user');

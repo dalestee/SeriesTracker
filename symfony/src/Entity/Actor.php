@@ -17,7 +17,7 @@ class Actor
 
     #[ORM\Column(name: "name", type: "string", length: 128, nullable: false)]
     private $name;
-    
+
     #[ORM\ManyToMany(targetEntity: "Series", inversedBy: "actor")]
     #[ORM\JoinTable(
         name: "actor_series",
