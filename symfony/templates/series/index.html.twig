@@ -32,7 +32,7 @@
                                     {% if series.ratings|length > 0 %}
                                         {% set usersRating = usersRating / series.ratings|length %}
                                     {% endif %}
-                                    <p class="text-white mb-2">seen episodes:</p>
+                                    <p class="text-white mb-2">episodes seen:</p>
                                     {% if user %}
                                         <div class="relative pt-1">
                                             <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
@@ -67,27 +67,30 @@
                     <h1 class="text-4xl text-white font-bold mb-8">No series found</h1>
                 {% endfor %}
             </div>
-            {% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
-            {% set current_page = pagination.getCurrentPageNumber() %}
-
-            {% if current_page != 1 %}
-                <a href="{{ path(app_action, {'page': current_page - 1}) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
-            {% endif %}
-
-            {% for page in 1..total_pages %}
-                {% if page == current_page %}
-                    <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
-                {% elseif page == current_page - 1 or page == current_page + 1 %}
-                    <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
-                {% elseif page == 1 or page == total_pages %}
-                    <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
-                {% elseif page == current_page - 2 or page == current_page + 2 %}
-                    <span class="text-white px-5">...</span>
+            {% if pagination.items|length != 0 %}
+                {% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
+                {% set current_page = pagination.getCurrentPageNumber() %}
+                <div class="flex justify-center mt-8">
+                {% if current_page != 1 %}
+                    <a href="{{ path(app_action, {'page': current_page - 1}) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
                 {% endif %}
-            {% endfor %}
 
-            {% if current_page != total_pages %}
-                <a href="{{ path(app_action, {'page': current_page + 1}) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+                {% for page in 1..total_pages %}
+                    {% if page == current_page %}
+                        <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
+                    {% elseif page == current_page - 1 or page == current_page + 1 %}
+                        <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+                    {% elseif page == 1 or page == total_pages %}
+                        <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+                    {% elseif page == current_page - 2 or page == current_page + 2 %}
+                        <span class="text-white px-5">...</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if current_page != total_pages %}
+                    <a href="{{ path(app_action, {'page': current_page + 1}) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+                {% endif %}
+                </div>
             {% endif %}
 
             </div>
