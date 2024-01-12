@@ -20,4 +20,11 @@ class SeriesRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Series::class);
     }
+
+    public function queryRandom(int $seed)
+    {
+        $queryBuilder = $this->createQueryBuilder('p');
+        $queryBuilder->orderBy('RAND(' . $seed . ')');
+        return $queryBuilder->getQuery();
+    }
 }
