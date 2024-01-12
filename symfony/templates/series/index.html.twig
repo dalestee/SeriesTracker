@@ -6,8 +6,11 @@
 {% block body %}
 	<div class="flex items-center w-screen flex-col py-8 ">
 		<div class="container flex items-center px-8 w-full flex-col ">
+	<div class="flex items-center w-screen flex-col py-8 ">
+		<div class="container flex items-center px-8 w-full flex-col ">
 			<h1 class="text-4xl text-center text-white font-bold mb-12">Series</h1>
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
                 {% for series in pagination.items %}
                     {% if user %}
@@ -18,7 +21,7 @@
                         {% set nb_episodes_seen = series_episodes|split(',')|filter(e => e in user_episodes|split(','))|length %}
                         {% set nb_episodes = series.seasons|map(s => s.episodes|length)|reduce((a, b) => a + b) %}
                     {% endif %}
-                    <div class="flex justify-between flex-col w-full transform transition-transform duration-300 hover:scale-105 bg-gray-900 rounded-lg hover:border-red-500 border-2 border-transparent h-full">
+                    <div class="flex justify-between flex-col w-full w-full transform transition-transform duration-300 hover:scale-105 bg-gray-900 rounded-lg hover:border-red-500 border-2 border-transparent h-full">
                         <a href="{{ path('app_series_show', {'id': series.id}) }}">
                             <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-fit object-cover rounded-t-lg">
                             <div class="p-4">
@@ -92,7 +95,8 @@
                 {% endif %}
                 </div>
             {% endif %}
-            
+            </div>
+
             </div>
         </div>
     </div>
