@@ -38,9 +38,12 @@ class CreateRatingCommand extends Command
     {
         $this
             ->addArgument('nbComms', InputArgument::OPTIONAL, 'Number of comments to create', 10);
+        $this
+            ->addArgument('ecartType', InputArgument::OPTIONAL, 'Standard deviation for the ratings', 1);
     }
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $ecartType = $input->getArgument('ecartType');
         $io = new SymfonyStyle($input, $output);
         $nbComms = $input->getArgument('nbComms');
         $users = $this->entityManager->getRepository(User::class)->findBy(['admin' => -1]);
@@ -54,8 +57,11 @@ class CreateRatingCommand extends Command
             // Prendre un utilisateur de la liste
             $user = array_pop($users);
     
+            // Mélanger la liste des séries
+            shuffle($series);
+    
             // Trouver une série que l'utilisateur n'a pas encore notée
-            foreach ($series as $serie) {
+            foreach ($series as $key => $serie) {
                 $rating = $this->entityManager->getRepository(Rating::class)->findOneBy(['user' => $user, 'series' => $serie]);
                 if (!$rating) {
                     // Créer une note pour la série
@@ -63,7 +69,12 @@ class CreateRatingCommand extends Command
                     $rating->setUser($user);
                     $rating->setSeries($serie);
                     $rating->setDate(new \DateTime());
-                    $rating->setValue($this->faker->numberBetween(0, 5));
+                    $average = $this->faker->randomFloat(2, 2, 5); // Génère une moyenne aléatoire entre 0 et 5
+                    $ratingValue = $this->faker->randomFloat(
+                        2,
+                        max(0, $average - $ecartType), min(5, $average + $ecartType)
+                    ); // Génère une note suivant une loi normale
+                    $rating->setValue($ratingValue);
                     $rating->setComment($this->faker->text);
                     $this->entityManager->persist($rating);
     
@@ -71,6 +82,9 @@ class CreateRatingCommand extends Command
                     if ($ratingsCreated >= $nbComms) {
                         break 2; // Sortir de la boucle while et de la boucle foreach
                     }
+                } else {
+                    // Si l'utilisateur a déjà noté cette série, la retirer de la liste
+                    unset($series[$key]);
                 }
             }
         }
