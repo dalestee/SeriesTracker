@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^2.17",
         "fakerphp/faker": "^1.23",
+        "gregwar/captcha-bundle": "^2.2",
         "knplabs/knp-paginator-bundle": "^6.3",
         "knplabs/knp-time-bundle": "^2.2",
         "phpdocumentor/reflection-docblock": "^5.3",
