@@ -14,6 +14,10 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use App\Entity\Country;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Gregwar\CaptchaBundle\Type\CaptchaType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 class RegistrationFormType extends AbstractType
 {
@@ -23,8 +27,14 @@ class RegistrationFormType extends AbstractType
         ->add('name', TextType::class, [
             'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
         ])
-        ->add('email', TextType::class, [
-            'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
+        ->add('email', EmailType::class, [
+            'constraints' => [
+                new NotBlank(),
+                new Regex([
+                    'pattern' => '/@/',
+                    'message' => 'L\'adresse email doit contenir le caractère "@".',
+                ]),
+            ],
         ])
         ->add('country', EntityType::class, [
             'class' => Country::class,
@@ -32,15 +42,6 @@ class RegistrationFormType extends AbstractType
             'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
             'placeholder' => 'Select your country',
             'required' => false,
-        ])
-        ->add('agreeTerms', CheckboxType::class, [
-            'mapped' => false,
-            'constraints' => [
-                new IsTrue([
-                    'message' => 'You should agree to our terms.',
-                ]),
-            ],
-            'attr' => ['class' => 'text-white'],
         ])
         ->add('plainPassword', PasswordType::class, [
             'mapped' => false,
@@ -55,7 +56,8 @@ class RegistrationFormType extends AbstractType
                     'max' => 4096,
                 ]),
             ],
-        ]);
+        ])
+        ->add('captcha', CaptchaType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -21,6 +21,8 @@ cache:
 
 before_script:
   - cd symfony
+  - apk add --update zlib-dev libpng-dev
+  - docker-php-ext-install gd
   - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
 
 phpcs:
