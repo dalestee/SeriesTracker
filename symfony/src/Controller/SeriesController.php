@@ -21,7 +21,7 @@ class SeriesController extends AbstractController
     }
 
     #[Route('/{page}', name: 'app_series_index', methods: ['GET'], requirements: ['page' => '\d+'])]
-    public function index(EntityManagerInterface $entityManager,Request $request, PaginatorInterface $paginator, $page = 1): Response
+    public function index(EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator, $page = 1): Response
     {
 
         $session = $request->getSession();
