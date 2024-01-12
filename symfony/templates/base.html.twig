@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="w-screen">
+<html>
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta charset="UTF-8">
@@ -81,8 +81,8 @@
 			}
 		</style>
 	</head>
-	<body class="w-screen bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-center">
-		<nav class="flex sticky top-0 z-20 lg:hidden w-full h-10 items-center py-10 bg-gray-900">
+	<body class=" bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-center">
+		<nav class="flex sticky top-0 z-20 lg:hidden w-full h-fit items-center py-0 bg-gray-900">
 			<ul class="flex justify-around items-center w-full">
 				<li>
 					<button id="mobilSearch">
@@ -112,7 +112,7 @@
 			<button id="mobileMenuClose" class="text-white px-4 py-2 absolute top-4 left-4 inline-block group focus:outline-none">
 				<img src="{{ asset('img/close.png') }}" alt="logo" class="h-20">
 			</button>
-			<ul id="listeNavMobile" class="relative top-20 h-full w-full ml-8">
+			<ul id="listeNavMobile" class="relative top-20 h-full w-full ">
 				<li>
 					<a href="{{ path('app_series_index') }}" class="text-white px-4 py-2 relative inline-block group">
 						Home
