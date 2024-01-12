@@ -17,18 +17,29 @@ class AdminPanelController extends AbstractController
     #[Route('/admin/{page}', name: 'app_admin_panel', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
     {
-        $users = $entityManager
-            ->getRepository(User::class)
-            ->findby([], ['admin' => 'DESC']);
-
-        $userRepository = $entityManager->getRepository(User::class);
-        $query = $userRepository->createQueryBuilder('p')->getQuery();
+        if (isset($_GET['email'])) {
+            $mail = $_GET['email'];
+        
+            $queryBuilder = $entityManager->getRepository(User::class)->createQueryBuilder('u');
+            $queryBuilder->where('u.email LIKE :email')
+                         ->setParameter('email', '%' . $mail . '%')
+                         ->orderBy('u.admin', 'DESC');
+        
+            $query = $queryBuilder->getQuery();
+        }
+        else {
+            $queryBuilder = $entityManager->getRepository(User::class)->createQueryBuilder('u');
+            $queryBuilder->orderBy('u.admin', 'DESC');
+            $query = $queryBuilder->getQuery();
+        }
         
         $pagination = $paginator->paginate(
             $query, /* query NOT result */
             $page/*page number*/,
             10/*limit per page*/
         );
+        
+        $users = $pagination->getItems();
 
         $formImpersonation = $this->createForm(UserImpersonationFormType::class, null, [
                 'action' => $this->generateUrl('app_admin_impersonate'),
@@ -46,10 +57,10 @@ class AdminPanelController extends AbstractController
             'users' => $users,
             'form_impersonation' => $formImpersonation->createView(),
             'pagination' => $pagination,
-            'app_action' => 'app_admin_panel',
             'form_role' => $formRole,
         ]);
     }
+
     #[Route('/admin/impersonate', name: 'app_admin_impersonate', methods: ['POST'])]
     public function impersonate(Request $request): Response
     {
