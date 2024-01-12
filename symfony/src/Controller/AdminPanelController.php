@@ -10,15 +10,25 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 class AdminPanelController extends AbstractController
 {
-    #[Route('/admin', name: 'app_admin_panel', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    #[Route('/admin/{page}', name: 'app_admin_panel', methods: ['GET'])]
+    public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
     {
         $users = $entityManager
             ->getRepository(User::class)
             ->findby([], ['admin' => 'DESC']);
+
+        $userRepository = $entityManager->getRepository(User::class);
+        $query = $userRepository->createQueryBuilder('p')->getQuery();
+        
+        $pagination = $paginator->paginate(
+            $query, /* query NOT result */
+            $page/*page number*/,
+            10/*limit per page*/
+        );
 
         $formImpersonation = $this->createForm(UserImpersonationFormType::class, null, [
                 'action' => $this->generateUrl('app_admin_impersonate'),
@@ -35,6 +45,8 @@ class AdminPanelController extends AbstractController
         return $this->render('admin_panel/index.html.twig', [
             'users' => $users,
             'form_impersonation' => $formImpersonation->createView(),
+            'pagination' => $pagination,
+            'app_action' => 'app_admin_panel',
             'form_role' => $formRole,
         ]);
     }

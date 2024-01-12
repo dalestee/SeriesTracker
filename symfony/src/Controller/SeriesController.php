@@ -31,7 +31,6 @@ class SeriesController extends AbstractController
             $page/*page number*/,
             10/*limit per page*/
         );
-        dump($pagination);
         return $this->render('series/index.html.twig', [
             'user' => $this->getUser(),
             'app_action' => 'app_series_index',

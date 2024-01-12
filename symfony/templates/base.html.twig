@@ -58,21 +58,22 @@
 						</a>
 					{% endif %}
 				</li>
-				<li class="w-96 h-full bg-black rounded-full">
-					<div id="searchBar" class="flex items-start justify-center w-full text-white p-3 z-2 transition-all duration-800 ease-in-out bg-grey-900">
-						<button id="boutonClose" class="hidden absolute right-4 top-4 w-10 h-10 bg-red-500 rounded-full focus:outline-none">
-							<p class="text-white text-2xl border-2 border-white rounded-full w-10 h-10 flex items-center justify-center">X</p>
-						</button>
-						<p id="pSearch">Recherche</p>
-						<div id="formHidden" class="hidden w-full flex flex-col items-center justify-center">
-							<h1 class="text-white text-2xl">Recherche</h1>
-						<form class="w-full flex items-center justify-center" action="" method="get">
-							<input type="text" name="search" class="w-10/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
-						</form>
+				{% if "/admin" not in app.request.uri %}
+					<li class="w-96 h-full bg-black rounded-full">
+						<div id="searchBar" class="flex items-start justify-center w-full text-white p-3 z-2 transition-all duration-800 ease-in-out bg-grey-900">
+							<button id="boutonClose" class="hidden absolute right-4 top-4 w-10 h-10 bg-red-500 rounded-full focus:outline-none">
+								<p class="text-white text-2xl border-2 border-white rounded-full w-10 h-10 flex items-center justify-center">X</p>
+							</button>
+							<p id="pSearch">Recherche</p>
+							<div id="formHidden" class="hidden w-full flex flex-col items-center justify-center">
+								<h1 class="text-white text-2xl">Recherche</h1>
+							<form class="w-full flex items-center justify-center" action="" method="get">
+								<input type="text" name="search" class="w-10/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
+							</form>
+							</div>
 						</div>
-					</div>
-				</li>
-
+					</li>
+				{% endif %}
 				{% if app.user %}
 					<li>
 						{% if app.request.attributes.get('_route') == 'app_series_list_follow' %}

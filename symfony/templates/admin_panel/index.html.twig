@@ -9,6 +9,10 @@
         <h1 class="text-4xl font-bold mb-8">Admin Panel</h1>
 
         <h2 class="text-2xl font-bold mb-4">User List:</h2>
+        <form method="get" onsubmit="event.preventDefault(); searchByEmail();">
+            <input type="text" id="email-input" name="email" placeholder="Search by email">
+            <button type="submit" class="ml-3 bg-red-500 p-2 rounded hover:bg-green-500">Search</button>
+        </form>
         <div class="overflow-x-auto">
             <table class="table-auto w-full">
                 <thead>
@@ -21,7 +25,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for user in users %}
+                    {% for user in pagination.items %}
                         <tr>
                             <td class="border px-4 py-2">{{ user.id }}</td>
                             <td class="border px-4 py-2">{{ user.name }}</td>
@@ -33,6 +37,31 @@
                 </tbody>
             </table>
         </div>
+        {% if pagination.items|length != 0 %}
+                {% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
+                {% set current_page = pagination.getCurrentPageNumber() %}
+                <div class="flex justify-center mt-8">
+                {% if current_page != 1 %}
+                    <a href="{{ path(app_action, {'page': current_page - 1}) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
+                {% endif %}
+
+                {% for page in 1..total_pages %}
+                    {% if page == current_page %}
+                        <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
+                    {% elseif page == current_page - 1 or page == current_page + 1 %}
+                        <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+                    {% elseif page == 1 or page == total_pages %}
+                        <a href="{{ path(app_action, {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+                    {% elseif page == current_page - 2 or page == current_page + 2 %}
+                        <span class="text-white px-5">...</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if current_page != total_pages %}
+                    <a href="{{ path(app_action, {'page': current_page + 1}) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+                {% endif %}
+                </div>
+            {% endif %}
         {% if form_impersonation %}
             <h3 class="text-2xl font-bold mt-8 mb-4">User Impersonation</h3>
             <div class="max-w-md">
