@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controller;
-
 use App\Entity\Series;
 use App\Entity\User;
 use App\Form\SeriesType;
@@ -60,7 +59,7 @@ class SeriesController extends AbstractController
             $suivies = $this->isfollow($user, $series);
             if (!$suivies) {
                 $user->addSeries($series);
-                $entityManager ->flush();
+                $entityManager->flush();
             }
 
             $route = $request->headers->get('referer');
@@ -83,7 +82,7 @@ class SeriesController extends AbstractController
             $suivies = $this->isfollow($user, $series);
             if ($suivies) {
                 $user->removeSeries($series);
-                $entityManager ->flush();
+                $entityManager->flush();
             }
 
             $route = $request->headers->get('referer');
