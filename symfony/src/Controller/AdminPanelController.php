@@ -26,8 +26,7 @@ class AdminPanelController extends AbstractController
                          ->orderBy('u.admin', 'DESC');
         
             $query = $queryBuilder->getQuery();
-        }
-        else {
+        } else {
             $queryBuilder = $entityManager->getRepository(User::class)->createQueryBuilder('u');
             $queryBuilder->orderBy('u.admin', 'DESC');
             $query = $queryBuilder->getQuery();
