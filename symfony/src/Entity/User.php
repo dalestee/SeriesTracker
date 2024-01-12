@@ -25,7 +25,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
 
-    #[ORM\Column(name: "name", type: "string", length: 128, nullable: false)]
+    #[ORM\Column(name: "name", type: "string", length: 128, nullable: false, unique: true)]
     private $name;
 
     #[ORM\Column(name: "email", type: "string", length: 128, nullable: false)]
