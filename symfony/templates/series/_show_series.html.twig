@@ -1,12 +1,20 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
 	{% for series in pagination.items %}
 		{% if user %}
+
+			{# Test pour savoir si séries est un Array#}
+			{% if series is iterable %}
+				{% set series = series[0] %}
+			{% endif %}
+
 			{% set nb_episodes = 0 %}
 			{% set nb_episodes_seen = 0 %}
 			{% set user_episodes = user.episode|map(e => e.id)|join(',') %}
 			{% set series_episodes = series.seasons|map(s => s.episodes|map(e => e.id)|join(','))|join(',') %}
 			{% set nb_episodes_seen = series_episodes|split(',')|filter(e => e in user_episodes|split(','))|length %}
 			{% set nb_episodes = series.seasons|map(s => s.episodes|length)|reduce((a, b) => a + b) %}
+
+			
 		{% endif %}
 		<div class="flex justify-between flex-col transform transition-transform duration-300 hover:scale-105 bg-gray-900 rounded-lg hover:border-red-500 border-2 border-transparent h-full">
 			<a href="{{ path('app_series_show', {'id': series.id}) }}">
