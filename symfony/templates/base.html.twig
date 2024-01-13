@@ -295,6 +295,7 @@ mobileMenuClose.addEventListener('click', function (event) {
 mobileMenu.classList.add('hidden');
 
 });
+if (searchBar) {
 searchBar.addEventListener('click', function (event) {
 if (! searchBar.classList.contains('bigSearchBar')) {
 searchBar.classList.remove('initialSize');
@@ -321,6 +322,7 @@ searchBar.offsetHeight;
 // Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
 event.stopPropagation();
 });
+}
 accountMenuBtn.addEventListener('click', function (event) {
 if (! accountMenu.classList.contains('block')) {
 accountMenu.classList.remove('hidden');
@@ -329,9 +331,10 @@ accountMenu.classList.add('block');
 accountMenu.classList.remove('block');
 accountMenu.classList.add('hidden');
 }
-// Empêche la propagation de l'événement pour éviter d'activer le clic du searchBar immédiatement
+// Empêche la propagation de l'événement pour éviter d'activer le clic du adminMenu immédiatement
 event.stopPropagation();
 });
+
 		</script>
 	</body>
 </html>
