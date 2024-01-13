@@ -58,7 +58,7 @@ class Series
     #[ORM\ManyToMany(targetEntity: "Country", mappedBy: "series")]
     private $country = array();
 
-    #[ORM\OneToMany(targetEntity: "Season", mappedBy: "series", fetch:"EAGER")]
+    #[ORM\OneToMany(targetEntity: "Season", mappedBy: "series")]
     #[ORM\OrderBy(["number" => "ASC"])]
     private $seasons;
 
