@@ -114,7 +114,7 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/listSeriesFollow', name: 'app_series_list_follow', methods: ['GET'])]
+    #[Route('/listSeriesFollow/{page_serie}', name: 'app_series_list_follow', methods: ['GET'])]
     public function listFollow(
         Request $request,
         SeriesRepository $seriesRepository,
