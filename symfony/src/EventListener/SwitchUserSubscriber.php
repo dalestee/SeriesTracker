@@ -18,6 +18,12 @@ class SwitchUserSubscriber implements EventSubscriberInterface
 
     public function onSwitchUser(SwitchUserEvent $event)
     {
+        dump($event);
+        dump($event->getRequest()->get('_switch_user'));
+
+        dump($event->getToken()->getUser());
+        dump($event->getTargetUser());
+
         $targetUser = $event->getTargetUser();
         $currentUser = $event->getToken()->getUser();
 

@@ -1,103 +1,99 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AdminPanelController!{% endblock %}
+{% block title %}Admin Panel
+{% endblock %}
 
 {% block body %}
 
-<div class="bg-gray-900 text-white">
-    <div class="container mx-auto py-8">
-        <h1 class="text-4xl font-bold mb-8">Admin Panel</h1>
+	<div class="bg-gray-900 text-white">
+		<div class="container mx-auto py-8">
+			<h1 class="text-4xl font-bold mb-8">Admin Panel</h1>
 
-        <h2 class="text-2xl font-bold mb-4">User List:</h2>
-        <form action="{{ path('app_admin_panel')}}" method="get">
-            <input type="text" name="email" placeholder="Search by email" class="ml-3 bg-gray-900 text-white p-2 rounded">
-            <button type="submit" class="ml-3 bg-red-500 p-2 rounded hover:bg-green-500">Search</button>
-        </form>
-        <div class="overflow-x-auto">
-            <table class="table-auto w-full">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2">Id</th>
-                        <th class="px-4 py-2">Username</th>
-                        <th class="px-4 py-2">Email</th>
-                        <th class="px-4 py-2">Registration Date</th>
-                        <th class="px-4 py-2">Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in pagination.items %}
-                        <tr>
-                            <td class="border px-4 py-2">{{ user.id }}</td>
-                            <td class="border px-4 py-2">{{ user.name }}</td>
-                            <td class="border px-4 py-2">{{ user.email }}</td>
-                            <td class="border px-4 py-2">{{ user.registerDateToString }}</td>
-                            <td class="border px-4 py-2">{{ user.role }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% if pagination.items|length != 0 %}
-                {% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
-                <span class="text-white">Page {{ pagination.getCurrentPageNumber() }} of {{ total_pages }}</span>
-                {% set current_page = pagination.getCurrentPageNumber() %}
-                <div class="flex justify-center mt-8">
-                {% if current_page != 1 %}
-                    <a href="{{ path('app_admin_panel', {'page': current_page - 1}) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
-                {% endif %}
+			<h2 class="text-2xl font-bold mb-4">User List:</h2>
+			<form action="{{ path('app_admin_panel')}}" method="get">
+				<input type="text" name="email" placeholder="Search by email" class="ml-3 bg-gray-900 text-white p-2 rounded">
+				<button type="submit" class="ml-3 bg-red-500 p-2 rounded hover:bg-green-500">Search</button>
+			</form>
+			<div class="overflow-x-auto">
+				<table class="table-auto w-full">
+					<thead>
+						<tr>
+							<th class="px-4 py-2">Id</th>
+							<th class="px-4 py-2">Username</th>
+							<th class="px-4 py-2">Email</th>
+							<th class="px-4 py-2">Registration Date</th>
+							<th class="px-4 py-2">Role</th>
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+								<th class="px-4 py-2">Change Role</th>
+							{% endif %}
+							{% if is_granted('ROLE_ADMIN') %}
+								<th class="px-4 py-2">Personify</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for user in pagination.items %}
+							<tr>
+								<td class="border px-4 py-2">{{ user.id }}</td>
+								<td class="border px-4 py-2">{{ user.name }}</td>
+								<td class="border px-4 py-2">{{ user.email }}</td>
+								<td class="border px-4 py-2">{{ user.registerDateToString }}</td>
+								<td class="border px-4 py-2">{{ user.role }}</td>
 
-                {% for page in 1..total_pages %}
-                    {% if page == current_page %}
-                        <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
-                    {% elseif page == current_page - 1 or page == current_page + 1 %}
-                        <a href="{{ path('app_admin_panel', {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
-                    {% elseif page == 1 or page == total_pages %}
-                        <a href="{{ path('app_admin_panel', {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
-                    {% elseif page == current_page - 2 or page == current_page + 2 %}
-                        <span class="text-white px-5">...</span>
-                    {% endif %}
-                {% endfor %}
+                                {#Afficher le bouton pour changer le role si l'utilisateur est super admin#}
+                                {% if is_granted('ROLE_SUPER_ADMIN') %}
+									<td class="border px-4 py-2">
+										<form action="{{ path('app_admin_change_role',{'id':user.id}) }}" method="post">
+											{% if 'ROLE_ADMIN' in user.roles %}
+												<button type="submit" class="text-white hover:text-gray-300">Make User</button>
+											{% elseif 'ROLE_USER' in user.roles %}
+												<button type="submit" class="text-white hover:text-gray-300">Make Admin</button>
+											{% endif %}
+										</form>
+									</td>
+								{% endif %}
+                                {#Afficher le bouton pour incarner l'utilisateur si le role est admin #}
+								{% if is_granted('ROLE_ADMIN') %}
+									<td class="border px-4 py-2">
+										{% if 'ROLE_USER' in user.roles or ('ROLE_ADMIN' in user.roles and is_granted('ROLE_SUPER_ADMIN')) %}
+											<a href="{{ path('app_admin_personify', {'id': user.id}) }}" class="text-white hover:text-gray-300">Personify</a>
+										{% endif %}
+									</td>
+								{% endif %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			{% if pagination.items|length != 0 %}
+				{% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
+				<span class="text-white">Page
+					{{ pagination.getCurrentPageNumber() }}
+					of
+					{{ total_pages }}</span>
+				{% set current_page = pagination.getCurrentPageNumber() %}
+				<div class="flex justify-center mt-8">
+					{% if current_page != 1 %}
+						<a href="{{ path('app_admin_panel', {'page': current_page - 1}) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
+					{% endif %}
 
-                {% if current_page != total_pages %}
-                    <a href="{{ path('app_admin_panel', {'page': current_page + 1}) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
-                {% endif %}
-                </div>
-            {% endif %}
-        {% if form_impersonation %}
-            <h3 class="text-2xl font-bold mt-8 mb-4">User Impersonation</h3>
-            <div class="max-w-md">
-                {{ form_start(form_impersonation) }}
-                <div class="mb-4 text-white-500">
-                    {{ form_errors(form_impersonation) }}
-                </div>
-                <div class="mb-4">
-                        {{ form_label(form_impersonation.user, 'User', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
-                        {{ form_widget(form_impersonation.user, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
-                </div>
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
-                {{ form_end(form_impersonation) }}
-            </div>
-        {% endif %}
+					{% for page in 1..total_pages %}
+						{% if page == current_page %}
+							<span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
+						{% elseif page == current_page - 1 or page == current_page + 1 %}
+							<a href="{{ path('app_admin_panel', {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+						{% elseif page == 1 or page == total_pages %}
+							<a href="{{ path('app_admin_panel', {'page': page}) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+						{% elseif page == current_page - 2 or page == current_page + 2 %}
+							<span class="text-white px-5">...</span>
+						{% endif %}
+					{% endfor %}
 
-        {% if form_role %}
-            <h3 class="text-2xl font-bold mt-8 mb-4">User Role Modification</h3>
-            <div class="max-w-md">
-                {{ form_start(form_role) }}
-                <div class="mb-4 text-white-500">
-                    {{ form_errors(form_role) }}
-                </div>
-                <div class="mb-4">
-                        {{ form_label(form_role.user, 'User', {'label_attr': {'class': 'block text-white-200 text-1xl text-sm font-bold mb-2'}}) }}
-                        {{ form_widget(form_role.user, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
-                </div>
-                 <div class="mb-4">
-                        {{ form_label(form_role.role, 'Role', {'label_attr': {'class': 'block text-white-200 text-1xl font-bold mb-2'}}) }}
-                        {{ form_widget(form_role.role, {'attr': {'class': 'bg-gray-900 px-4 py-2 border-white'}}) }}
-                </div>
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
-                {{ form_end(form_role) }}
-            </div>
-        {% endif %}
-    </div>
-</div>
+					{% if current_page != total_pages %}
+						<a href="{{ path('app_admin_panel', {'page': current_page + 1}) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+					{% endif %}
+				</div>
+			{% endif %}
+		</div>
+	</div>
 {% endblock %}
