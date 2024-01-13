@@ -114,8 +114,9 @@ class SeriesController extends AbstractController
         } else {
             $user = $entityManager->getRepository(User::class)
                     ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-            $seriesQuery = $user->getSeries();
-
+            $seriesQuery = $entityManager->getRepository(Series::class)
+                    ->querySeriesSuiviesTrieParVisionnage($user->getId());
+                    
             $pagination = $paginator->paginate(
                 $seriesQuery, /* query NOT result */
                 $page_serie/*page number*/,
