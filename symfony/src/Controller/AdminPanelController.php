@@ -9,9 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 
+#[Route('/admin')]
 class AdminPanelController extends AbstractController
 {
-    #[Route('/admin/{page}', name: 'app_admin_panel', methods: ['GET'])]
+    #[Route('/{page}', name: 'app_admin_panel', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
     {
         if (isset($_GET['email'])) {
@@ -20,7 +21,7 @@ class AdminPanelController extends AbstractController
             $queryBuilder = $entityManager->getRepository(User::class)->createQueryBuilder('u');
             $queryBuilder->where('u.email LIKE :email')
                 ->setParameter('email', '%' . $mail . '%')
-                
+
                 ->orderBy('u.registerDate', 'DESC')
                 ->orderBy('u.admin', 'DESC')
             ;
@@ -48,7 +49,7 @@ class AdminPanelController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/personify/{id}', name: 'app_admin_personify', methods: ['GET'])]
+    #[Route('/personify/{id}', name: 'app_admin_personify', methods: ['GET'])]
     public function personify(User $user): Response
     {
         if ($user) {
@@ -64,7 +65,7 @@ class AdminPanelController extends AbstractController
             // Admins can personify users and super admins can personify admins and users
             return $this->redirectToRoute('app_series_index', ['_switch_user' => $user->getUserIdentifier()]);
         }
-    
+
         return $this->redirectToRoute('app_admin_panel');
     }
 

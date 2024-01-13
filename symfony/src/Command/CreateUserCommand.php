@@ -51,7 +51,7 @@ class CreateUserCommand extends Command
         for ($i = 0; $i < $nbUsers; $i++) {
             $user = new User();
             $email = $faker->unique()->safeEmail;
-            $uniqueEmail = str_replace('@', $i.'@', $email); // Ajoutez l'index à l'e-mail
+            $uniqueEmail = str_replace('@', $i . '@', $email); // Ajoutez l'index à l'e-mail
             $user->setEmail($uniqueEmail);
             $user->setName($faker->name);
             $user->setPassword(

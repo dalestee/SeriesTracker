@@ -1,16 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Series
-{% endblock %}
+{% block title %}Series{% endblock %}
 
 {% block body %}
 	
 		<div class="flex flex-col items-center my-8 px-8 w-full">
 			<h1 class="text-4xl text-center text-white font-bold mb-12">Series</h1>
+
+            {# If param_action is null create param_action#}
+            {% if param_action is null %}
+                {% set param_action = {} %}
+            {% endif %}
+
             {% include 'series/_show_series.html.twig' with { 
                 'user': user,
                 'app_action' : app_action,
-                'param_action' : {},
+                'param_action' : param_action,
                 'pagination' : pagination,
                 }
             %}

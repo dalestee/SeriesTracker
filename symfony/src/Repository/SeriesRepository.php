@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Series;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
@@ -28,6 +30,30 @@ class SeriesRepository extends ServiceEntityRepository
         $queryBuilder->orderBy('RAND(' . $seed . ')');
         return $queryBuilder->getQuery();
     }
+
+    public function findByKeyWordInAll($keyWord)
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.title LIKE :keyWord')
+            ->orWhere('s.plot LIKE :keyWord')
+            ->setParameter('keyWord', '%' . $keyWord . '%')
+            ->getQuery();
+    }
+
+    public function findByKeyWordInSeriesFollowing(User $user, $keyWord)
+    {
+        $seriesSearch = [];
+        $seriesQuery = $user->getSeries();
+        foreach ($seriesQuery as $serie) {
+            if (stripos($serie->getTitle(), $keyWord) !== false ||
+                stripos($serie->getPlot(), $keyWord) !== false
+            ) {
+                array_push($seriesSearch, $serie);
+            }
+        }
+        return $seriesSearch;
+    }
+
     public function querySeriesSuiviesTrieParVisionnage(int $userId)
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());

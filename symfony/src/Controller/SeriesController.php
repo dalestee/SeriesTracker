@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Repository\SeriesRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/')]
 class SeriesController extends AbstractController
@@ -23,8 +25,8 @@ class SeriesController extends AbstractController
 
     #[Route('/{page_serie}', name: 'app_series_index', methods: ['GET'], requirements: ['page_serie' => '\d+'])]
     public function index(
-        EntityManagerInterface $entityManager,
         Request $request,
+        EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
         $page_serie = 1
     ): Response {
@@ -41,15 +43,22 @@ class SeriesController extends AbstractController
 
         $query = $entityManager->getRepository(Series::class)->queryRandom($seed);
 
+        $search = $request->query->get('search');
+        if (!empty($search)) {
+            $query = $entityManager->getRepository(Series::class)->findByKeyWordInAll($search);
+        }
+
         $pagination = $paginator->paginate(
             $query, /* query NOT result */
             $page_serie/*page number*/,
             10/*limit per page*/
         );
+
         return $this->render('series/index.html.twig', [
             'user' => $this->getUser(),
             'app_action' => 'app_series_index',
             'pagination' => $pagination,
+            'param_action' => ['search' => $search]
         ]);
     }
 
@@ -62,14 +71,14 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/series/follow/{id}', name:'app_series_follow', methods: ['POST'])]
+    #[Route('/series/follow/{id}', name: 'app_series_follow', methods: ['POST'])]
     public function follow(EntityManagerInterface $entityManager, Request $request, Series $series): Response
     {
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
-                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $suivies = $this->isfollow($user, $series);
             if (!$suivies) {
                 $user->addSeries($series);
@@ -81,7 +90,9 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/series/unfollow/{id}', name:'app_series_unfollow', methods: ['POST'])]
+
+
+    #[Route('/series/unfollow/{id}', name: 'app_series_unfollow', methods: ['POST'])]
     public function unfollow(
         EntityManagerInterface $entityManager,
         Request $request,
@@ -91,7 +102,7 @@ class SeriesController extends AbstractController
             return $this->redirectToRoute('app_login');
         } else {
             $user = $user = $entityManager->getRepository(User::class)
-                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $suivies = $this->isfollow($user, $series);
             if ($suivies) {
                 $user->removeSeries($series);
@@ -103,8 +114,10 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/listSeriesFollow/{page_serie}', name: 'app_series_list_follow', methods: ['GET'])]
+    #[Route('/listSeriesFollow', name: 'app_series_list_follow', methods: ['GET'])]
     public function listFollow(
+        Request $request,
+        SeriesRepository $seriesRepository,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
         int $page_serie = 1
@@ -113,9 +126,16 @@ class SeriesController extends AbstractController
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
-                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-            $seriesQuery = $entityManager->getRepository(Series::class)
-                    ->querySeriesSuiviesTrieParVisionnage($user->getId());
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+            $seriesQuery = $user->getSeries();
+
+            $search = $request->query->get('search');
+            if (empty($search) == false) {
+                $seriesQuery = $seriesRepository->findByKeyWordInSeriesFollowing($user, $search);
+            } else {
+                $seriesQuery = $entityManager->getRepository(Series::class)
+                        ->querySeriesSuiviesTrieParVisionnage($user->getId());
+            }
                     
             $pagination = $paginator->paginate(
                 $seriesQuery, /* query NOT result */
@@ -127,6 +147,7 @@ class SeriesController extends AbstractController
                 'user' => $this->getUser(),
                 'app_action' => 'app_series_list_follow',
                 'pagination' => $pagination,
+                'param_action' => ['search' => $search],
             ]);
         }
     }
@@ -135,7 +156,7 @@ class SeriesController extends AbstractController
     public function viewAllSeries(EntityManagerInterface $entityManager, Request $request, Series $series): Response
     {
         $user = $user = $entityManager->getRepository(User::class)
-                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+            ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $seriesSeasons = $series->getSeasons();
         foreach ($seriesSeasons as $season) {
             $seasonEpisodes = $season->getEpisodes();
@@ -156,7 +177,7 @@ class SeriesController extends AbstractController
     public function unviewAllSeries(EntityManagerInterface $entityManager, Request $request, Series $series): Response
     {
         $user = $user = $entityManager->getRepository(User::class)
-                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+            ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $seriesSeasons = $series->getSeasons();
         foreach ($seriesSeasons as $season) {
             $seasonEpisodes = $season->getEpisodes();
@@ -187,7 +208,7 @@ class SeriesController extends AbstractController
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
-                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
 
             $rating = new Rating();
             $rating->setUser($user);
@@ -209,9 +230,9 @@ class SeriesController extends AbstractController
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
-                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $rating = $entityManager->getRepository(Rating::class)
-                    ->findOneBy(['user' => $user, 'series' => $series]);
+                ->findOneBy(['user' => $user, 'series' => $series]);
             $entityManager->remove($rating);
             $entityManager->flush();
 
@@ -226,9 +247,9 @@ class SeriesController extends AbstractController
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
-                    ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $rating = $entityManager->getRepository(Rating::class)
-                    ->findOneBy(['user' => $user, 'series' => $series]);
+                ->findOneBy(['user' => $user, 'series' => $series]);
             $rating->setComment($request->request->get('comment'));
             $entityManager->flush();
 
@@ -292,4 +313,22 @@ class SeriesController extends AbstractController
 
         return $this->redirectToRoute('app_series_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    // #[Route('/search', name: 'app_series_search', methods: ['GET'])]
+    // public function search(Request $request, EntityManagerInterface $entityManager): Response
+    // {
+    //     $search = $request->query->get('search');
+    //     $seriesRepository = $entityManager->getRepository(Series::class);
+    //     var_dump($search);
+    //     $series = $seriesRepository->createQueryBuilder('s')
+    //         ->where('s.title LIKE :search')
+    //         ->setParameter('search', '%' . $search . '%')
+    //         ->getQuery()
+    //         ->getResult();
+
+    //     return $this->render('series/search.html.twig', [
+    //         'series' => $series,
+    //         'search' => $search,
+    //     ]);
+    // }
 }

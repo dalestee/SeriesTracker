@@ -34,7 +34,7 @@ class UserController extends AbstractController
         } else {
             $series_suivies = null;
         }
-        
+
         return $this->render('user/index.html.twig', [
             'user' => $user,
             'series_suivies' => $series_suivies,

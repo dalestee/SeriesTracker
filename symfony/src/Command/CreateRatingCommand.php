@@ -78,7 +78,7 @@ class CreateRatingCommand extends Command
             $ratingsCreated = 0;
 
             $averageRatings = $this->faker->randomFloat(2, 0, 6);
-            
+
             shuffle($users);
 
             foreach ($users as $key => $user) {
@@ -107,7 +107,7 @@ class CreateRatingCommand extends Command
         $this->entityManager->flush();
 
 
-        
+
 
         $io->success(sprintf('Successfully created %d ratings.', $totalCreatedRatings));
 

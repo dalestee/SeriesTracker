@@ -15,6 +15,8 @@
 			{% block importmap %}
 				{{ importmap('app') }}
 			{% endblock %}
+
+			<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 		{% endblock %}
 		<style>
 			.bigSearchBar {
@@ -172,7 +174,8 @@
 					{% endif %}
 				</li>
 
-				{% if "/admin" not in app.request.uri %}
+				
+				{% if path('app_admin_panel') not in app.request.uri and 'showSerie' not in app.request.uri%}
 					<li class="w-96 h-full bg-black rounded-full">
 						<div id="searchBar" class="flex anim initialSize items-start justify-center text-white p-3 bg-grey-900">
 							<button id="boutonClose" class="hidden absolute right-4 top-4 w-10 h-10 bg-red-500 rounded-full focus:outline-none">
