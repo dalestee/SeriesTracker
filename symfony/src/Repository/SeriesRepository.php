@@ -7,7 +7,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
-
 /**
  * @extends ServiceEntityRepository<Series>
  *
@@ -64,6 +63,5 @@ class SeriesRepository extends ServiceEntityRepository
         $ormQuery = $query->getResult();
     
         return $ormQuery ;
-            
     }
 }
