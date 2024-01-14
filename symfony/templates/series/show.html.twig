@@ -211,11 +211,22 @@
                         <div class="flex mb-2 flex-col lg:w-2/3"> 
                             {% if not app.user %}
                                 {% for season in series.seasons %}
-                                    <a href="{{ path('app_season_show', {'id': season.id}) }}">
-                                        <div class="bg-red-500 rounded-lg ml-5 mb-4">
-                                                <span class="text-white px-4 py-2 justify-center">{{ season.number }}</span>
+                                    <details>
+                                        <summary class="rounded-lg ml-5 mb-4 px-4 w-1/3">
+                                            <span class="text-white px-4 py-2 justify-center cursor-pointer font-bold">Season : {{ season.number }}</span>
+                                        </summary>
+                                        <div w-full>
+                                            <p>
+                                                {% for episode in season.episodes %}
+                                                    <li class="text-white px-4 py-2 list-none flex items-center">
+                                                        <div class="text-center h-full">
+                                                            #{{ episode.number }} {{episode.title }}
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </p>
                                         </div>
-                                    </a>    
+                                    </details>
                                 {% endfor %}
                             {% else %}
                                 {% for season in series.seasons %}
