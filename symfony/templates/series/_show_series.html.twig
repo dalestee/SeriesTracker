@@ -16,8 +16,14 @@
 
 			
 		{% endif %}
-		<div class="flex justify-between flex-col transform transition-transform duration-300 hover:scale-105 bg-gray-900 rounded-lg hover:border-red-500 border-2 border-transparent h-full">
-			<a href="{{ path('app_series_show', {'id': series.id}) }}">
+			{% set background = "hover:border-red-500" %}
+			{% set title="" %}
+			{% if app.user and nb_episodes == nb_episodes_seen %}
+				{% set background = "hover:border-blue-500 hover:bg-blue-500" %}
+				{% set title = "Alredy seen" %}
+			{% endif %}
+			<div class="{{ 'flex justify-between flex-col transform transition-transform duration-300 hover:scale-105 rounded-lg border-2 border-transparent h-full ' ~ background }}" title="{{title}}">
+			<a class="h-full" ~ background href="{{ path('app_series_show', {'id': series.id}) }}">
 				<img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-fit object-cover rounded-t-lg">
 				<div class="p-4">
 					<h2 class="text-white text-xl font-bold mb-2">{{ series.title }}</h2>
