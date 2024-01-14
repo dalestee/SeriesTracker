@@ -182,7 +182,7 @@
                             {% endif %}
                         {% endif %}
                         <span class="text-white font-bold">IMDb ID:</span>
-                        <span class="text-white ml-2">{{ series.imdb}}</span>
+                        <a href="https://www.imdb.com/title/{{ series.imdb }}" target="_blank" class="text-blue-500 hover:underline ml-2">{{ series.imdb }}</a>
                         <span class="text-white font-bold">Plot:</span>
                         <span class="text-white ml-2">{{ series.plot }}</span>
                         <iframe width="100%" id="trailer" height="auto"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
