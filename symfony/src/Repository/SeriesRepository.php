@@ -54,7 +54,7 @@ class SeriesRepository extends ServiceEntityRepository
             ->setParameter('keyWord', '%' . $keyWord . '%')
             ->getQuery();
 
-        return $query;
+        return $query->getResult();
     }
 
     public function querySeriesSuiviesTrieParVisionnage(int $userId)
