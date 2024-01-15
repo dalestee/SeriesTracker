@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[Route('/')]
 class SeriesController extends AbstractController
 {
-    
     public function isUserLoggedIn(): bool
     {
         return $this->getUser() != null;
@@ -38,7 +37,7 @@ class SeriesController extends AbstractController
         $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
         $form->handleRequest($request);
         $search = $request->query->get('search');
-        
+
         if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
             $criteria = $form->getData();
             if (!$criteria) {
@@ -72,10 +71,10 @@ class SeriesController extends AbstractController
         $user = $entityManager->getRepository(User::class)
             ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
 
-        if ($user){
+        if ($user) {
             $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id, $seed);
         }
-        
+
         return $this->render('series/index.html.twig', [
             'user' => $user,
             'app_action' => 'app_series_index',
@@ -146,13 +145,13 @@ class SeriesController extends AbstractController
         PaginatorInterface $paginator,
         int $page_series = 1
     ): Response {
-        
+
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-            
+
             $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
             $form->handleRequest($request);
 
@@ -167,7 +166,7 @@ class SeriesController extends AbstractController
                 $seriesQuery = $entityManager->getRepository(Series::class)
                     ->querySeriesSuiviesTrieParVisionnage($user->getId());
             }
-                    
+
             $pagination = $paginator->paginate(
                 $seriesQuery, /* query NOT result */
                 $page_series/*page number*/,
