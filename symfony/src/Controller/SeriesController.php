@@ -27,13 +27,13 @@ class SeriesController extends AbstractController
         return $this->getUser() != null;
     }
 
-    #[Route('/{page_serie}', name: 'app_series_index', methods: ['GET'], requirements: ['page_serie' => '\d+'])]
+    #[Route('/{page_series}', name: 'app_series_index', methods: ['GET'], requirements: ['page_series' => '\d+'])]
     public function index(
         Request $request,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
         SeriesRepository $seriesRepository,
-        $page_serie = 1
+        $page_series = 1
     ): Response {
         $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
         $form->handleRequest($request);
@@ -60,7 +60,7 @@ class SeriesController extends AbstractController
 
         $pagination = $paginator->paginate(
             $query, /* query NOT result */
-            $page_serie/*page number*/,
+            $page_series/*page number*/,
             10/*limit per page*/
         );
 
@@ -125,13 +125,13 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/listSeriesFollow/{page_serie}', name: 'app_series_list_follow', methods: ['GET'])]
+    #[Route('/listSeriesFollow/{page_series}', name: 'app_series_list_follow', methods: ['GET'])]
     public function listFollow(
         Request $request,
         SeriesRepository $seriesRepository,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
-        int $page_serie = 1
+        int $page_series = 1
     ): Response {
         
         if (!$this->isUserLoggedIn()) {
@@ -157,7 +157,7 @@ class SeriesController extends AbstractController
                     
             $pagination = $paginator->paginate(
                 $seriesQuery, /* query NOT result */
-                $page_serie/*page number*/,
+                $page_series/*page number*/,
                 10/*limit per page*/
             );
 
