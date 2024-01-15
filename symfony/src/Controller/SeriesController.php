@@ -38,6 +38,14 @@ class SeriesController extends AbstractController
         $form->handleRequest($request);
         $search = $request->query->get('search');
 
+        $session = $request->getSession();
+        // Check if the session already has a 'seed' value
+        if (!$session->has('seed')) {
+            // If not, set a new 'seed' value
+            $session->set('seed', rand());
+        }
+        $seed = $session->get('seed');
+
         if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
             $criteria = $form->getData();
             if (!$criteria) {
@@ -45,14 +53,6 @@ class SeriesController extends AbstractController
             }
             $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery()->getResult();
         } else {
-            $session = $request->getSession();
-
-            // Check if the session already has a 'seed' value
-            if (!$session->has('seed')) {
-                // If not, set a new 'seed' value
-                $session->set('seed', rand());
-            }
-            $seed = $session->get('seed');
 
             $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
