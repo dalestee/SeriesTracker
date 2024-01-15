@@ -39,7 +39,7 @@
                             {% endfor %}
                             {% set ratingsHistogram = ratingsHistogram|merge([noteCount]) %}
                         {% endfor %}
-                        <div class="histogram w-1/4 h-fit flex flex-col">
+                        <div class="histogram w-9/12 lg:w-1/4 h-fit flex flex-col">
                             {% set numIndex = 1 %}
                             {% for count in ratingsHistogram %}
                                 <div>
@@ -191,7 +191,7 @@
                         <a href="https://www.imdb.com/title/{{ series.imdb }}" target="_blank" class="text-blue-500 hover:underline ml-2">{{ series.imdb }}</a>
                         <span class="text-white font-bold">Plot:</span>
                         <span class="text-white ml-2">{{ series.plot }}</span>
-                        <iframe width="100%" id="trailer" height="auto"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
+                        <iframe width="100%" id="trailer" height="100%"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" class="h-96" ></iframe>
                         <span class="text-white font-bold">Awards:</span>
                         <span class="text-white ml-2">{{ series.awards }}</span>
                         <span class="text-white font-bold">Date:</span>

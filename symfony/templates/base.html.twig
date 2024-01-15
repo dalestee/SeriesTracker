@@ -19,6 +19,7 @@
 			<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 		{% endblock %}
 		<style>
+			
 			.bigSearchBar {
 				position: absolute;
 				z-index: 15;
@@ -49,7 +50,7 @@
 
 			}
 			.anim {
-				transition: width 0.8s ease-in-out, height 0.8s ease-in-out;
+				transition: width 0.4s ease-in-out, height 0.4s ease-in-out;
 			}
 			.initialSize {
 				width: 100%;
@@ -97,7 +98,7 @@
 					<a href="{{ path('app_series_index') }}"><img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32"></a>
 				</li>
 				<li>
-					<button id="mobilMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
+					<button id="mobilMenuBtn" class="text-white  relative inline-block group focus:outline-none">
 						<img src="{{ asset('img/burger.png') }}" alt="logo" class="h-20">
 						<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 					</button>
@@ -105,9 +106,10 @@
 			</ul>
 		</nav>
 		<div id="formMobileHidden" class="hidden w-full h-[80vh] flex flex-col items-center justify-center">
-			<h1 class="text-white text-2xl">Recherche</h1>
-			<form class="w-full flex items-center justify-center" action="" method="get">
+			<h1 class="text-white text-2xl">Search</h1>
+			<form class="w-full flex flex-col items-center justify-center" action="" method="get">
 				<input type="text" name="search" class="w-10/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
+				<button type="submit" class="w-6/12 mt-12 px-4 h-12 border-red-500 items-center bg-red-500 text-white rounded-full">Search</button>
 			</form>
 		</div>
 
@@ -121,7 +123,7 @@
 				</div>
 				{% if app.user %}
 					<div class="flex items-center">
-						<p class="text-white ml-4">{{ app.user.getName }}</p>
+						<p class="text-white text-4xl ml-4">Hello {{ app.user.getName }}</p>
 					</div>
 				{% endif %}
 			</div>
@@ -166,7 +168,7 @@
 
 
 		<nav class="hidden sticky top-0 z-20 lg:flex h-10 text-xl flex items-center py-10 bg-gray-900">
-			<ul class="flex justify-around items-center w-full">
+			<ul class="flex justify-between items-center w-full">
 				<li class="flex item-center ">
 					<a href="{{ path('app_series_index') }}"><img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32 "></a>
 				</li>
@@ -185,15 +187,15 @@
 				</li>
 
 				
-				{% if path('app_admin_panel') not in app.request.uri and 'showSerie' not in app.request.uri and 'login' not in app.request.uri and 'register' not in app.request.uri %}
-					<li class="w-96 h-full bg-black rounded-full">
+				{% if path('app_admin_panel') not in app.request.uri and 'showSerie' not in app.request.uri%}
+					<li class="w-96 h-full  bg-black rounded-full">
 						<div id="searchBar" class="flex anim initialSize items-start justify-center text-white p-3 bg-grey-900">
-							<button id="boutonClose" class="hidden absolute right-4 top-4 w-10 h-10 bg-red-500 rounded-full focus:outline-none">
-								<p class="text-white text-2xl border-2 border-white rounded-full w-10 h-10 flex items-center justify-center">X</p>
+							<button id="boutonClose" class="hidden absolute right-4 top-4 w-6 h-6 bg-red-500 rounded-full focus:outline-none">
+								<p class="text-black items-center text-center border-2 border-black rounded-full w-6 h-6 flex items-center justify-center">X</p>
 							</button>
-							<p id="pSearch">Recherche</p>
+							<p id="pSearch">Search</p>
 							<div id="formHidden" class="hidden w-full flex flex-col items-center justify-center">
-								<h1 class="text-white text-2xl">Recherche</h1>
+								<h1 class="text-white mb-4 text-2xl">Search</h1>
 								<form class="w-full flex items-center justify-center" action="" method="get">
 									<input type="text" name="search" value="{{ app.request.query.get('search') }}" class="w-8/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
 									<div class="pt-5">
@@ -226,10 +228,11 @@
 							{% endif %}
 						</li>
 						<li class="flex items-center text-white px-1 py-1">
-							{% if app.user %}
-								<p class="mr-2 text-sm">{{ app.user.getName }}</p>
-							{% endif %}
-							<button id="accountMenuBtn" class="text-white px-4 py-2 relative inline-block group focus:outline-none">
+							
+							<button id="accountMenuBtn" class="flex flex-row items-center text-white px-4 py-2 relative inline-block group focus:outline-none">
+								{% if app.user %}
+								<p class="mr-2 text-xl">{{ app.user.getName }}</p>
+								{% endif %}
 								<img src="{{ asset('img/account.png') }}" alt="logo" class="h-10">
 								<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 							</button>
@@ -241,6 +244,9 @@
 							<!-- Liens pour le compte -->
 							{% if app.user %}
 
+								<div class="flex items-center justify-center border-b border-white w-full mb-8 pl-8 pr-2 pb-2">
+									<h2 class="text-2xl font-bold text-white">Hello {{ app.user.getName }}</h2>
+								</div>
 
 								{% if is_granted('IS_IMPERSONATOR') %}
 									<a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-black px-4 py-2 relative inline-block group">
