@@ -145,7 +145,7 @@ class SeriesController extends AbstractController
                 10/*limit per page*/
             );
 
-            return $this->render('series/index.html.twig', [
+            return $this->render('series/series_follow.html.twig', [
                 'user' => $this->getUser(),
                 'app_action' => 'app_series_list_follow',
                 'pagination' => $pagination,
