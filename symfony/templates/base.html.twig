@@ -84,12 +84,12 @@
 			}
 		</style>
 	</head>
-	<body class=" bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-center">
+	<body class=" bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-fixed bg-center">
 		<nav class="flex sticky top-0 z-20 lg:hidden w-full h-fit items-center py-0 bg-gray-900">
 			<ul class="flex justify-around items-center w-full">
 				<li>
 					<button id="mobilSearch">
-						<img src="{{ asset('img/loupe.png') }}" alt="logo" class="h-20">
+						<img src="{{ asset('img/loupe.png') }}" alt="logo" class="h-12">
 					</button>
 				</li>
 				<li>
@@ -97,7 +97,7 @@
 				</li>
 				<li>
 					<button id="mobilMenuBtn" class="text-white  relative inline-block group focus:outline-none">
-						<img src="{{ asset('img/burger.png') }}" alt="logo" class="h-20">
+						<img src="{{ asset('img/burger.png') }}" alt="logo" class="h-12">
 						<span class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent transition-all duration-300 group-hover:bg-red-500"></span>
 					</button>
 				</li>
@@ -302,6 +302,9 @@ var mobilSearch = document.getElementById('mobilSearch');
 
 mobilSearch.addEventListener('click', function (event) {
 formMobileHidden.classList.toggle('hidden');
+if (!formMobileHidden.classList.contains('hidden')) {
+	scrollTo(0, 0);
+}
 
 });
 
