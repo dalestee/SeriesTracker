@@ -30,7 +30,7 @@ class SeriesSearchType extends AbstractType
 
         $builder
             ->add('genre', ChoiceType::class, [
-                'label' => false,
+                'label' => "Filter by genre",
                 'choices' => $choices,
                 'required' => false,
                 'multiple' => true,
@@ -38,6 +38,7 @@ class SeriesSearchType extends AbstractType
                 'placeholder' => 'Select a genre',
                 'attr' => [
                     'name' => 'genres[]',
+                    'id' => 'genres'
                 ],
             ])
             ->add('ratings', ChoiceType::class, [
@@ -51,6 +52,10 @@ class SeriesSearchType extends AbstractType
                 'multiple' => false,
                 'attr' => [
                     'name' => 'ratingSort[]',
+                    'id' => 'ratingSort'
+                ],
+                'label_attr' => [
+                    'id' => 'ratingSortLabel', // Ajouter un ID au label
                 ],
             ])
             ->add('startDate', IntegerType::class, [
@@ -58,7 +63,9 @@ class SeriesSearchType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Start Date',
-                    'name' => 'startDate'
+                    'name' => 'startDate',
+                    'id' => 'startDate'
+
                 ],
             ])
             ->add('endDate', IntegerType::class, [
@@ -66,7 +73,8 @@ class SeriesSearchType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'End Date',
-                    'name' => 'endDate'
+                    'name' => 'endDate',
+                    'id' => 'endDate'
                 ],
             ]);
     }

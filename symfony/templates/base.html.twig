@@ -84,6 +84,59 @@
 				padding-top: 10px;
 				padding-bottom: 10px;
 			}
+			#series_search > div{
+						margin-bottom: 15px;
+						padding-bottom: 15px;	
+						border-bottom: 1px solid white;
+						
+					} 
+					#series_search div:nth-of-type(3){
+						margin-bottom: 0px!important;
+						border-bottom: none!important;
+					}
+					#series_search_genre{
+						width: 100%;
+						display: grid;
+						grid-template-columns: repeat(10, 1fr);
+						
+					}
+					#series_search_genre input{
+						margin-left: 10px;
+						width: 30px;
+						
+						
+
+					}
+					#divForm div:nth-of-type(2), #divForm div:nth-of-type(3){
+						margin-top: 10px;
+					}
+					#divForm div:nth-of-type(4){
+						margin-bottom: 40px;
+					} 
+					#series_search_ratings{
+						width: 100%;
+						display: grid;
+						grid-template-columns: repeat(6, 1fr 2fr);
+						
+					}
+					#ratingSortLabel{
+						font-weight: bold;
+						font-size: 1.8rem;
+						margin-top: 30px;
+					}
+					#series_search_startDate{
+						color: white;
+						background-color: rgb(17, 24, 39);
+						border-radius: 5px;
+						border : 2px solid white;
+						margin-bottom: 10px!important;
+					}
+					#series_search_endDate{
+						color: white;
+						background-color: rgb(17, 24, 39);
+						border-radius: 5px;
+						border : 2px solid white;
+					}
 		</style>
 	</head>
 	<body class=" bg-[url({{ asset('img/background.jpg') }})] bg-cover bg-fixed bg-center">
@@ -186,7 +239,10 @@
 					{% endif %}
 				</li>
 
-				
+				<style>
+					
+
+				</style>	
 				{% if path('app_admin_panel') not in app.request.uri and 'showSerie' not in app.request.uri and 'login' not in app.request.uri and 'register' not in app.request.uri %}
 					<li class="w-96 h-full bg-black rounded-full">
 						<div id="searchBar" class="flex anim initialSize items-start justify-center text-white p-3 bg-grey-900">
@@ -196,16 +252,17 @@
 							<p id="pSearch">Search</p>
 							<div id="formHidden" class="hidden w-full flex flex-col items-center justify-center">
 								<h1 class="text-white mb-4 text-2xl">Search</h1>
-								<form class="w-full flex items-center justify-center" action="" method="get">
+								<form class="w-full flex flex-col items-center justify-center" action="" method="get">
 									<input type="text" name="search" value="{{ app.request.query.get('search') }}" class="w-8/12 h-8 bg-transparent text-white border border-white rounded-full px-4" placeholder="Recherche">
-									<div class="pt-5">
+									<div id="divForm" class="pt-5  flex flex-col space-between items-center">
 									{% if form is defined %}
 										{{ form_start(form, {'csrf_protection': false}) }}
 										{{ form_widget(form) }}
 										{{ form_end(form) }}
 									{% endif %}
 
-									<button type="submit" class="w-2/12 ml-12 px-4 py-2 bg-red-500 text-white rounded-full">Rechercher</button>
+									<button type="submit" class="w-2/12 ml-12 px-4 py-2 bg-red-500 justify-self-center text-white rounded-full">Rechercher</button>
+									
 									</div>
 								</form>
 							</div>
