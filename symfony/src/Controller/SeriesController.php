@@ -284,12 +284,20 @@ class SeriesController extends AbstractController
     public function show(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
+        Request $request,
         Series $series,
         int $page_ratings = 1
     ): Response {
+        $note = $request->query->get('note');
 
-        $ratingQuery = $entityManager->getRepository(Rating::class)
+        if ($note){
+            $ratingQuery = $entityManager->getRepository(Rating::class)
+            ->queryRatingsBySeriesAndNote($series->getId(), $note);
+        }
+        else {
+            $ratingQuery = $entityManager->getRepository(Rating::class)
             ->queryRatingsBySeries($series->getId());
+        }
 
         $pagination = $paginator->paginate(
             $ratingQuery, /* query NOT result */
@@ -300,7 +308,7 @@ class SeriesController extends AbstractController
         return $this->render('series/show.html.twig', [
             'series' => $series,
             'app_action' => 'app_series_show',
-            'param_action' => ['id' => $series->getId()],
+            'param_action' => ['id' => $series->getId(),'note' => $note],
             'pagination' => $pagination,
         ]);
     }
