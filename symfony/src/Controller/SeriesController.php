@@ -280,7 +280,7 @@ class SeriesController extends AbstractController
         ]);
     }
 
-    #[Route('/showSerie/{id}/{{page_ratings}}', name: 'app_series_show', methods: ['GET'])]
+    #[Route('/showSerie/{id}/{page_ratings}', name: 'app_series_show', methods: ['GET'])]
     public function show(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
