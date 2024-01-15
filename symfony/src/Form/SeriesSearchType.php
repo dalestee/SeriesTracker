@@ -1,4 +1,5 @@
 <?php
+
 // src/Form/SeriesSearchType.php
 
 namespace App\Form;
@@ -9,7 +10,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use App\Repository\SeriesRepository;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\OptionsResolver\OptionsResolver; // Add this line
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+// Add this line
 
 class SeriesSearchType extends AbstractType
 {
