@@ -269,8 +269,15 @@ class SeriesController extends AbstractController
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $rating = $entityManager->getRepository(Rating::class)
                 ->findOneBy(['user' => $user, 'series' => $series]);
+            if ($rating == null) {
+                $rating = new Rating();
+                $rating->setUser($user);
+                $rating->setSeries($series);
+                $rating->setValue(0);
+            }
             $rating->setComment($request->request->get('comment'));
             $rating->setDate(new \DateTime());
+            $entityManager->persist($rating);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);

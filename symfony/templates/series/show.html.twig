@@ -114,6 +114,10 @@
                                         </form>
                                     {% endfor %}
                                 </div>
+                                <form action="{{ path('app_series_rate_comment', {'id': series.id}) }}" method="post" class="mt-4 flex flex-col">
+                                    <textarea id="comment" name="comment" class="rounded py-2 px-3 text-gray-700 leading-tight focus:shadow-outline w-1/2"></textarea>
+                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 w-fit">Submit</button>
+                                </form>
                             {% else %}
                                 {% set userRateComment = "" %}
                                 {% set userRate = null %}
@@ -173,12 +177,7 @@
                                         <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">unrate</button>
                                     </form>
                                 </div>
-                                {% if userRateComment == NULL %}
-                                    <form action="{{ path('app_series_rate_comment', {'id': series.id}) }}" method="post" class="mt-4 flex items-center">
-                                        <textarea id="comment" name="comment" class="rounded py-2 px-3 text-gray-700 leading-tight focus:shadow-outline w-1/2"></textarea>
-                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-4">comment</button>
-                                    </form>
-                                {% else %}
+                                {% if userRateComment != NULL %}
                                     <p class="text-white font-bold">Comment:
                                         <div class="text-white mb-2">
                                             {{ userRateComment }}
@@ -328,21 +327,75 @@ document.addEventListener("DOMContentLoaded", function() {
 
     stars.forEach((star, index) => {
         star.addEventListener("mouseover", function() {
-            // Remove active class from all stars
-            stars.forEach(s => s.classList.remove("text-yellow-500"));
-
             // Add active class to this star and all previous stars
             for (let i = 0; i <= index; i++) {
                 stars[i].classList.add("text-yellow-500");
+                stars[i].classList.remove("text-white");
             }
         });
 
         star.addEventListener("mouseout", function() {
             // Remove active class from all stars
-            stars.forEach(s => s.classList.remove("text-yellow-500"));
+            stars.forEach(s => {
+                if (!s.classList.contains('clicked')) {
+                    s.classList.remove("text-yellow-500");
+                    s.classList.add("text-white");
+                }
+            });
+        });
+
+        star.addEventListener('click', event => {
+            event.preventDefault();
+
+            // Change the color of the star
+            for (let i = 0; i <= index; i++) {
+                stars[i].classList.add('text-yellow-500', 'clicked');
+                stars[i].classList.remove('text-white');
+            }
+
+            // Send the rating to the server
+            fetch(star.form.action, { method: 'POST' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle the response
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
         });
     });
 });
+
+document.querySelectorAll('.star').forEach(button => {
+    button.addEventListener('click', event => {
+        event.preventDefault();
+
+        // Change the color of the star
+        button.classList.remove('text-white');
+        button.classList.add('text-yellow-500');
+
+        // Send the rating to the server
+        fetch(button.form.action, { method: 'POST' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+    });
+});
+
 function confirmAndSubmit(id) {
     if (confirm('Have you already seen the previous episodes?')) {
         document.getElementById('episode_view_precedent_form_'+id).submit();
