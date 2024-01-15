@@ -8,7 +8,8 @@
             <h1 class="text-4xl text-white font-bold mb-8 text-center">{{series.title}}</h1>
 
             <div class="flex lg:flex-row items-center flex-col">
-                <div class="w-2/3 flex flex-col item-center lg:w-1/3">
+
+                <div class="w-2/3 flex flex-col lg:self-start items-center lg:w-1/3">
                     <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="pb-20 object-cover rounded-t-lg">
                     {% include 'ratings/_show.html.twig' with { 
                     'pagination' : pagination,
@@ -16,13 +17,14 @@
                     'param_action' : param_action
                     }
             %}
+>>>>>>> symfony/templates/series/show.html.twig
                 </div>
                 <div class="w-full  lg:ml-8 bg-gray-900 rounded-lg shadow-lg p-5">
                     <div class="flex flex-col">
                         <span class="text-white font-bold">Title:</span>
-                        <span class="text-white ml-2">{{ series.title }}</span>
+                        <span class="my-2 text-white ml-2">{{ series.title }}</span>
                         <pan class="text-white font-bold">Genres:</pan>
-                        <div class="flex flex-wrap">
+                        <div class="my-2 flex flex-wrap">
                             {% for genre in series.genre %}
                                 <span class="inline-block bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold text-gray-300 mx-2 mb-2 w-fit">{{ genre.name }}</span>
                             {% endfor %}
@@ -67,7 +69,7 @@
                                     {% endfor %}
                                     <div class="relative pt-1 mt-2">
                                         <div class="overflow-hidden h-fit mb-4 text-xs flex rounded bg-gray-200">
-                                            <div style="width:{{ (allSerieRate > 0 ? (count/allSerieRate)*100 : 0) }}%" class="shadow-none flex flex-col text-start whitespace-nowrap text-black-500 justify-center bg-yellow-500 font-bold">{{count}}</div>
+                                            <div style="width:{{ (allSerieRate > 0 ? (count/allSerieRate)*100 : 0) }}%" class="shadow-none flex flex-col text-start whitespace-nowrap text-black-500 justify-center bg-yellow-500 font-bold"><p class="pl-2">{{count}}</p></div>
                                         </div>
                                     </div>
                                 </div>
@@ -187,15 +189,15 @@
 
                             {% endif %}
                         {% endif %}
-                        <span class="text-white font-bold">IMDb ID:</span>
-                        <a href="https://www.imdb.com/title/{{ series.imdb }}" target="_blank" class="text-blue-500 hover:underline ml-2">{{ series.imdb }}</a>
-                        <span class="text-white font-bold">Plot:</span>
-                        <span class="text-white ml-2">{{ series.plot }}</span>
-                        <iframe width="100%" id="trailer" height="100%"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" class="h-96" ></iframe>
-                        <span class="text-white font-bold">Awards:</span>
-                        <span class="text-white ml-2">{{ series.awards }}</span>
-                        <span class="text-white font-bold">Date:</span>
-                        <span class="text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
+                        <span class="text-white my-2 font-bold">IMDb ID:</span>
+                        <a href="https://www.imdb.com/title/{{ series.imdb }}" target="_blank" class="my-2 text-blue-500 hover:underline ml-2">{{ series.imdb }}</a>
+                        <span class="text-white my-2 font-bold">Plot:</span>
+                        <span class="text-white my-2 ml-2">{{ series.plot }}</span>
+                        <iframe width="100%" id="trailer" height="100%"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" class="h-[32rem]" ></iframe>
+                        <span class="my-2 text-white font-bold">Awards:</span>
+                        <span class="my-2 text-white ml-2">{{ series.awards }}</span>
+                        <span class="my-2 text-white font-bold">Date:</span>
+                        <span class="my-2 text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
                         {% if app.user %}
                             {% set seriesnWatched = true %}
                             {% for season in series.seasons %}
@@ -250,11 +252,11 @@
                                     {% endfor %}
                                     <details>
                                         {% if seasonWatched %}
-                                            <summary class="bg-green-500 rounded-lg ml-5 mb-4 px-4 w-1/3">
+                                            <summary class="bg-green-500 rounded-lg ml-5 mb-4 px-4 w-6/12">
                                                 <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
                                             </summary>
                                         {% else %}
-                                            <summary class="bg-red-500 rounded-lg ml-5 mb-4 px-4 w-1/3">
+                                            <summary class="bg-red-500 rounded-lg ml-5 mb-4 px-4 w-6/12">
                                                 <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
                                             </summary>
                                         {% endif %}
