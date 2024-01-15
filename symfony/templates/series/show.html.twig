@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Series{% endblock %}
+{% block title %}{{ series.title }}{% endblock %}
 
 {% block body %}
     <div class="">
@@ -8,15 +8,22 @@
             <h1 class="text-4xl text-white font-bold mb-8 text-center">{{series.title}}</h1>
 
             <div class="flex lg:flex-row items-center flex-col">
-                <div class="w-2/3 flex flex-col item-center lg:w-1/3">
+
+                <div class="w-2/3 flex flex-col lg:self-start items-center lg:w-1/3">
                     <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="pb-20 object-cover rounded-t-lg">
+                    {% include 'ratings/_show.html.twig' with { 
+                    'pagination' : pagination,
+                    'app_action' : app_action,
+                    'param_action' : param_action
+                    }
+                    %}
                 </div>
                 <div class="w-full  lg:ml-8 bg-gray-900 rounded-lg shadow-lg p-5">
                     <div class="flex flex-col">
                         <span class="text-white font-bold">Title:</span>
-                        <span class="text-white ml-2">{{ series.title }}</span>
+                        <span class="my-2 text-white ml-2">{{ series.title }}</span>
                         <pan class="text-white font-bold">Genres:</pan>
-                        <div class="flex flex-wrap">
+                        <div class="my-2 flex flex-wrap">
                             {% for genre in series.genre %}
                                 <span class="inline-block bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold text-gray-300 mx-2 mb-2 w-fit">{{ genre.name }}</span>
                             {% endfor %}
@@ -33,38 +40,40 @@
                             {% endfor %}
                             {% set ratingsHistogram = ratingsHistogram|merge([noteCount]) %}
                         {% endfor %}
-                        <div class="histogram w-1/4 h-fit flex flex-col">
+                        <div class="histogram w-9/12 md:w-1/4 h-fit flex flex-col">
                             {% set numIndex = 1 %}
                             {% for count in ratingsHistogram %}
-                                <div>
-                                    {% for note in 1..numIndex %}
-                                        <button class="text-white focus:outline-none mr-1" data-note="{{ note }}">
-                                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                                width="24" height="24" viewBox="0 0 1280.000000 1181.000000"
-                                                preserveAspectRatio="xMidYMid meet" class="inline-block fill-current text-yellow-500 cursor-default">
-                                                <g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current text-yellow-500 cursor-default"
-                                                fill="#000000" stroke="none">
-                                                <path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
-                                                -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
-                                                -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
-                                                -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
-                                                -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
-                                                1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
-                                                -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
-                                                -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
-                                                750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
-                                                -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
-                                                -4 5 -55 -139 -114 -320z"/>
-                                                </g>
-                                            </svg>
-                                        </button>
-                                    {% endfor %}
-                                    <div class="relative pt-1 mt-2">
-                                        <div class="overflow-hidden h-fit mb-4 text-xs flex rounded bg-gray-200">
-                                            <div style="width:{{ (allSerieRate > 0 ? (count/allSerieRate)*100 : 0) }}%" class="shadow-none flex flex-col text-start whitespace-nowrap text-black-500 justify-center bg-yellow-500 font-bold">{{count}}</div>
+                                <a href="{{path('app_series_show', {'id': series.id, 'note': numIndex})}}">
+                                    <div>
+                                        {% for note in 1..numIndex %}
+                                            <button class="text-white focus:outline-none mr-1" data-note="{{ note }}">
+                                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                                                    width="24" height="24" viewBox="0 0 1280.000000 1181.000000"
+                                                    preserveAspectRatio="xMidYMid meet" class="inline-block fill-current text-yellow-500 cursor-default">
+                                                    <g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current text-yellow-500 cursor-default"
+                                                    fill="#000000" stroke="none">
+                                                    <path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
+                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
+                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
+                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
+                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
+                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
+                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
+                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
+                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
+                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
+                                                    -4 5 -55 -139 -114 -320z"/>
+                                                    </g>
+                                                </svg>
+                                            </button>
+                                        {% endfor %}
+                                        <div class="relative pt-1 mt-2">
+                                            <div class="overflow-hidden h-fit mb-4 text-xs flex rounded bg-gray-200">
+                                                <div style="width:{{ (allSerieRate > 0 ? (count/allSerieRate)*100 : 0) }}%" class="shadow-none flex flex-col text-start whitespace-nowrap text-black-500 justify-center bg-yellow-500 font-bold">{{count}}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                                 {% set numIndex = numIndex + 1 %}
                             {% endfor %}
                         </div>
@@ -181,15 +190,15 @@
 
                             {% endif %}
                         {% endif %}
-                        <span class="text-white font-bold">IMDb ID:</span>
-                        <a href="https://www.imdb.com/title/{{ series.imdb }}" target="_blank" class="text-blue-500 hover:underline ml-2">{{ series.imdb }}</a>
-                        <span class="text-white font-bold">Plot:</span>
-                        <span class="text-white ml-2">{{ series.plot }}</span>
-                        <iframe width="100%" id="trailer" height="auto"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
-                        <span class="text-white font-bold">Awards:</span>
-                        <span class="text-white ml-2">{{ series.awards }}</span>
-                        <span class="text-white font-bold">Date:</span>
-                        <span class="text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
+                        <span class="text-white my-2 font-bold">IMDb ID:</span>
+                        <a href="https://www.imdb.com/title/{{ series.imdb }}" target="_blank" class="my-2 text-blue-500 hover:underline ml-2">{{ series.imdb }}</a>
+                        <span class="text-white my-2 font-bold">Plot:</span>
+                        <span class="text-white my-2 ml-2">{{ series.plot }}</span>
+                        <iframe width="100%" id="trailer" height="100%"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" class="h-[32rem]" ></iframe>
+                        <span class="my-2 text-white font-bold">Awards:</span>
+                        <span class="my-2 text-white ml-2">{{ series.awards }}</span>
+                        <span class="my-2 text-white font-bold">Date:</span>
+                        <span class="my-2 text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
                         {% if app.user %}
                             {% set seriesnWatched = true %}
                             {% for season in series.seasons %}
@@ -218,15 +227,15 @@
                             {% if not app.user %}
                                 {% for season in series.seasons %}
                                     <details>
-                                        <summary class="bg-red-500 rounded-lg ml-5 mb-4 px-4 w-1/3">
-                                            <span class="rounded-lg text-white px-4 py-2 justify-center cursor-pointer font-bold">Season : {{ season.number }}</span>
+                                        <summary class="rounded-lg ml-5 mb-4 px-4 w-1/3">
+                                            <span class="text-white px-4 py-2 justify-center cursor-pointer font-bold">Season : {{ season.number }}</span>
                                         </summary>
                                         <div w-full>
                                             <p>
                                                 {% for episode in season.episodes %}
                                                     <li class="text-white px-4 py-2 list-none flex items-center">
-                                                        <div class="flex text-center h-full">
-                                                            <p class="bg-red-500 rounded-lg mr-5 p-2 w-12">#{{ episode.number }}</p> {{episode.title }}
+                                                        <div class="text-center h-full">
+                                                            #{{ episode.number }} {{episode.title }}
                                                         </div>
                                                     </li>
                                                 {% endfor %}
@@ -244,11 +253,11 @@
                                     {% endfor %}
                                     <details>
                                         {% if seasonWatched %}
-                                            <summary class="bg-green-500 rounded-lg ml-5 mb-4 px-4 w-1/3">
+                                            <summary class="bg-green-500 rounded-lg ml-5 mb-4 px-4 w-6/12">
                                                 <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
                                             </summary>
                                         {% else %}
-                                            <summary class="bg-red-500 rounded-lg ml-5 mb-4 px-4 w-1/3">
+                                            <summary class="bg-red-500 rounded-lg ml-5 mb-4 px-4 w-6/12">
                                                 <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
                                             </summary>
                                         {% endif %}

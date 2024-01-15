@@ -6,9 +6,7 @@ use App\Entity\Series;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use App\Entity\SeriesSearch;
 
 /**
  * @extends ServiceEntityRepository<Series>
@@ -29,6 +27,7 @@ class SeriesRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('p');
         $queryBuilder->orderBy('RAND(' . $seed . ')');
+        return $queryBuilder;
         return $queryBuilder;
     }
 
@@ -124,12 +123,6 @@ class SeriesRepository extends ServiceEntityRepository
     
         return $ormQuery->getResult() ;
     }
-    public function findByCriteria(array $criteria, $search)
-    {
-        $qb = $this->buildQuerryfindByCriteria($criteria, $search);
-        return $qb;
-    }
-
     public function buildQuerryfindByCriteria(array $criteria, $search)
     {
         $qb = $this->createQueryBuilder('s');
@@ -176,6 +169,11 @@ class SeriesRepository extends ServiceEntityRepository
         $qb->leftJoin('s.user', 'u')
             ->andWhere('u.id = :userId')
             ->setParameter('userId', $user->getId());
+        return $qb;
+    }
+    public function findByCriteria(array $criteria, $search)
+    {
+        $qb = $this->buildQuerryfindByCriteria($criteria, $search);
         return $qb;
     }
 

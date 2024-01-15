@@ -1,0 +1,14 @@
+{% extends 'ratings/_show.html.twig' %}
+
+{% block container_rating %}
+	<div class="grid grid-cols-2 gap-8">
+{% endblock %}
+
+{% block rating_title_card %}
+    <h4 class="text-2xl font-semibold text-gray-700">{{ rating.series.title }}</h4>
+    <p class="text-gray-500 font-bold ml-3">{{ rating.date|time_diff }}</p>
+{% endblock %}
+
+{% block link_rating_card %}
+    <a href="{{ path('app_series_show', {'id': rating.series.id}) }}" class="hover:bg-gray-100 block focus:outline-none focus:bg-gray-50 transition duration-150 ease-in-out">
+{% endblock %}

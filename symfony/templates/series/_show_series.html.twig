@@ -12,15 +12,15 @@
 			{% endif %}
 			
 		{% endif %}
-			{% set background = "hover:border-red-500 bg-gray-900" %}
+			{% set background = "hover:border-blue-200 bg-gray-900" %}
 			{% set title="" %}
 			{% if app.user and percentage_seen == 100 %}
 				{% set background = "hover:border-blue-500 hover:bg-blue-500 bg-gray-900" %}
 				{% set title = "Alredy seen" %}
 			{% endif %}
-			<div class="{{ 'flex justify-between flex-col transform transition-transform duration-300 hover:scale-105 rounded-lg border-2 border-transparent h-full ' ~ background }}" title="{{title}}">
+			<div class="{{ 'flex justify-between overflow-hidden flex-col transform transition-transform duration-300 hover:shadow-md hover:shadow-blue-200 hover:scale-105 rounded-md border-2 border-transparent h-full ' ~ background }}" title="{{title}}">
 			<a class="h-full" ~ background href="{{ path('app_series_show', {'id': series.id}) }}">
-				<img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-fit object-cover rounded-t-lg">
+				<img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="w-full h-fit object-cover">
 				<div class="p-4">
 					<h2 class="text-white text-xl font-bold mb-2">{{ series.title }}</h2>
 					<p class="text-white mb-2">Seasons:
@@ -60,13 +60,13 @@
 			</a>
 			{% if app.user %}
 				{% if series in app.user.series %}
-					<div class="flex justify-center pb-4 pt-2 bg-red-600 rounded-b-lg font-bold">
+					<div class="flex justify-center pb-4 pt-2 bg-red-600 font-bold">
 						<form action="{{ path('app_series_unfollow', {'id': series.id,'page': pagination.getCurrentPageNumber()}) }}" method="post" class="w-full h-full">
 							<button type="submit" class="text-white hover:text-gray-300 w-full h-full">Unfollow</button>
 						</form>
 					</div>
 				{% else %}
-					<div class="flex justify-center pb-4 pt-2 bg-green-600 rounded-b-lg font-bold">
+					<div class="flex justify-center pb-4 pt-2 bg-green-600 font-bold">
 						<form action="{{ path('app_series_follow', {'id': series.id,'page': pagination.getCurrentPageNumber()}) }}" method="post" class="w-full h-full">
 							<button type="submit" class="text-white hover:text-gray-300 w-full h-full">Follow</button>
 						</form>
@@ -84,23 +84,23 @@
 	<div class="flex justify-center mt-8">
 		{% if current_page != 1 %}
 
-			<a href="{{ path(app_action, {'page_serie': current_page - 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
+			<a href="{{ path(app_action, {'page_series': current_page - 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
 		{% endif %}
 
 		{% for page in 1..total_pages %}
 			{% if page == current_page %}
 				<span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
 			{% elseif page == current_page - 1 or page == current_page + 1 %}
-				<a href="{{ path(app_action, {'page_serie': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+				<a href="{{ path(app_action, {'page_series': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
 			{% elseif page == 1 or page == total_pages %}
-				<a href="{{ path(app_action, {'page_serie': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+				<a href="{{ path(app_action, {'page_series': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
 			{% elseif page == current_page - 2 or page == current_page + 2 %}
 				<span class="text-white px-5">...</span>
 			{% endif %}
 		{% endfor %}
 
 		{% if current_page != total_pages %}
-			<a href="{{ path(app_action, {'page_serie': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+			<a href="{{ path(app_action, {'page_series': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
 		{% endif %}
 	</div>
 {% endif %}

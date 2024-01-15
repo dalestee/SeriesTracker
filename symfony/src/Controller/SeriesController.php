@@ -6,6 +6,7 @@ use App\Entity\Series;
 use App\Entity\User;
 use App\Entity\Rating;
 use App\Form\SeriesType;
+use App\Form\SeriesSearchType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,46 +14,53 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\SeriesRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Entity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/')]
 class SeriesController extends AbstractController
 {
+    
     public function isUserLoggedIn(): bool
     {
         return $this->getUser() != null;
     }
 
-    #[Route('/{page_serie}', name: 'app_series_index', methods: ['GET'], requirements: ['page_serie' => '\d+'])]
+    #[Route('/{page_series}', name: 'app_series_index', methods: ['GET'], requirements: ['page_series' => '\d+'])]
     public function index(
         Request $request,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
-        $page_serie = 1
+        SeriesRepository $seriesRepository,
+        $page_series = 1
     ): Response {
-
-        $session = $request->getSession();
-
-        $seriesRepository = $entityManager->getRepository(Series::class);
-
-        // Check if the session already has a 'seed' value
-        if (!$session->has('seed')) {
-            // If not, set a new 'seed' value
-            $session->set('seed', rand());
-        }
-
-        $seed = $session->get('seed');
-
-        $query = $seriesRepository->queryRandom($seed);
-
+        $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
+        $form->handleRequest($request);
         $search = $request->query->get('search');
-        if (!empty($search)) {
-            $query = $seriesRepository->findByKeyWordInAll($search);
+        dump($search);
+        if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
+            $criteria = $form->getData();
+            if (!$criteria) {
+                $criteria = [];
+            }
+            $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery()->getResult();
+        } else {
+            $session = $request->getSession();
+
+            // Check if the session already has a 'seed' value
+            if (!$session->has('seed')) {
+                // If not, set a new 'seed' value
+                $session->set('seed', rand());
+            }
+            $seed = $session->get('seed');
+
+            $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
 
         $pagination = $paginator->paginate(
             $query, /* query NOT result */
-            $page_serie/*page number*/,
+            $page_series/*page number*/,
             10/*limit per page*/
         );
 
@@ -72,8 +80,9 @@ class SeriesController extends AbstractController
             'user' => $user,
             'app_action' => 'app_series_index',
             'pagination' => $pagination,
-            'series_view'=> $series_view,
-            'param_action' => ['search' => $search]
+            'series_view' => $series_view ?? [],
+            'param_action' => ['search' => $search],
+            'form' => $form->createView(),
         ]);
     }
 
@@ -129,39 +138,47 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/listSeriesFollow/{page_serie}', name: 'app_series_list_follow', methods: ['GET'])]
+    #[Route('/listSeriesFollow/{page_series}', name: 'app_series_list_follow', methods: ['GET'])]
     public function listFollow(
         Request $request,
         SeriesRepository $seriesRepository,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
-        int $page_serie = 1
+        int $page_series = 1
     ): Response {
+        
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-            $seriesQuery = $user->getSeries();
+            
+            $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
+            $form->handleRequest($request);
 
-            $search = $request->query->get('search');
-            if (empty($search) == false) {
-                $seriesQuery = $seriesRepository->findByKeyWordInSeriesFollowing($user, $search);
+            $search = $request->query->get('search', '');
+            if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
+                $criteria = $form->getData();
+                if (!$criteria) {
+                    $criteria = [];
+                }
+                $seriesQuery = $seriesRepository->findByCriteriaFollow($user, $criteria, $search);
             } else {
                 $seriesQuery = $entityManager->getRepository(Series::class)
-                        ->querySeriesSuiviesTrieParVisionnage($user->getId());
+                    ->querySeriesSuiviesTrieParVisionnage($user->getId());
             }
                     
             $pagination = $paginator->paginate(
                 $seriesQuery, /* query NOT result */
-                $page_serie/*page number*/,
+                $page_series/*page number*/,
                 10/*limit per page*/
             );
 
-            return $this->render('series/index.html.twig', [
+            return $this->render('series/series_follow.html.twig', [
                 'user' => $this->getUser(),
                 'app_action' => 'app_series_list_follow',
                 'pagination' => $pagination,
+                'form' => $form->createView(),
                 'param_action' => ['search' => $search],
             ]);
         }
@@ -293,11 +310,35 @@ class SeriesController extends AbstractController
         ]);
     }
 
-    #[Route('/showSerie/{id}', name: 'app_series_show', methods: ['GET'])]
-    public function show(Series $series): Response
-    {
+    #[Route('/showSerie/{id}/{page_ratings}', name: 'app_series_show', methods: ['GET'])]
+    public function show(
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+        Request $request,
+        Series $series,
+        int $page_ratings = 1
+    ): Response {
+        $note = $request->query->get('note');
+
+        if ($note) {
+            $ratingQuery = $entityManager->getRepository(Rating::class)
+            ->queryRatingsBySeriesAndNote($series->getId(), $note);
+        } else {
+            $ratingQuery = $entityManager->getRepository(Rating::class)
+            ->queryRatingsBySeries($series->getId());
+        }
+
+        $pagination = $paginator->paginate(
+            $ratingQuery, /* query NOT result */
+            $page_ratings/*page number*/,
+            3/*limit per page*/
+        );
+
         return $this->render('series/show.html.twig', [
             'series' => $series,
+            'app_action' => 'app_series_show',
+            'param_action' => ['id' => $series->getId(),'note' => $note],
+            'pagination' => $pagination,
         ]);
     }
 
