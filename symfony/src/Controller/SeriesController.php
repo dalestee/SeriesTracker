@@ -67,9 +67,12 @@ class SeriesController extends AbstractController
         foreach ($pagination as $serie) {
             $series_id[] = $serie->getId();
         }
-
-        $user = $entityManager->getRepository(User::class)
-            ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        if ($this->getUser() == null) {
+            $user = null;
+        } else {
+            $user = $entityManager->getRepository(User::class)
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        } 
 
         if ($user) {
             $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id, $seed);
