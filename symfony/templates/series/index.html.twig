@@ -3,22 +3,26 @@
 {% block title %}Series{% endblock %}
 
 {% block body %}
-	
-		<div class="flex flex-col items-center my-8 px-8 w-full">
-			<h1 class="text-4xl text-center text-white font-bold mb-12">Series</h1>
+    <div class="flex flex-col items-center my-8 px-8 w-full">
+        {% block description %}
+            <h1 class="text-white font-bold mb-10 text-3xl">Explore a diverse world of TV series on our platform. 
+                Immerse yourself in a vast collection of shows ranging from drama, comedy, and thriller to science fiction and fantasy. 
+                Rate and review your favorite series, keep track of watched episodes, and discover new gems. 
+                Manage your watchlist, stay up-to-date with the latest releases, and connect with a community of fellow TV enthusiasts. 
+                Whether you're a binge-watcher or a casual viewer, our platform provides a seamless experience for all your TV series needs. 
+                Join us in the exciting journey of discovering, rating, and discussing the world of television.</h1>
+        {% endblock %}
+        {# If param_action is null, create param_action #}
+        {% if param_action is null %}
+            {% set param_action = {} %}
+        {% endif %}
 
-            {# If param_action is null create param_action#}
-            {% if param_action is null %}
-                {% set param_action = {} %}
-            {% endif %}
-
-            {% include 'series/_show_series.html.twig' with { 
-                'user': user,
-                'app_action' : app_action,
-                'param_action' : param_action,
-                'pagination' : pagination,
-                }
-            %}
-        </div>
-    
+        {% include 'series/_show_series.html.twig' with { 
+            'user': user,
+            'app_action' : app_action,
+            'param_action' : param_action,
+            'pagination' : pagination,
+            }
+        %}
+    </div>
 {% endblock %}
