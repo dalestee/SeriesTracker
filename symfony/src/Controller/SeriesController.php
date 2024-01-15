@@ -38,7 +38,7 @@ class SeriesController extends AbstractController
         $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
         $form->handleRequest($request);
         $search = $request->query->get('search');
-        dump($search);
+        
         if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
             $criteria = $form->getData();
             if (!$criteria) {
