@@ -1,0 +1,78 @@
+<div class="grid grid-cols-1 gap-8">
+	{% for rating in pagination.items %}
+		<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+			<div class="border-t border-gray-200">
+				<dl class="text-wrap flex-wrap">
+					<div class="bg-white px-4 py-5">
+					<a href="{{ path('app_user', {'id_user': rating.user.id}) }}" class="hover:bg-gray-100 block focus:outline-none focus:bg-gray-50 transition duration-150 ease-in-out">
+						<dt class="text-sm font-medium text-gray-500 flex-col w-full">
+
+							<div class="flex items-center">
+								{% block rating_title_card %}
+									<img src="{{ asset('img/account.png') }}" alt="logo" class="h-10">
+									<h4 class="text-sm text-gray-500 ml-2">{{ rating.user.name }}</h4>
+									<p class="text-gray-500 font-bold ml-3" >{{ rating.date|time_diff }}</p>
+								{% endblock %}
+							</div>
+
+							<div class="flex">
+								{% for note in 1..5 %}
+									<div class="text-white focus:outline-none mr-1 ">
+										<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 1280.000000 1181.000000" preserveaspectratio="xMidYMid meet" class="inline-block fill-current">
+											<g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current {% if note <= rating.value %} text-yellow-500 {% else %} text-gray-300 {% endif %}" fill="#000000" stroke="none">
+												<path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
+																		-1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
+																		-2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
+																		-1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
+																		-141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
+																		1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
+																		-2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
+																		-712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
+																		750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
+																		-272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
+																		-4 5 -55 -139 -114 -320z"/>
+											</g>
+										</svg>
+									</div>
+								{% endfor %}
+							</div>
+						</dt>
+					</a>
+					</div>
+					{% if rating.comment != null %}
+					<dd class="mt-1 text-sm text-gray-900 flex justify-center">
+						<p class="text-gray-900 w-full h-full pb-2 mb-2 ml-4 mr-4 bg-white line-clamp-6 overflow-y-auto">{{ rating.comment }}</p>
+					</dd>
+					{% endif %}
+				</dl>
+			</div>
+		</div>
+	{% endfor %}
+</div>
+
+{% if pagination.items|length != 0 %}
+	{% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
+	{% set current_page = pagination.getCurrentPageNumber() %}
+	<div class="flex justify-center mt-8">
+		{% if current_page != 1 %}
+
+			<a href="{{ path(app_action, {'page_ratings': current_page - 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
+		{% endif %}
+
+		{% for page in 1..total_pages %}
+			{% if page == current_page %}
+				<span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
+			{% elseif page == current_page - 1 or page == current_page + 1 %}
+				<a href="{{ path(app_action, {'page_ratings': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+			{% elseif page == 1 or page == total_pages %}
+				<a href="{{ path(app_action, {'page_ratings': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+			{% elseif page == current_page - 2 or page == current_page + 2 %}
+				<span class="text-white px-5">...</span>
+			{% endif %}
+		{% endfor %}
+
+		{% if current_page != total_pages %}
+			<a href="{{ path(app_action, {'page_ratings': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+		{% endif %}
+	</div>
+{% endif %}

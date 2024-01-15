@@ -24,7 +24,7 @@ class Season
     #[ORM\JoinColumn(name: "series_id", referencedColumnName: "id")]
     private $series;
 
-    #[ORM\OneToMany(targetEntity: "Episode", mappedBy: "season", fetch:"EAGER")]
+    #[ORM\OneToMany(targetEntity: "Episode", mappedBy: "season")]
     #[ORM\OrderBy(["number" => "ASC"])]
     private $episodes;
 
