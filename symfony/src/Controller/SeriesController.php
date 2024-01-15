@@ -307,7 +307,7 @@ class SeriesController extends AbstractController
     ): Response {
         $note = $request->query->get('note');
 
-        if ($note) {
+        if ($note != null) {
             $ratingQuery = $entityManager->getRepository(Rating::class)
             ->queryRatingsBySeriesAndNote($series->getId(), $note);
         } else {
