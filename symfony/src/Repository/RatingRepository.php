@@ -13,7 +13,7 @@ class RatingRepository extends ServiceEntityRepository
         parent::__construct($registry, Rating::class);
     }
 
-    public function queryRatingsBySeries ($seriesId)
+    public function queryRatingsBySeries($seriesId)
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.series = :seriesId')

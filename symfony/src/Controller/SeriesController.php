@@ -282,13 +282,12 @@ class SeriesController extends AbstractController
 
     #[Route('/showSerie/{id}/{{page_ratings}}', name: 'app_series_show', methods: ['GET'])]
     public function show(
-            EntityManagerInterface $entityManager,
-            PaginatorInterface $paginator ,
-            Series $series,
-            int $page_ratings = 1
-        ): Response
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+        Series $series,
+        int $page_ratings = 1
+    ): Response {
 
-    {
         $ratingQuery = $entityManager->getRepository(Rating::class)
             ->queryRatingsBySeries($series->getId());
 
