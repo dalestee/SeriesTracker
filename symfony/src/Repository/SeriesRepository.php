@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use App\Entity\SeriesSearch;
 
 /**
  * @extends ServiceEntityRepository<Series>
@@ -28,7 +29,7 @@ class SeriesRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('p');
         $queryBuilder->orderBy('RAND(' . $seed . ')');
-        return $queryBuilder->getQuery();
+        return $queryBuilder;
     }
 
     public function findByKeyWordInAll($keyWord)
@@ -39,19 +40,52 @@ class SeriesRepository extends ServiceEntityRepository
             ->setParameter('keyWord', '%' . $keyWord . '%')
             ->getQuery();
     }
-
     public function findByKeyWordInSeriesFollowing(User $user, $keyWord)
     {
-        $seriesSearch = [];
-        $seriesQuery = $user->getSeries();
-        foreach ($seriesQuery as $serie) {
-            if (stripos($serie->getTitle(), $keyWord) !== false ||
-                stripos($serie->getPlot(), $keyWord) !== false
-            ) {
-                array_push($seriesSearch, $serie);
-            }
-        }
-        return $seriesSearch;
+        $qb = $this->createQueryBuilder('s');
+
+        $query = $qb->select('s')
+            ->where('s.user = :user')
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->like('s.title', ':keyWord'),
+                $qb->expr()->like('s.plot', ':keyWord')
+            ))
+            ->setParameter('user', $user)
+            ->setParameter('keyWord', '%' . $keyWord . '%')
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
+    public function queryVisionage(int $userId, array $arraySeriesId, int $seed) {
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addRootEntityFromClassMetadata('App\Entity\Series', 's');
+        $rsm->addScalarResult('percentage_seen', 'percentage_seen');
+        $sql = "SELECT ROUND((IFNULL(seen_episodes, 0) * 100.0 / total_episodes), 2) AS percentage_seen
+                FROM series
+                INNER JOIN (
+                    SELECT S.series_id, COUNT(*) AS total_episodes
+                    FROM season S
+                    INNER JOIN episode E ON E.season_id = S.id
+                    WHERE S.series_id IN (:arraySeriesId)
+                    GROUP BY S.series_id
+                ) total ON series.id = total.series_id
+                LEFT JOIN (
+                    SELECT S.series_id, COUNT(*) AS seen_episodes
+                    FROM user_episode UE
+                    INNER JOIN episode E ON UE.episode_id = E.id
+                    INNER JOIN season S ON E.season_id = S.id
+                    GROUP BY S.series_id
+                ) seen ON series.id = seen.series_id
+                ORDER BY RAND(:seed)";
+        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
+        $query->setParameter('userId', $userId);
+        $query->setParameter('arraySeriesId', $arraySeriesId);
+        $query->setParameter('seed', $seed);
+
+        $ormQuery = $query;
+
+        return $ormQuery->getResult() ;
     }
 
     public function querySeriesSuiviesTrieParVisionnage(int $userId)
@@ -86,8 +120,72 @@ class SeriesRepository extends ServiceEntityRepository
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
 
-        $ormQuery = $query->getResult();
+        $ormQuery = $query;
     
-        return $ormQuery ;
+        return $ormQuery->getResult() ;
+    }
+    public function findByCriteria(array $criteria, $search)
+    {
+        $qb = $this->buildQuerryfindByCriteria($criteria, $search);
+        return $qb;
+    }
+
+    public function buildQuerryfindByCriteria(array $criteria, $search)
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        if (!empty($criteria['genre'])) {
+            $qb->leftJoin('s.genre', 'g')
+                ->andWhere('g.name IN (:genres)')
+                ->groupBy('s.id')
+                ->having('COUNT(s.id) = :count')
+                ->setParameters([
+                    'genres' => $criteria['genre'],
+                    'count' => count($criteria['genre'])
+                ]);
+        }
+
+        if (!empty($criteria['startDate'])) {
+            $qb->andWhere('s.yearStart = :startDate')
+               ->setParameter('startDate', $criteria['startDate']);
+        }
+
+        if (!empty($criteria['endDate'])) {
+            $qb->andWhere('s.yearEnd = :endDate')
+               ->setParameter('endDate', $criteria['endDate']);
+        }
+        if (!empty($search)) {
+            $qb->andWhere('s.title LIKE :search OR s.plot LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+        if (!empty($criteria['ratings'])) {
+            $sub = $this->createQueryBuilder('s2')
+                ->select('AVG(r.value)')
+                ->leftJoin('s2.ratings', 'r')
+                ->where('s2.id = s.id');
+            $qb->addSelect('(' . $sub->getDQL() . ') as HIDDEN avgRating')
+                ->orderBy('avgRating', $criteria['ratings']);
+        }
+        return $qb;
+    }
+
+    public function findByCriteriaFollow(User $user, array $criteria, $search)
+    {
+
+        $qb = $this->buildQuerryfindByCriteria($criteria, $search);
+        $qb->leftJoin('s.user', 'u')
+            ->andWhere('u.id = :userId')
+            ->setParameter('userId', $user->getId());
+        return $qb;
+    }
+
+    public function findUniqueGenres()
+    {
+        $qb = $this->createQueryBuilder('s')
+                ->select('g.name')
+                ->distinct()
+                ->leftJoin('s.genre', 'g');
+
+        return $qb;
     }
 }

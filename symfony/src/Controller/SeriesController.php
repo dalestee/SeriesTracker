@@ -33,6 +33,8 @@ class SeriesController extends AbstractController
 
         $session = $request->getSession();
 
+        $seriesRepository = $entityManager->getRepository(Series::class);
+
         // Check if the session already has a 'seed' value
         if (!$session->has('seed')) {
             // If not, set a new 'seed' value
@@ -41,11 +43,11 @@ class SeriesController extends AbstractController
 
         $seed = $session->get('seed');
 
-        $query = $entityManager->getRepository(Series::class)->queryRandom($seed);
+        $query = $seriesRepository->queryRandom($seed);
 
         $search = $request->query->get('search');
         if (!empty($search)) {
-            $query = $entityManager->getRepository(Series::class)->findByKeyWordInAll($search);
+            $query = $seriesRepository->findByKeyWordInAll($search);
         }
 
         $pagination = $paginator->paginate(
@@ -54,10 +56,23 @@ class SeriesController extends AbstractController
             10/*limit per page*/
         );
 
+        $series_id = [];
+        foreach ($pagination as $serie) {
+            $series_id[] = $serie->getId();
+        }
+
+        $user = $entityManager->getRepository(User::class)
+            ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+
+        if ($user){
+            $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id, $seed);
+        }
+        
         return $this->render('series/index.html.twig', [
-            'user' => $this->getUser(),
+            'user' => $user,
             'app_action' => 'app_series_index',
             'pagination' => $pagination,
+            'series_view'=> $series_view,
             'param_action' => ['search' => $search]
         ]);
     }
