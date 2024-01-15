@@ -2,13 +2,15 @@
 // src/Form/SeriesSearchType.php
 
 namespace App\Form;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use App\Repository\SeriesRepository; 
+use App\Repository\SeriesRepository;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\OptionsResolver\OptionsResolver; // Add this line
+
 class SeriesSearchType extends AbstractType
 {
     private $seriesRepository;
@@ -21,7 +23,7 @@ class SeriesSearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $genres = $this->seriesRepository->findUniqueGenres()->getQuery()->getResult();
-        $genres = array_map(function($genre) {
+        $genres = array_map(function ($genre) {
             return $genre['name'];
         }, $genres);
         $choices = array_combine($genres, $genres);
@@ -53,7 +55,7 @@ class SeriesSearchType extends AbstractType
             ])
             ->add('startDate', IntegerType::class, [
                 'label' => false,
-                'required' => false, 
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'Start Date',
                     'name' => 'startDate'
@@ -61,7 +63,7 @@ class SeriesSearchType extends AbstractType
             ])
             ->add('endDate', IntegerType::class, [
                 'label' => false,
-                'required' => false, 
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'End Date',
                     'name' => 'endDate'

@@ -41,10 +41,10 @@ class SeriesController extends AbstractController
         dump($search);
         if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
             $criteria = $form->getData();
-            if(!$criteria) {
+            if (!$criteria) {
                 $criteria = [];
             }
-            $query = $seriesRepository->findByCriteria($criteria,$search)->getQuery()->getResult();
+            $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery()->getResult();
         } else {
             $session = $request->getSession();
 
@@ -143,15 +143,14 @@ class SeriesController extends AbstractController
             $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
             $form->handleRequest($request);
 
-            $search = $request->query->get('search','');
+            $search = $request->query->get('search', '');
             if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
                 $criteria = $form->getData();
-                if(!$criteria) {
+                if (!$criteria) {
                     $criteria = [];
                 }
-                $seriesQuery = $seriesRepository->findByCriteriaFollow($user, $criteria,$search);
-            }
-            else {
+                $seriesQuery = $seriesRepository->findByCriteriaFollow($user, $criteria, $search);
+            } else {
                 $seriesQuery = $entityManager->getRepository(Series::class)
                     ->querySeriesSuiviesTrieParVisionnage($user->getId());
             }

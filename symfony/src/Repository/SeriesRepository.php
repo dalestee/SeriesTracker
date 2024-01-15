@@ -93,13 +93,13 @@ class SeriesRepository extends ServiceEntityRepository
     
         return $ormQuery->getResult() ;
     }
-    public function findByCriteria(array $criteria,$search)
+    public function findByCriteria(array $criteria, $search)
     {
-        $qb = $this->buildQuerryfindByCriteria($criteria,$search);
+        $qb = $this->buildQuerryfindByCriteria($criteria, $search);
         return $qb;
     }
 
-    public function buildQuerryfindByCriteria(array $criteria,$search)
+    public function buildQuerryfindByCriteria(array $criteria, $search)
     {
         $qb = $this->createQueryBuilder('s');
 
@@ -127,7 +127,7 @@ class SeriesRepository extends ServiceEntityRepository
             $qb->andWhere('s.title LIKE :search OR s.plot LIKE :search')
                ->setParameter('search', '%' . $search . '%');
         }
-        if(!empty($criteria['ratings'])){
+        if (!empty($criteria['ratings'])) {
             $sub = $this->createQueryBuilder('s2')
                 ->select('AVG(r.value)')
                 ->leftJoin('s2.ratings', 'r')
@@ -138,7 +138,8 @@ class SeriesRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    public function findByCriteriaFollow(User $user, array $criteria,$search) {
+    public function findByCriteriaFollow(User $user, array $criteria, $search)
+    {
 
         $qb = $this->buildQuerryfindByCriteria($criteria, $search);
         $qb->leftJoin('s.user', 'u')
