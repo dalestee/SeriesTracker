@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\SeriesRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Entity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/')]
@@ -278,11 +280,28 @@ class SeriesController extends AbstractController
         ]);
     }
 
-    #[Route('/showSerie/{id}', name: 'app_series_show', methods: ['GET'])]
-    public function show(Series $series): Response
-    {
+    #[Route('/showSerie/{id}/{{page_ratings}}', name: 'app_series_show', methods: ['GET'])]
+    public function show(
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+        Series $series,
+        int $page_ratings = 1
+    ): Response {
+
+        $ratingQuery = $entityManager->getRepository(Rating::class)
+            ->queryRatingsBySeries($series->getId());
+
+        $pagination = $paginator->paginate(
+            $ratingQuery, /* query NOT result */
+            $page_ratings/*page number*/,
+            3/*limit per page*/
+        );
+
         return $this->render('series/show.html.twig', [
             'series' => $series,
+            'app_action' => 'app_series_show',
+            'param_action' => ['id' => $series->getId()],
+            'pagination' => $pagination,
         ]);
     }
 
