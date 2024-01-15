@@ -6,7 +6,9 @@ use App\Entity\Series;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use App\Entity\SeriesSearch;
 
 /**
  * @extends ServiceEntityRepository<Series>
@@ -27,7 +29,6 @@ class SeriesRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('p');
         $queryBuilder->orderBy('RAND(' . $seed . ')');
-        return $queryBuilder;
         return $queryBuilder;
     }
 
@@ -55,15 +56,13 @@ class SeriesRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
-
     public function queryVisionage(int $userId, array $arraySeriesId, int $seed)
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
-        $rsm->addRootEntityFromClassMetadata('App\Entity\Series', 's');
         $rsm->addScalarResult('percentage_seen', 'percentage_seen');
-        $sql = "SELECT ROUND((IFNULL(seen_episodes, 0) * 100.0 / total_episodes), 2) AS percentage_seen
+        $sql = "SELECT ROUND( IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
                 FROM series
-                INNER JOIN (
+                RIGHT JOIN (
                     SELECT S.series_id, COUNT(*) AS total_episodes
                     FROM season S
                     INNER JOIN episode E ON E.season_id = S.id
@@ -93,12 +92,12 @@ class SeriesRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata('App\Entity\Series', 's');
         $rsm->addScalarResult('percentage_seen', 'percentage_seen');
-
+    
         $sql = "
             SELECT series.*, 
-                   ROUND((IFNULL(seen_episodes, 0) * 100.0 / total_episodes), 2) AS percentage_seen
+                   ROUND(IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
             FROM series
-            INNER JOIN (
+            RIGHT JOIN (
                 SELECT S.series_id, COUNT(*) AS total_episodes
                 FROM episode E
                 INNER JOIN season S ON E.season_id = S.id
@@ -116,14 +115,20 @@ class SeriesRepository extends ServiceEntityRepository
             WHERE US.user_id = :userId
             ORDER BY percentage_seen DESC
         ";
-
+    
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
 
         $ormQuery = $query;
-
+    
         return $ormQuery->getResult() ;
     }
+    public function findByCriteria(array $criteria, $search)
+    {
+        $qb = $this->buildQuerryfindByCriteria($criteria, $search);
+        return $qb;
+    }
+
     public function buildQuerryfindByCriteria(array $criteria, $search)
     {
         $qb = $this->createQueryBuilder('s');
@@ -170,11 +175,6 @@ class SeriesRepository extends ServiceEntityRepository
         $qb->leftJoin('s.user', 'u')
             ->andWhere('u.id = :userId')
             ->setParameter('userId', $user->getId());
-        return $qb;
-    }
-    public function findByCriteria(array $criteria, $search)
-    {
-        $qb = $this->buildQuerryfindByCriteria($criteria, $search);
         return $qb;
     }
 
