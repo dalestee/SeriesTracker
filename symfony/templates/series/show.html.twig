@@ -41,7 +41,7 @@
                             {% endfor %}
                             {% set ratingsHistogram = ratingsHistogram|merge([noteCount]) %}
                         {% endfor %}
-                        <div class="histogram w-9/12 lg:w-1/4 h-fit flex flex-col">
+                        <div class="histogram w-9/12 md:w-1/4 h-fit flex flex-col">
                             {% set numIndex = 1 %}
                             {% for count in ratingsHistogram %}
                                 <div>
