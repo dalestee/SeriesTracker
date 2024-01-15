@@ -1,6 +1,10 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
 	{% for series in pagination.items %}
 		{% if user %}
+			{% if series is iterable %}
+				{% set series = series[0] %}
+			{% endif %}
+
 			{% set nb_episodes = 0 %}
 			{% set nb_episodes_seen = 0 %}
 			{% set user_episodes = user.episode|map(e => e.id)|join(',') %}

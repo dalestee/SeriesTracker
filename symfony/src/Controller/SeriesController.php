@@ -6,6 +6,7 @@ use App\Entity\Series;
 use App\Entity\User;
 use App\Entity\Rating;
 use App\Form\SeriesType;
+use App\Form\SeriesSearchType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[Route('/')]
 class SeriesController extends AbstractController
 {
+    
     public function isUserLoggedIn(): bool
     {
         return $this->getUser() != null;
@@ -30,24 +32,30 @@ class SeriesController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
+        SeriesRepository $seriesRepository,
         $page_serie = 1
     ): Response {
-
-        $session = $request->getSession();
-
-        // Check if the session already has a 'seed' value
-        if (!$session->has('seed')) {
-            // If not, set a new 'seed' value
-            $session->set('seed', rand());
-        }
-
-        $seed = $session->get('seed');
-
-        $query = $entityManager->getRepository(Series::class)->queryRandom($seed);
-
+        $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
+        $form->handleRequest($request);
         $search = $request->query->get('search');
-        if (!empty($search)) {
-            $query = $entityManager->getRepository(Series::class)->findByKeyWordInAll($search);
+        dump($search);
+        if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
+            $criteria = $form->getData();
+            if (!$criteria) {
+                $criteria = [];
+            }
+            $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery()->getResult();
+        } else {
+            $session = $request->getSession();
+
+            // Check if the session already has a 'seed' value
+            if (!$session->has('seed')) {
+                // If not, set a new 'seed' value
+                $session->set('seed', rand());
+            }
+            $seed = $session->get('seed');
+
+            $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
 
         $pagination = $paginator->paginate(
@@ -60,7 +68,8 @@ class SeriesController extends AbstractController
             'user' => $this->getUser(),
             'app_action' => 'app_series_index',
             'pagination' => $pagination,
-            'param_action' => ['search' => $search]
+            'param_action' => ['search' => $search],
+            'form' => $form->createView(),
         ]);
     }
 
@@ -124,19 +133,26 @@ class SeriesController extends AbstractController
         PaginatorInterface $paginator,
         int $page_serie = 1
     ): Response {
+        
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-            $seriesQuery = $user->getSeries();
+            
+            $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
+            $form->handleRequest($request);
 
-            $search = $request->query->get('search');
-            if (empty($search) == false) {
-                $seriesQuery = $seriesRepository->findByKeyWordInSeriesFollowing($user, $search);
+            $search = $request->query->get('search', '');
+            if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
+                $criteria = $form->getData();
+                if (!$criteria) {
+                    $criteria = [];
+                }
+                $seriesQuery = $seriesRepository->findByCriteriaFollow($user, $criteria, $search);
             } else {
                 $seriesQuery = $entityManager->getRepository(Series::class)
-                        ->querySeriesSuiviesTrieParVisionnage($user->getId());
+                    ->querySeriesSuiviesTrieParVisionnage($user->getId());
             }
                     
             $pagination = $paginator->paginate(
@@ -149,6 +165,7 @@ class SeriesController extends AbstractController
                 'user' => $this->getUser(),
                 'app_action' => 'app_series_list_follow',
                 'pagination' => $pagination,
+                'form' => $form->createView(),
                 'param_action' => ['search' => $search],
             ]);
         }
