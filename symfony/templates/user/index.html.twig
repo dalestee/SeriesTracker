@@ -22,11 +22,17 @@
                 {% include 'series/_show_series.html.twig' with { 
                     'user': user,
                     'app_action' : "app_user",
-                    'param_action' : {'id_user' : user.id},
+                    'param_action' : {'id_user' : user.id}|merge({'page_ratings':param_action['page_ratings']}),
                     'pagination' : series_suivies
                     }
                 %}
         </div>
+        {% include 'ratings/_show_user_page.html.twig' with { 
+                    'app_action' : "app_user",
+                    'param_action' : {'id_user' : user.id}|merge({'page_series':param_action['page_series']}),
+                    'pagination' : ratings_user
+                    }
+                %}
     {% else %}
         <div class="container mx-auto py-8">
             <h1 class="text-4xl text-white font-bold mb-8">Il n'existe aucun utilisateur avec cet identifiant</h1>

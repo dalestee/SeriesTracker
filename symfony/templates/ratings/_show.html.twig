@@ -1,10 +1,14 @@
+{% block container_rating %}
 <div class="grid grid-cols-1 gap-8">
+{% endblock %}
 	{% for rating in pagination.items %}
 		<div class="bg-white shadow overflow-hidden sm:rounded-lg">
 			<div class="border-t border-gray-200">
 				<dl class="text-wrap flex-wrap">
 					<div class="bg-white px-4 py-5">
+					{% block link_rating_card %}
 					<a href="{{ path('app_user', {'id_user': rating.user.id}) }}" class="hover:bg-gray-100 block focus:outline-none focus:bg-gray-50 transition duration-150 ease-in-out">
+					{% endblock %}
 						<dt class="text-sm font-medium text-gray-500 flex-col w-full">
 
 							<div class="flex items-center">
