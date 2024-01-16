@@ -255,13 +255,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
     public function getRoles(): array
     {
+        $roles = [];
         if ($this->isSuperAdmin()) {
-            return ['ROLE_SUPER_ADMIN'];
+            $roles += ['ROLE_SUPER_ADMIN'];
         } elseif ($this->isAdmin()) {
-            return ['ROLE_ADMIN'];
+            $roles += ['ROLE_ADMIN'];
         } else {
-            return ['ROLE_USER'];
+            $roles += ['ROLE_USER'];
         }
+        return ($roles);
     }
     public function eraseCredentials(): void
     {

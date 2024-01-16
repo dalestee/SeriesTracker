@@ -37,13 +37,6 @@ class CreateRatingCommand extends Command
     {
         $this
             ->addArgument(
-                'ecartType',
-                InputArgument::OPTIONAL,
-                'Standard deviation for the ratings',
-                1
-            );
-        $this
-            ->addArgument(
                 'nbRatingsMin',
                 InputArgument::OPTIONAL,
                 'Minimum number of ratings to create for each series',
@@ -60,7 +53,7 @@ class CreateRatingCommand extends Command
     }
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $ecartType = $input->getArgument('ecartType');
+        $ecartType = $this->faker->randomFloat(2, 1, 5);
         $io = new SymfonyStyle($input, $output);
         $nbRatingMin = $input->getArgument('nbRatingsMin');
         $nbRatingMax = $input->getArgument('nbRatingsMax');
