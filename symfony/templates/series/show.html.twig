@@ -243,13 +243,15 @@
                         <iframe width="100%" id="trailer" height="100%"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" class="h-[32rem]" ></iframe>
                         <span class="my-2 text-white font-bold">Awards:</span>
                         <span class="my-2 text-white ml-2">{{ series.awards }}</span>
-                        {% if percentage_seen != 0 %}
-                            <span class="my-2 text-white font-bold">seen:</span>
-                            <div class="relative pt-1">
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                                    <div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+                        {% if user %}
+                            {% if percentage_seen != 0 %}
+                                <span class="my-2 text-white font-bold">seen:</span>
+                                <div class="relative pt-1">
+                                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+                                        <div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
                         {% endif %}
                         <span class="my-2 text-white font-bold">Date:</span>
                         <span class="my-2 text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
