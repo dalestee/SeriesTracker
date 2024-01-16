@@ -17,18 +17,8 @@ class RatingRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.series = :seriesId')
+            ->orderBy('r.date', 'DESC')
             ->setParameter('seriesId', $seriesId)
-            ->getQuery()
-        ;
-    }
-
-    public function queryRatingsBySeriesAndNote($seriesId, $note)
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.series = :seriesId')
-            ->andWhere('r.value = :note')
-            ->setParameter('seriesId', $seriesId)
-            ->setParameter('note', $note)
             ->getQuery()
         ;
     }

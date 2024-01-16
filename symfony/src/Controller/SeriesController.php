@@ -330,6 +330,7 @@ class SeriesController extends AbstractController
     public function show(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
+        SeriesRepository $seriesRepository,
         Request $request,
         Series $series,
         int $page_ratings = 1
@@ -362,8 +363,7 @@ class SeriesController extends AbstractController
                 ->getRepository(Series::class)
                 ->queryVisionage($user->getId(), [$series->getId()], 0);
         }
-
-
+       
         return $this->render('series/show.html.twig', [
             'series' => $series,
             'app_action' => 'app_series_show',
@@ -371,6 +371,7 @@ class SeriesController extends AbstractController
             'user' => $user,
             'series_view' => $series_view ?? [],
             'pagination' => $pagination,
+            'userRate' => $userRate ?? null,
         ]);
     }
 

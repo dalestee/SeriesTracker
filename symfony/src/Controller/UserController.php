@@ -39,6 +39,7 @@ class UserController extends AbstractController
                 $page_series,
                 10
             );
+            $rating = $userRepository->queryFindRatingFromUser($user);
 
             $series_id = [];
             foreach ($series_suivies->getItems() as $serie) {
@@ -51,7 +52,7 @@ class UserController extends AbstractController
                 ->querySeriesSuiviesTrieParVisionnage($user->getId(), $series_id);
 
             $ratings_user = $paginator->paginate(
-                $user->getRatings(),
+                $rating->getResult(),
                 $page_ratings,
                 10
             );

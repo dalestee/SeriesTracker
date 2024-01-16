@@ -24,6 +24,17 @@ class SeriesRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Series::class);
     }
+    
+    public function queryFindRatingFromSeries(Series $series)
+    {
+        return $this->createQueryBuilder('s')
+            ->select('r')
+            ->from('App:Rating', 'r')
+            ->where('r.series = :series')
+            ->orderBy('r.date', 'DESC')
+            ->setParameter('series', $series)
+            ->getQuery();
+    }
 
     public function queryRandom(int $seed)
     {
@@ -32,30 +43,6 @@ class SeriesRepository extends ServiceEntityRepository
         return $queryBuilder;
     }
 
-    public function findByKeyWordInAll($keyWord)
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.title LIKE :keyWord')
-            ->orWhere('s.plot LIKE :keyWord')
-            ->setParameter('keyWord', '%' . $keyWord . '%')
-            ->getQuery();
-    }
-    public function findByKeyWordInSeriesFollowing(User $user, $keyWord)
-    {
-        $qb = $this->createQueryBuilder('s');
-
-        $query = $qb->select('s')
-            ->where('s.user = :user')
-            ->andWhere($qb->expr()->orX(
-                $qb->expr()->like('s.title', ':keyWord'),
-                $qb->expr()->like('s.plot', ':keyWord')
-            ))
-            ->setParameter('user', $user)
-            ->setParameter('keyWord', '%' . $keyWord . '%')
-            ->getQuery();
-
-        return $query->getResult();
-    }
     public function queryVisionage(int $userId, array $arraySeriesId, int $seed)
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
