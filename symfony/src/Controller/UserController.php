@@ -9,11 +9,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Series;
 
 class UserController extends AbstractController
 {
     #[Route('/user/{id_user}/', name: 'app_user')]
     public function index(
+        EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
         UserRepository $userRepository,
         Request $request,
@@ -29,11 +32,24 @@ class UserController extends AbstractController
         $page_ratings = $request->query->getInt('page_ratings', 1);
 
         if ($user) {
+
             $series_suivies = $paginator->paginate(
-                $user->getSeries(),
+                $entityManager
+                ->getRepository(Series::class)
+                ->querySeriesSuiviesTrieParVisionnage($user->getId()),
                 $page_series,
                 10
             );
+
+            $series_id = [];
+            foreach ($series_suivies->getItems() as $serie) {
+                $series_id[] = $serie[0]->getId();
+            }
+
+
+            $series_view =  $entityManager
+                ->getRepository(Series::class)
+                ->querySeriesSuiviesTrieParVisionnage($user->getId(),$series_id);
 
             $ratings_user = $paginator->paginate(
                 $user->getRatings(),
@@ -48,6 +64,7 @@ class UserController extends AbstractController
         return $this->render('user/index.html.twig', [
             'user' => $user,
             'series_suivies' => $series_suivies,
+            'series_view' => $series_view,
             'ratings_user' => $ratings_user,
             'app_action' => 'app_user',
             'param_action' => ['page_series' => $page_series, 'page_ratings' => $page_ratings]
