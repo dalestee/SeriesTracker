@@ -243,15 +243,18 @@ class SeriesController extends AbstractController
         } else {
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+            $rating = $entityManager->getRepository(Rating::class)
+                ->findOneBy(['user' => $user, 'series' => $series]);
+            if ($rating == null) {
+                $rating = new Rating();
+                $rating->setUser($user);
+                $rating->setSeries($series);
+                $rating->setValue($note);
+                $rating->setDate(new \DateTime());
+                $entityManager->persist($rating);
 
-            $rating = new Rating();
-            $rating->setUser($user);
-            $rating->setSeries($series);
-            $rating->setValue($note);
-            $rating->setDate(new \DateTime());
-            $entityManager->persist($rating);
-
-            $entityManager->flush();
+                $entityManager->flush();
+            } 
 
             return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
         }
@@ -267,9 +270,11 @@ class SeriesController extends AbstractController
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $rating = $entityManager->getRepository(Rating::class)
                 ->findOneBy(['user' => $user, 'series' => $series]);
-            $entityManager->remove($rating);
-            $entityManager->flush();
 
+            if ($rating != null) {
+                $entityManager->remove($rating);
+            $entityManager->flush();
+            }
             return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
         }
     }
@@ -290,7 +295,9 @@ class SeriesController extends AbstractController
                 $rating->setSeries($series);
                 $rating->setValue(0);
             }
-            $rating->setComment($request->request->get('comment'));
+            if ($rating->getComment() == null) {
+                $rating->setComment($request->request->get('comment'));
+            }
             $rating->setDate(new \DateTime());
             $entityManager->persist($rating);
             $entityManager->flush();
