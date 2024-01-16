@@ -64,9 +64,10 @@ class SeriesController extends AbstractController
         );
 
         $series_id = [];
-        foreach ($pagination as $serie) {
+        foreach ($pagination->getItems() as $serie) {
             $series_id[] = $serie->getId();
         }
+
         if ($this->getUser() == null) {
             $user = null;
         } else {
@@ -343,10 +344,24 @@ class SeriesController extends AbstractController
             3/*limit per page*/
         );
 
+        if ($this->getUser() == null) {
+            $user = null;
+        } else {
+            $user = $entityManager->getRepository(User::class)
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        } 
+
+        if ($user) {
+            $series_view =  $entityManager->getRepository(Series::class)->queryVisionage($user->getId(), [$series->getId()], 0);
+        }
+        
+
         return $this->render('series/show.html.twig', [
             'series' => $series,
             'app_action' => 'app_series_show',
             'param_action' => ['id' => $series->getId(),'note' => $note],
+            'user' => $user,
+            'series_view' => $series_view ?? [],
             'pagination' => $pagination,
         ]);
     }
