@@ -224,11 +224,12 @@
                                     </form>
                                 </div>
                                 {% if userRateComment != NULL %}
-                                    <p class="text-white font-bold">Comment:
-                                        <div class="text-white mb-2">
-                                            {{ userRateComment }}
+                                    <p class="text-white font-bold">Comment:</p>
+                                    <dd class="mt-1 text-sm text-gray-900 flex">
+                                        <div class="w-1/2 bg-white p-4 rounded shadow h-32"> <!-- Ajustez la hauteur ici, par exemple, h-32 pour une hauteur de 32 pixels -->
+                                            <textarea readonly class="text-gray-900 w-full h-full bg-transparent border-none resize-none focus:outline-none">{{ userRateComment }}</textarea>
                                         </div>
-                                    </p>
+                                    </dd>
                                 {% endif %}
                                 {% set dateRate = userRate.date|time_diff %}
                                 <p class="text-white font-bold" >{{ dateRate }}</p>

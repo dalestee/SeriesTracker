@@ -44,9 +44,11 @@
 					</a>
 					</div>
 					{% if rating.comment != null %}
-					<dd class="mt-1 text-sm text-gray-900 flex justify-center">
-						<p class="text-gray-900 w-full h-full pb-2 mb-2 ml-4 mr-4 bg-white line-clamp-6 overflow-y-auto">{{ rating.comment }}</p>
-					</dd>
+						<dd class="mt-1 text-sm text-gray-900 flex justify-center">
+							<div class="w-full bg-white p-4 rounded shadow h-32"> <!-- Ajustez la hauteur ici, par exemple, h-32 pour une hauteur de 32 pixels -->
+								<textarea readonly class="text-gray-900 w-full h-full bg-transparent border-none resize-none focus:outline-none">{{ rating.comment }}</textarea>
+							</div>
+						</dd>
 					{% endif %}
 				</dl>
 			</div>
