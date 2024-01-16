@@ -92,7 +92,7 @@ class SeriesRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata('App\Entity\Series', 's');
         $rsm->addScalarResult('percentage_seen', 'percentage_seen');
-    
+
         $sql = "
             SELECT series.*, 
                    ROUND(IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
@@ -115,12 +115,12 @@ class SeriesRepository extends ServiceEntityRepository
             WHERE US.user_id = :userId
             ORDER BY percentage_seen DESC
         ";
-    
+
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
 
         $ormQuery = $query;
-    
+
         return $ormQuery->getResult() ;
     }
     public function findByCriteria(array $criteria, $search)

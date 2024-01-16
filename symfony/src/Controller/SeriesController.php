@@ -53,7 +53,6 @@ class SeriesController extends AbstractController
             }
             $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery()->getResult();
         } else {
-
             $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
 
@@ -73,7 +72,7 @@ class SeriesController extends AbstractController
         } else {
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-        } 
+        }
 
         if ($user) {
             $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id, $seed);
@@ -349,12 +348,12 @@ class SeriesController extends AbstractController
         } else {
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-        } 
+        }
 
         if ($user) {
             $series_view =  $entityManager->getRepository(Series::class)->queryVisionage($user->getId(), [$series->getId()], 0);
         }
-        
+
 
         return $this->render('series/show.html.twig', [
             'series' => $series,
