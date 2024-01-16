@@ -1,20 +1,20 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+	{% set index = 0 %}
 	{% for series in pagination.items %}
 		{% if user %}
+			{# Test pour savoir si séries est un Array#}
 			{% if series is iterable %}
+				{% set percentage_seen = series['percentage_seen'] %}
 				{% set series = series[0] %}
+			{% else %}
+				{% set percentage_seen = series_view[index]['percentage_seen'] %}
+				{% set index = index + 1 %}
 			{% endif %}
-
-			{% set nb_episodes = 0 %}
-			{% set nb_episodes_seen = 0 %}
-			{% set user_episodes = user.episode|map(e => e.id)|join(',') %}
-			{% set series_episodes = series.seasons|map(s => s.episodes|map(e => e.id)|join(','))|join(',') %}
-			{% set nb_episodes_seen = series_episodes|split(',')|filter(e => e in user_episodes|split(','))|length %}
-			{% set nb_episodes = series.seasons|map(s => s.episodes|length)|reduce((a, b) => a + b) %}
+			
 		{% endif %}
 			{% set background = "hover:border-blue-200 bg-gray-900" %}
 			{% set title="" %}
-			{% if app.user and nb_episodes == nb_episodes_seen %}
+			{% if app.user and percentage_seen == 100 %}
 				{% set background = "hover:border-blue-500 hover:bg-blue-500 bg-gray-900" %}
 				{% set title = "Alredy seen" %}
 			{% endif %}
@@ -41,10 +41,10 @@
 						{% set usersRating = usersRating / series.ratings|length %}
 					{% endif %}
 					{% if user %}
-						<p class="text-white mb-2">episodes seen:</p>
+						<p class="text-white mb-2">seen:</p>
 						<div class="relative pt-1">
 							<div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-								<div style="width:{{ (nb_episodes > 0 ? (nb_episodes_seen/nb_episodes)*100 : 0) }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+								<div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
 							</div>
 						</div>
 					{% endif %}
@@ -84,23 +84,23 @@
 	<div class="flex justify-center mt-8">
 		{% if current_page != 1 %}
 
-			<a href="{{ path(app_action, {'page_serie': current_page - 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
+			<a href="{{ path(app_action, {'page_series': current_page - 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
 		{% endif %}
 
 		{% for page in 1..total_pages %}
 			{% if page == current_page %}
 				<span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
 			{% elseif page == current_page - 1 or page == current_page + 1 %}
-				<a href="{{ path(app_action, {'page_serie': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+				<a href="{{ path(app_action, {'page_series': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
 			{% elseif page == 1 or page == total_pages %}
-				<a href="{{ path(app_action, {'page_serie': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+				<a href="{{ path(app_action, {'page_series': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
 			{% elseif page == current_page - 2 or page == current_page + 2 %}
 				<span class="text-white px-5">...</span>
 			{% endif %}
 		{% endfor %}
 
 		{% if current_page != total_pages %}
-			<a href="{{ path(app_action, {'page_serie': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+			<a href="{{ path(app_action, {'page_series': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
 		{% endif %}
 	</div>
 {% endif %}

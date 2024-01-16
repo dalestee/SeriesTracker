@@ -21,24 +21,31 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[Route('/')]
 class SeriesController extends AbstractController
 {
-    
     public function isUserLoggedIn(): bool
     {
         return $this->getUser() != null;
     }
 
-    #[Route('/{page_serie}', name: 'app_series_index', methods: ['GET'], requirements: ['page_serie' => '\d+'])]
+    #[Route('/{page_series}', name: 'app_series_index', methods: ['GET'], requirements: ['page_series' => '\d+'])]
     public function index(
         Request $request,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
         SeriesRepository $seriesRepository,
-        $page_serie = 1
+        $page_series = 1
     ): Response {
         $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
         $form->handleRequest($request);
         $search = $request->query->get('search');
-        dump($search);
+
+        $session = $request->getSession();
+        // Check if the session already has a 'seed' value
+        if (!$session->has('seed')) {
+            // If not, set a new 'seed' value
+            $session->set('seed', rand());
+        }
+        $seed = $session->get('seed');
+
         if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
             $criteria = $form->getData();
             if (!$criteria) {
@@ -46,28 +53,36 @@ class SeriesController extends AbstractController
             }
             $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery()->getResult();
         } else {
-            $session = $request->getSession();
-
-            // Check if the session already has a 'seed' value
-            if (!$session->has('seed')) {
-                // If not, set a new 'seed' value
-                $session->set('seed', rand());
-            }
-            $seed = $session->get('seed');
 
             $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
 
         $pagination = $paginator->paginate(
             $query, /* query NOT result */
-            $page_serie/*page number*/,
+            $page_series/*page number*/,
             10/*limit per page*/
         );
 
+        $series_id = [];
+        foreach ($pagination as $serie) {
+            $series_id[] = $serie->getId();
+        }
+        if ($this->getUser() == null) {
+            $user = null;
+        } else {
+            $user = $entityManager->getRepository(User::class)
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        } 
+
+        if ($user) {
+            $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id, $seed);
+        }
+
         return $this->render('series/index.html.twig', [
-            'user' => $this->getUser(),
+            'user' => $user,
             'app_action' => 'app_series_index',
             'pagination' => $pagination,
+            'series_view' => $series_view ?? [],
             'param_action' => ['search' => $search],
             'form' => $form->createView(),
         ]);
@@ -125,21 +140,21 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/listSeriesFollow/{page_serie}', name: 'app_series_list_follow', methods: ['GET'])]
+    #[Route('/listSeriesFollow/{page_series}', name: 'app_series_list_follow', methods: ['GET'])]
     public function listFollow(
         Request $request,
         SeriesRepository $seriesRepository,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
-        int $page_serie = 1
+        int $page_series = 1
     ): Response {
-        
+
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
         } else {
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-            
+
             $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
             $form->handleRequest($request);
 
@@ -154,10 +169,10 @@ class SeriesController extends AbstractController
                 $seriesQuery = $entityManager->getRepository(Series::class)
                     ->querySeriesSuiviesTrieParVisionnage($user->getId());
             }
-                    
+
             $pagination = $paginator->paginate(
                 $seriesQuery, /* query NOT result */
-                $page_serie/*page number*/,
+                $page_series/*page number*/,
                 10/*limit per page*/
             );
 
@@ -269,8 +284,15 @@ class SeriesController extends AbstractController
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $rating = $entityManager->getRepository(Rating::class)
                 ->findOneBy(['user' => $user, 'series' => $series]);
+            if ($rating == null) {
+                $rating = new Rating();
+                $rating->setUser($user);
+                $rating->setSeries($series);
+                $rating->setValue(0);
+            }
             $rating->setComment($request->request->get('comment'));
             $rating->setDate(new \DateTime());
+            $entityManager->persist($rating);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
@@ -301,12 +323,19 @@ class SeriesController extends AbstractController
     public function show(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
+        Request $request,
         Series $series,
         int $page_ratings = 1
     ): Response {
+        $note = $request->query->get('note');
 
-        $ratingQuery = $entityManager->getRepository(Rating::class)
+        if ($note != null) {
+            $ratingQuery = $entityManager->getRepository(Rating::class)
+            ->queryRatingsBySeriesAndNote($series->getId(), $note);
+        } else {
+            $ratingQuery = $entityManager->getRepository(Rating::class)
             ->queryRatingsBySeries($series->getId());
+        }
 
         $pagination = $paginator->paginate(
             $ratingQuery, /* query NOT result */
@@ -317,7 +346,7 @@ class SeriesController extends AbstractController
         return $this->render('series/show.html.twig', [
             'series' => $series,
             'app_action' => 'app_series_show',
-            'param_action' => ['id' => $series->getId()],
+            'param_action' => ['id' => $series->getId(),'note' => $note],
             'pagination' => $pagination,
         ]);
     }

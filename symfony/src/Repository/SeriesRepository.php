@@ -56,6 +56,36 @@ class SeriesRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+    public function queryVisionage(int $userId, array $arraySeriesId, int $seed)
+    {
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addScalarResult('percentage_seen', 'percentage_seen');
+        $sql = "SELECT ROUND( IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
+                FROM series
+                RIGHT JOIN (
+                    SELECT S.series_id, COUNT(*) AS total_episodes
+                    FROM season S
+                    INNER JOIN episode E ON E.season_id = S.id
+                    WHERE S.series_id IN (:arraySeriesId)
+                    GROUP BY S.series_id
+                ) total ON series.id = total.series_id
+                LEFT JOIN (
+                    SELECT S.series_id, COUNT(*) AS seen_episodes
+                    FROM user_episode UE
+                    INNER JOIN episode E ON UE.episode_id = E.id
+                    INNER JOIN season S ON E.season_id = S.id
+                    GROUP BY S.series_id
+                ) seen ON series.id = seen.series_id
+                ORDER BY RAND(:seed)";
+        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
+        $query->setParameter('userId', $userId);
+        $query->setParameter('arraySeriesId', $arraySeriesId);
+        $query->setParameter('seed', $seed);
+
+        $ormQuery = $query;
+
+        return $ormQuery->getResult() ;
+    }
 
     public function querySeriesSuiviesTrieParVisionnage(int $userId)
     {
@@ -65,9 +95,9 @@ class SeriesRepository extends ServiceEntityRepository
     
         $sql = "
             SELECT series.*, 
-                   ROUND((IFNULL(seen_episodes, 0) * 100.0 / total_episodes), 2) AS percentage_seen
+                   ROUND(IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
             FROM series
-            INNER JOIN (
+            RIGHT JOIN (
                 SELECT S.series_id, COUNT(*) AS total_episodes
                 FROM episode E
                 INNER JOIN season S ON E.season_id = S.id
