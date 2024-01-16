@@ -38,7 +38,7 @@ class UserController extends AbstractController
             $ratings_user = $paginator->paginate(
                 $user->getRatings(),
                 $page_ratings,
-                10
+                12
             );
         } else {
             $series_suivies = null;
