@@ -57,10 +57,6 @@ class AdminPanelController extends AbstractController
                 // No one can personify a super admin
                 $this->addFlash('danger', 'You cannot personify a super admin.');
                 return $this->redirectToRoute('app_admin_panel');
-            } elseif ($user->isAdmin() && !$this->isGranted('ROLE_SUPER_ADMIN')) {
-                // Only super admin can personify an admin
-                $this->addFlash('danger', 'You cannot personify an admin.');
-                return $this->redirectToRoute('app_admin_panel');
             }
             // Admins can personify users and super admins can personify admins and users
             return $this->redirectToRoute('app_series_index', ['_switch_user' => $user->getUserIdentifier()]);
