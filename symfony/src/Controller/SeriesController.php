@@ -53,7 +53,6 @@ class SeriesController extends AbstractController
             }
             $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery()->getResult();
         } else {
-
             $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
 
@@ -72,7 +71,7 @@ class SeriesController extends AbstractController
         } else {
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-        } 
+        }
 
         if ($user) {
             $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id, $seed);
@@ -254,7 +253,7 @@ class SeriesController extends AbstractController
                 $entityManager->persist($rating);
 
                 $entityManager->flush();
-            } 
+            }
 
             return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
         }
@@ -273,7 +272,7 @@ class SeriesController extends AbstractController
 
             if ($rating != null) {
                 $entityManager->remove($rating);
-            $entityManager->flush();
+                $entityManager->flush();
             }
             return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
         }
