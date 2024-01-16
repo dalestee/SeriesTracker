@@ -181,7 +181,4 @@ class SeriesRepository extends ServiceEntityRepository
 
         return $qb;
     }
-
-    
-
 }

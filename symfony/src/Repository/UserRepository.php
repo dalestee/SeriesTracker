@@ -14,7 +14,8 @@ class UserRepository extends ServiceEntityRepository
     }
 
 
-    public function queryFindRatingFromUser(User $user){
+    public function queryFindRatingFromUser(User $user)
+    {
         return $this->createQueryBuilder('u')
             ->select('r')
             ->from('App:Rating', 'r')
