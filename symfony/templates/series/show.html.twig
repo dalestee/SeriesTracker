@@ -396,11 +396,32 @@
                     }
                 });
             });
+        });
 
-            star.addEventListener('click', event => {
-                event.preventDefault();
-                // Ajoutez votre code ici
-            });
+             star.addEventListener('click', event => {
+            event.preventDefault();
+
+            // Change the color of the star
+            for (let i = 0; i <= index; i++) {
+                stars[i].classList.add('text-yellow-500', 'clicked');
+                stars[i].classList.remove('text-white');
+            }
+
+            // Send the rating to the server
+            fetch(star.form.action, { method: 'POST' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle the response
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+
         });
     }
 
