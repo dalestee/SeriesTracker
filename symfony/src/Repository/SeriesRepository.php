@@ -87,7 +87,7 @@ class SeriesRepository extends ServiceEntityRepository
         return $ormQuery->getResult() ;
     }
 
-    public function querySeriesSuiviesTrieParVisionnage(int $userId,array $arraySeriesId = [])
+    public function querySeriesSuiviesTrieParVisionnage(int $userId, array $arraySeriesId = [])
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata('App\Entity\Series', 's');
@@ -115,14 +115,14 @@ class SeriesRepository extends ServiceEntityRepository
             WHERE US.user_id = :userId"
         ;
 
-        if ($arraySeriesId){
-           $sql =  $sql." AND series.id IN (:arraySeriesId)";
+        if ($arraySeriesId) {
+            $sql =  $sql." AND series.id IN (:arraySeriesId)";
         }
         $sql = $sql." ORDER BY percentage_seen DESC";
     
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
-        if ($arraySeriesId){
+        if ($arraySeriesId) {
             $query->setParameter('arraySeriesId', $arraySeriesId);
         }
 

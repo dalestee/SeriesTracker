@@ -32,7 +32,6 @@ class UserController extends AbstractController
         $page_ratings = $request->query->getInt('page_ratings', 1);
 
         if ($user) {
-
             $series_suivies = $paginator->paginate(
                 $entityManager
                 ->getRepository(Series::class)
@@ -49,7 +48,7 @@ class UserController extends AbstractController
 
             $series_view =  $entityManager
                 ->getRepository(Series::class)
-                ->querySeriesSuiviesTrieParVisionnage($user->getId(),$series_id);
+                ->querySeriesSuiviesTrieParVisionnage($user->getId(), $series_id);
 
             $ratings_user = $paginator->paginate(
                 $user->getRatings(),
