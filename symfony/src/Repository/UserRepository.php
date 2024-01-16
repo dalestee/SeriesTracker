@@ -12,4 +12,15 @@ class UserRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, User::class);
     }
+
+
+    public function queryFindRatingFromUser(User $user){
+        return $this->createQueryBuilder('u')
+            ->select('r')
+            ->from('App:Rating', 'r')
+            ->where('r.user = :user')
+            ->orderBy('r.date', 'DESC')
+            ->setParameter('user', $user)
+            ->getQuery();
+    }
 }

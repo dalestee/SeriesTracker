@@ -34,9 +34,9 @@ class UserController extends AbstractController
                 $page_series,
                 10
             );
-
+            $rating = $userRepository->queryFindRatingFromUser($user);
             $ratings_user = $paginator->paginate(
-                $user->getRatings(),
+                $rating->getResult(),
                 $page_ratings,
                 10
             );
