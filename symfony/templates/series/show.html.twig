@@ -243,13 +243,15 @@
                         <iframe width="100%" id="trailer" height="100%"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" class="h-[32rem]" ></iframe>
                         <span class="my-2 text-white font-bold">Awards:</span>
                         <span class="my-2 text-white ml-2">{{ series.awards }}</span>
-                        {% if percentage_seen != 0 %}
-                            <span class="my-2 text-white font-bold">seen:</span>
-                            <div class="relative pt-1">
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                                    <div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+                        {% if user %}
+                            {% if percentage_seen != 0 %}
+                                <span class="my-2 text-white font-bold">seen:</span>
+                                <div class="relative pt-1">
+                                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+                                        <div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
                         {% endif %}
                         <span class="my-2 text-white font-bold">Date:</span>
                         <span class="my-2 text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
@@ -377,32 +379,53 @@
         </div>
     </div>
 <script>
-    var stars = document.querySelectorAll(".star");
 
-    if (stars.length > 0) {
-        stars.forEach((star, index) => {
-            star.addEventListener("mouseover", function() {
-                for (let i = 0; i <= index; i++) {
-                    stars[i].classList.add("text-yellow-500");
-                    stars[i].classList.remove("text-white");
-                }
-            });
+var stars = document.querySelectorAll(".star");
 
-            star.addEventListener("mouseout", function() {
-                stars.forEach(s => {
-                    if (!s.classList.contains('clicked')) {
-                        s.classList.remove("text-yellow-500");
-                        s.classList.add("text-white");
-                    }
-                });
-            });
+stars.forEach((star, index) => {
+    star.addEventListener("mouseover", function() {
+        // Add active class to this star and all previous stars
+        for (let i = 0; i <= index; i++) {
+            stars[i].classList.add("text-yellow-500");
+            stars[i].classList.remove("text-white");
+        }
+    });
 
-            star.addEventListener('click', event => {
-                event.preventDefault();
-                // Ajoutez votre code ici
-            });
+    star.addEventListener("mouseout", function() {
+        // Remove active class from all stars
+        stars.forEach(s => {
+            if (!s.classList.contains('clicked')) {
+                s.classList.remove("text-yellow-500");
+                s.classList.add("text-white");
+            }
         });
-    }
+    });
+
+    star.addEventListener('click', event => {
+        event.preventDefault();
+
+        // Change the color of the star
+        for (let i = 0; i <= index; i++) {
+            stars[i].classList.add('text-yellow-500', 'clicked');
+            stars[i].classList.remove('text-white');
+        }
+
+        // Send the rating to the server
+        fetch(star.form.action, { method: 'POST' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+    });
+});
 
 
 document.querySelectorAll('.star').forEach(button => {
@@ -440,5 +463,6 @@ function confirmAndSubmit(id) {
     }
     return false;
 }
+
 </script>
 {% endblock %}

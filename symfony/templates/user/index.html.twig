@@ -21,6 +21,7 @@
                 <h1 class="text-4xl text-center text-white font-bold mb-12">Séries suivies</h1>
                 {% include 'series/_show_series.html.twig' with { 
                     'user': user,
+                    'series_view' : series_view,
                     'app_action' : "app_user",
                     'param_action' : {'id_user' : user.id}|merge({'page_ratings':param_action['page_ratings']}),
                     'pagination' : series_suivies
