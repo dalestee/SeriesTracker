@@ -38,8 +38,7 @@ class SwitchUserSubscriber implements EventSubscriberInterface
         }
 
         // If the current user is not a super admin and the target user is an admin, throw an exception
-        if (
-            !in_array('ROLE_SUPER_ADMIN', $currentUser->getRoles())
+        if (!in_array('ROLE_SUPER_ADMIN', $currentUser->getRoles())
                 && in_array('ROLE_ADMIN', $targetUser->getRoles())
         ) {
             throw new AccessDeniedException();

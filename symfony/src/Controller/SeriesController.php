@@ -351,7 +351,9 @@ class SeriesController extends AbstractController
         }
 
         if ($user) {
-            $series_view =  $entityManager->getRepository(Series::class)->queryVisionage($user->getId(), [$series->getId()], 0);
+            $series_view =  $entityManager
+                ->getRepository(Series::class)
+                ->queryVisionage($user->getId(), [$series->getId()], 0);
         }
 
 
