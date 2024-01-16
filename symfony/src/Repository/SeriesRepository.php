@@ -62,11 +62,10 @@ class SeriesRepository extends ServiceEntityRepository
         $rsm->addScalarResult('percentage_seen', 'percentage_seen');
         $sql = "SELECT ROUND( IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
                 FROM series
-                RIGHT JOIN (
+                LEFT JOIN (
                     SELECT S.series_id, COUNT(*) AS total_episodes
                     FROM season S
                     INNER JOIN episode E ON E.season_id = S.id
-                    WHERE S.series_id IN (:arraySeriesId)
                     GROUP BY S.series_id
                 ) total ON series.id = total.series_id
                 LEFT JOIN (
@@ -76,6 +75,7 @@ class SeriesRepository extends ServiceEntityRepository
                     INNER JOIN season S ON E.season_id = S.id
                     GROUP BY S.series_id
                 ) seen ON series.id = seen.series_id
+                WHERE series.id IN (:arraySeriesId)
                 ORDER BY RAND(:seed)";
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
@@ -92,7 +92,7 @@ class SeriesRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata('App\Entity\Series', 's');
         $rsm->addScalarResult('percentage_seen', 'percentage_seen');
-    
+
         $sql = "
             SELECT series.*, 
                    ROUND(IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
@@ -115,12 +115,12 @@ class SeriesRepository extends ServiceEntityRepository
             WHERE US.user_id = :userId
             ORDER BY percentage_seen DESC
         ";
-    
+
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
 
         $ormQuery = $query;
-    
+
         return $ormQuery->getResult() ;
     }
     public function findByCriteria(array $criteria, $search)

@@ -10,7 +10,6 @@
 				{% set percentage_seen = series_view[index]['percentage_seen'] %}
 				{% set index = index + 1 %}
 			{% endif %}
-			
 		{% endif %}
 			{% set background = "hover:border-blue-200 bg-gray-900" %}
 			{% set title="" %}
@@ -41,12 +40,14 @@
 						{% set usersRating = usersRating / series.ratings|length %}
 					{% endif %}
 					{% if user %}
-						<p class="text-white mb-2">seen:</p>
-						<div class="relative pt-1">
-							<div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-								<div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+						{% if percentage_seen != 0 %}
+							<p class="text-white mb-2">seen:</p>
+							<div class="relative pt-1">
+								<div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+									<div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+								</div>
 							</div>
-						</div>
+						{% endif %}
 					{% endif %}
 					<p class="text-white mb-2">Users rating:
 						{{ usersRating|number_format(1, '.', '') }}/5
