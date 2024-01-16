@@ -89,6 +89,16 @@
                                 {% set numIndex = numIndex + 1 %}
                             {% endfor %}
                         </div>
+                        <span class="text-white font-bold">Number of rate:  {{series.ratings|length}}</span>
+                        {% set usersRating = 0 %}
+                        {% for rating in series.ratings %}
+                            {% set usersRating = usersRating + rating.value %}
+                        {% endfor %}
+                        {% if series.ratings|length > 0 %}
+						    {% set usersRating = usersRating / series.ratings|length %}
+                        {% endif %}
+                        <span class="text-white font-bold">Users Rating: {{ usersRating|number_format(1, '.', '') }}/5</span></br>
+
                         {% if app.user %}
                             <span class="text-white font-bold">Rate the series:</span>
                             {% set userAlreadyRateSerie = false %}
