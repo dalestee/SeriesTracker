@@ -1,37 +1,57 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Series{% endblock %}
+{% block title %}Series
+{% endblock %}
 
 {% block body %}
-    <div class="flex flex-col items-center my-8 px-8 w-full">
-        {% block description %}
-        {% if 'search' not in app.request.uri  %}
+	
+    
+	<div class="flex flex-col items-center my-8 px-8 w-full">
+		{% block description %}
+			{% if 'search' not in app.request.uri  %}
 
-        <div class=" flex flex-col w-11/12 backdrop-blur items-center mb-20 border-y-2 border-gray-600 px-2 py-8 lg:px-20">
-            <h1 class="text-center text-red-500 mb-12 text-4xl">Welcome to <span class="text-white">Series</span><span class="font-bold">Tracker !</span></h1>
-            <h1 class="text-gray-300 leading-6 text-center mb-10 text-sm ">
-                Explore a diverse world of TV series on our platform. Immerse yourself in a vast collection of shows ranging from drama, comedy, and thriller to science fiction and fantasy. 
-                Rate and review your favorite series, keep track of watched episodes, and discover new gems. 
-                Manage your watchlist, stay up-to-date with the latest releases, and connect with a community of fellow TV enthusiasts. 
-                Whether you're a binge-watcher or a casual viewer, our platform provides a seamless experience for all your TV series needs. 
-                Join us in the exciting journey of discovering, rating, and discussing the world of television.</h1>
+				<div class=" flex flex-col w-11/12 backdrop-blur items-center mb-20 border-y-2 border-gray-600 px-2 py-8 lg:px-20">
+					<h1 id="welcomeH1" class=" text-center text-red-500 mb-12 text-4xl">Welcome to
+						<span class="text-white">Series</span>
+						<span class="font-bold">Tracker !</span>
+					</h1>
+					<h1 class="text-gray-300 leading-6 text-center mb-10 text-sm ">
+						Explore a diverse world of TV series on our platform. Immerse yourself in a vast collection of shows ranging from drama, comedy, and thriller to science fiction and fantasy. 
+                        Rate and review your favorite series, keep track of watched episodes, and discover new gems. 
+                        Manage your watchlist, stay up-to-date with the latest releases, and connect with a community of fellow TV enthusiasts. 
+                        Whether you're a binge-watcher or a casual viewer, our platform provides a seamless experience for all your TV series needs. 
+                        Join us in the exciting journey of discovering, rating, and discussing the world of television.</h1>
 
-        </div>
+				</div>
 
-        {% endif %}
+			{% endif %}
 
-        {% endblock %}
-        {# If param_action is null, create param_action #}
-        {% if param_action is null %}
-            {% set param_action = {} %}
-        {% endif %}
+		{% endblock %}
+		{# If param_action is null, create param_action #}
+		{% if param_action is null %}
+			{% set param_action = {} %}
+		{% endif %}
 
-        {% include 'series/_show_series.html.twig' with { 
+		{% include 'series/_show_series.html.twig' with { 
             'user': user,
             'app_action' : app_action,
             'param_action' : param_action,
             'pagination' : pagination,
             }
         %}
-    </div>
+	</div>
+	<script>
+    var welcomeH1 = document.getElementById('welcomeH1');
+    document.addEventListener('DOMContentLoaded', function() {
+        welcomeH1.classList.add('opacity-0');   
+        welcomeH1.classList.add('text-focus-in');
+        welcomeH1.classList.remove('opacity-0');
+    });
+    welcomeH1.classList.remove('opacity-0');
+
+    
+    
+
+
+	</script>
 {% endblock %}

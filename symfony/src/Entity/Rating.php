@@ -33,7 +33,7 @@ class Rating
     private $date;
 
     #[ORM\ManyToOne(targetEntity:"User")]
-    #[ORM\JoinColumn(name:"user_id", referencedColumnName:"id")]
+    #[ORM\JoinColumn(name:"user_id", referencedColumnName:"id", unique:true)]
     private $user;
 
     #[ORM\ManyToOne(targetEntity:"Series", inversedBy:"ratings")]
