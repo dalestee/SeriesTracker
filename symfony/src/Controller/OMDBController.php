@@ -36,7 +36,7 @@ class OMDBController extends AbstractController
         $client = HttpClient::create();
 
         $query = [
-            'apikey' => '5140c72f',  
+            'apikey' => '5140c72f',
             'type' => 'series'
         ];
 
@@ -51,7 +51,7 @@ class OMDBController extends AbstractController
         $serieImdb = $imdb;
         $existSerie = false;
 
-        if ($imdb){
+        if ($imdb) {
             $existingSeries = $entityManager->getRepository(Series::class)->findOneBy(['imdb' => $imdb]);
             if ($existingSeries) {
                 $existSerie = true;
@@ -67,13 +67,13 @@ class OMDBController extends AbstractController
         ]);
     }
 
-    #[Route ('/series/import/{imdb}', name: 'app_admin_series_import', methods: ['GET'])]
+    #[Route('/series/import/{imdb}', name: 'app_admin_series_import', methods: ['GET'])]
     public function import(EntityManagerInterface $entityManager, Request $request, $imdb): Response
     {
         $client = HttpClient::create();
 
         $query = [
-            'apikey' => '5140c72f', 
+            'apikey' => '5140c72f',
             'type' => 'series',
             'i' => $imdb
         ];
@@ -93,9 +93,9 @@ class OMDBController extends AbstractController
             $newSeries->setYearStart($years[0]);
             if (!empty($years[1])) {
                 $newSeries->setYearEnd($years[1]);
-            } 
+            }
         }
-        if($series['Genre']) {
+        if ($series['Genre']) {
             $genres_imdb = explode(', ', $series['Genre']);
             foreach ($genres_imdb as $genre_imdb) {
                 $genre = $entityManager->getRepository(Genre::class)->findOneBy(['name' => $genre_imdb]);
@@ -107,7 +107,7 @@ class OMDBController extends AbstractController
                 $newSeries->addGenre($genre);
             }
         }
-        if ($series['Actors']){
+        if ($series['Actors']) {
             $actorNames = explode(', ', $series['Actors']);
             foreach ($actorNames as $actorName) {
                 $actor = $entityManager->getRepository(Actor::class)->findOneBy(['name' => $actorName]);
