@@ -149,7 +149,6 @@ class OMDBController extends AbstractController
         
             $season = new Season();
             $season->setNumber($seasonNumber);
-        
             if (array_key_exists('Episodes', $seasonDetails)) {
                 foreach ($seasonDetails['Episodes'] as $episodeDetails) {
                     $episode = new Episode();
