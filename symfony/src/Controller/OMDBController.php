@@ -140,7 +140,7 @@ class OMDBController extends AbstractController
 
         
         for ($seasonNumber = 1; $seasonNumber <= $totalSeasons; $seasonNumber++) {
-            $seasonDetails = file_get_contents('http://www.omdbapi.com/?i=' 
+            $seasonDetails = file_get_contents('http://www.omdbapi.com/?i='
             . $imdb . '&season=' . $seasonNumber . '&apikey=' . '5140c72f');
             $seasonDetails = json_decode($seasonDetails, true);
         
