@@ -1,6 +1,6 @@
+	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
 {% set index = 0 %}
 {% for series in pagination.items %}
-	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
 
 		{% if user %}
 			{# Test pour savoir si séries est un Array#}
@@ -98,10 +98,10 @@
 				{% endif %}
 			{% endif %}
 		</div>
-	</div>
 {% else %}
 	<h4 class="text-xl text-center text-white font-bold my-24">No series found</h4>
 {% endfor %}
+	</div>
 
 {% if pagination.items|length != 0 %}
 	{% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
