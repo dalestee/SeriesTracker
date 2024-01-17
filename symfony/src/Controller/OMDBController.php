@@ -131,7 +131,8 @@ class OMDBController extends AbstractController
                 $newSeries->addCountry($country);
             }
         }
-        $seriesDetails = file_get_contents('http://www.omdbapi.com/?i=' . $imdb . '&apikey=' . '5140c72f');
+        $seriesDetails = file_get_contents('http://www.omdbapi.com/?i=' .
+         $imdb . '&apikey=' . '5140c72f');
         $seriesDetails = json_decode($seriesDetails, true);
 
         
@@ -139,7 +140,8 @@ class OMDBController extends AbstractController
 
         
         for ($seasonNumber = 1; $seasonNumber <= $totalSeasons; $seasonNumber++) {
-            $seasonDetails = file_get_contents('http://www.omdbapi.com/?i=' . $imdb . '&season=' . $seasonNumber . '&apikey=' . '5140c72f');
+            $seasonDetails = file_get_contents('http://www.omdbapi.com/?i=' 
+            . $imdb . '&season=' . $seasonNumber . '&apikey=' . '5140c72f');
             $seasonDetails = json_decode($seasonDetails, true);
         
             if (!is_array($seasonDetails)) {
