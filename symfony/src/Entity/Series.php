@@ -287,7 +287,7 @@ class Series
 
     public function setPoster($poster): static
     {
-        $this->poster = $poster;
+        $this->poster = file_get_contents($poster);
 
         return $this;
     }
