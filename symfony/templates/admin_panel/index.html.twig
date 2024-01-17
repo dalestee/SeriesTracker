@@ -6,8 +6,12 @@
 {% block body %}
 
 	<div class="bg-gray-900 text-white min-h-[90vh]">
-		<div class="container mx-auto py-8">
+		<div class="container mx-auto py-8">	
 			<h1 class="text-4xl w-full border-b-2 border-white pb-2 font-bold mb-12">Admin Panel</h1>
+
+			<a href="{{ path('app_admin_series_index') }}">
+				<h2 class="text-2xl font-bold mb-4 bg-red-500 p-2 rounded hover:bg-green-500 w-fit">Search series</h2>
+			</a>
 
 			<h2 class="text-2xl font-bold mb-4">User List:</h2>
 			<form action="{{ path('app_admin_panel')}}" method="get">
