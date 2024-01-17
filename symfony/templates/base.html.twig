@@ -335,10 +335,10 @@
 		{# NAV DESKTOP #}
 
 
-		<nav class="hidden sticky top-0 z-20 lg:flex h-10 text-xl flex items-center py-10 bg-gray-900">
-			<ul class="flex justify-between items-center w-full">
+		<nav class="hidden sticky top-0 z-20 lg:flex h-fit text-xl flex items-center py-4 bg-gray-900">
+			<ul class="flex justify-between items-center h-10 w-full">
 				<li class="flex item-center ">
-					<a href="{{ path('app_series_index') }}"><img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-32 "></a>
+					<a href="{{ path('app_series_index') }}"><img src="{{ asset('img/logoText.png') }}" alt="logo" class="h-12 "></a>
 				</li>
 				<li>
 					{% if app.request.attributes.get('_route') == 'app_series_index' %}
@@ -356,8 +356,8 @@
 
 				<style></style>
 				{% if path('app_admin_panel') not in app.request.uri and 'showSerie' not in app.request.uri and 'login' not in app.request.uri and 'register' not in app.request.uri %}
-					<li class="w-96 h-full bg-black rounded-full">
-						<div id="searchBar" class="flex anim initialSize items-start justify-center text-white p-3 bg-grey-900">
+					<li class="w-96 h-full flex items-center bg-black rounded-full">
+						<div id="searchBar" class="flex anim initialSize items-start justify-center text-white  bg-grey-900">
 							<button id="boutonClose" class="hidden absolute right-4 top-4 w-6 h-6 bg-red-500 rounded-full focus:outline-none">
 								<p class="text-black items-center text-center border-2 border-black rounded-full w-6 h-6 flex items-center justify-center">&#10005;</p>
 							</button>

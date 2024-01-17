@@ -41,7 +41,7 @@ class OMDBController extends AbstractController
 
         $response = $client->request('GET', 'http://www.omdbapi.com/', ['query' => $query]);
 
-        dump($response->getContent());
+        
 
         $series = json_decode($response->getContent(), true);
 

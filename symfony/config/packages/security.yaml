@@ -45,8 +45,8 @@ security:
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: '^/super_admin', roles: ROLE_SUPER_ADMIN} # ROLE_SUPER_ADMIN has access to change roles of users
-        #- { path: ^/profile, roles: ROLE_USER }
-        
+        - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/OMDB, roles: ROLE_ADMIN }
 
 when@test:
     security:
