@@ -43,6 +43,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "user_id", type: "string", length: 128, nullable: true)]
     private $userId;
 
+    #[ORM\Column(name: "lastConnexion", type: "datetime", nullable: true)]
+    private $lastConnexion;
+
+
     #[ORM\ManyToOne(targetEntity: "Country")]
     #[ORM\JoinColumn(name: "country_id", referencedColumnName: "id")]
     private $country;
@@ -78,6 +82,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getLastConnexion()
+    {
+        return $this->lastConnexion;
+    }
+
+    public function setLastConnexion($lastConnexion): self
+    {
+        $this->lastConnexion = $lastConnexion;
+
+        return $this;
     }
 
     public function getName(): ?string
