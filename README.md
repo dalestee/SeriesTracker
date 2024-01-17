@@ -184,3 +184,37 @@ L'application est accessible à l'adresse suivante :
 ```url
 http://localhost:8000
 ```
+
+## Commandes super-administrateur
+
+Toutes les commandes suivantes sont à effectuer dans le dossier `/symfony`
+
+### Création d'un super-administrateur
+
+met un utilisateur donné en super-administrateur.
+
+```bash
+symfony console app:new-super-admin <email>
+```
+
+### Création d'utilisateurs aléatoires
+
+crée un nombre parametrable d'utilisateurs aléatoires.
+Leur mot de passe est son mail, et leur nombre admin dans la base de données est -1.
+
+```bash
+symfony console app:create-users <nombre d'utilisateurs>
+```
+par défaut le nombre d'utilisateurs est 10 si vous ne mettez pas de nombre d'utilisateurs.
+
+### Création de critiques aléatoires
+
+crée des critiques aléatoires pour chaque utilisateur,
+avec un nombre de critiques par utilisateur compris dans une plage parametrable. Et des notes aléatoires pour chaque critique et série.
+
+```bash
+symfony console app:create-rating <nombre minimum de critiques par utilisateur> <nombre maximum de critiques par utilisateur>
+```
+par défaut le nombre minimum de critiques par utilisateur est 10 et le nombre maximum de critiques par utilisateur est 150 si vous ne mettez pas de nombre minimum et maximum de critiques par utilisateur.
+
+
