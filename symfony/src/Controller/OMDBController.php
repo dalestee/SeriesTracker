@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use GuzzleHttp\Client;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/OMDB')]
+#[Route('/omdb')]
 class OMDBController extends AbstractController
 {
     #[Route('/', name: 'app_admin_series_index')]
@@ -20,7 +18,7 @@ class OMDBController extends AbstractController
         return $this->render('omdb/index.html.twig');
     }
 
-    #[Route('/series/', name: 'app_admin_series', methods: ['GET'])]
+    #[Route('/series', name: 'app_admin_series', methods: ['GET'])]
     public function series(EntityManagerInterface $entityManager, Request $request): Response
     {
         $name = $request->query->get('name', 'default');
