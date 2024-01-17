@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: "episode", indexes: [
-    new ORM\Index(name: "IDX_DDAA1CDA4EC001D1", columns: ["season_id"])
+    new ORM\Index(name: "IDX_EPISODE_SEASON_ID", columns: ["season_id"]),
 ])]
 #[ORM\Entity(repositoryClass: "App\Repository\EpisodeRepository")]
 class Episode
