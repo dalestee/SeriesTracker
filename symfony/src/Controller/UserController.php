@@ -101,26 +101,18 @@ class UserController extends AbstractController
     public function profile(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository
     ): Response {
-        $user = $this->getUser();
-        if ($this->getUser() == null) {
-            $user = null;
-        } else {
-            $user = $entityManager->getRepository(User::class)
-                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-        }
+
+        $user = $userRepository
+            ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+
         $form2 = $this->createForm(ProfileFormType::class, $user);
         $form2->handleRequest($request);
-        $test = $form2->isSubmitted();
+
         if ($form2->isSubmitted() && $form2->isValid()) {
-            if ($form2->get('name')->getData() == null) {
-            }
-            if ($form2->get('country')->getData() == null) {
-            }
-
             $oldpassword = $form2->get('oldPassword')->getData();
-
             if ($oldpassword != null) {
                 $firstPassword = $form2->get('newPassword')->get('first')->getData();
                 $secondPassword = $form2->get('newPassword')->get('second')->getData();
@@ -134,11 +126,11 @@ class UserController extends AbstractController
                     );
                 }
             }
-            $user->setName($form2->get('name')->getData());
-            $user->setCountry($form2->get('country')->getData());
+
             $entityManager->persist($user);
             $entityManager->flush();
         }
+        $entityManager->refresh($user);
 
         return $this->render('user/profile.html.twig', [
             'form2' => $form2->createView(),

@@ -3,6 +3,7 @@
 {% endblock %}
 {% block body %}
     {{ form_start(form2) }}
+        {{ form_row(form2.email) }}
         {{ form_row(form2.name) }}
         {{ form_row(form2.oldPassword) }}
         {{ form_row(form2.newPassword.first) }}
