@@ -34,11 +34,12 @@ class CreateUserCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('nbUsers', 
-                InputArgument::OPTIONAL, 
-                'Number of users to create', 
+            ->addArgument(
+                'nbUsers',
+                InputArgument::OPTIONAL,
+                'Number of users to create',
                 10
-                )
+            )
         ;
     }
 
