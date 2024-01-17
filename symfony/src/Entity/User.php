@@ -2,9 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -12,9 +10,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Table(name: "user", uniqueConstraints: [
-    new ORM\UniqueConstraint(name: "UNIQ_8D93D6495E237E05", columns: ["name"]),
-    new ORM\UniqueConstraint(name: "UNIQ_8D93D649E7927C74", columns: ["email"]),
-    new ORM\UniqueConstraint(name: "IDX_8D93D649F92F3E70", columns: ["country_id"]),
+    new ORM\UniqueConstraint(name: "UNIQ_USER_NAME", columns: ["name"]),
+    new ORM\UniqueConstraint(name: "UNIQ_USER_EMAIL", columns: ["email"]),
+    new ORM\UniqueConstraint(name: "IDX_USER_COUNTRY_ID", columns: ["country_id"]),
 ])]
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]

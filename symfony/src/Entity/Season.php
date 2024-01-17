@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 
 #[ORM\Table(name: "season", indexes: [
-    new ORM\Index(name: "IDX_F0E45BA95278319C", columns: ["series_id"])
+    new ORM\Index(name: "IDX_SEASON_SERIES_ID", columns: ["series_id"])
 ])]
 #[ORM\Entity]
 class Season

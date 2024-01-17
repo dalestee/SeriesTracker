@@ -252,7 +252,6 @@ class SeriesController extends AbstractController
                 $rating->setValue($note);
                 $rating->setDate(new \DateTime());
                 $entityManager->persist($rating);
-
                 $entityManager->flush();
             }
 
@@ -294,13 +293,16 @@ class SeriesController extends AbstractController
                 $rating->setUser($user);
                 $rating->setSeries($series);
                 $rating->setValue(0);
+                $rating->setDate(new \DateTime());
+                $entityManager->persist($rating);
+                $entityManager->flush();
             }
             if ($rating->getComment() == null) {
                 $rating->setComment($request->request->get('comment'));
+                $rating->setDate(new \DateTime());
+                $entityManager->persist($rating);
+                $entityManager->flush();
             }
-            $rating->setDate(new \DateTime());
-            $entityManager->persist($rating);
-            $entityManager->flush();
 
             return $this->redirectToRoute('app_series_show', ['id' => $series->getId()], Response::HTTP_SEE_OTHER);
         }
