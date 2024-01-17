@@ -14,20 +14,21 @@
 				<input type="text" name="email" placeholder="Search by email" class="bg-gray-900 text-white p-2 rounded border-2 border-gray-800">
 				<button type="submit" class="ml-3 bg-red-500 p-2 rounded hover:bg-green-500">Search</button>
 			</form>
-			<div class="overflow-x-auto">
+			<div class="overflow-x-auto w-full">
 				<table class="table-auto w-full mt-12 divide-y divide-gray-200">
 					<thead>
 						<tr>
-							<th class="px-4 py-2">Id</th>
-							<th class="px-4 py-2">Username</th>
-							<th class="px-4 py-2">Email</th>
-							<th class="px-4 py-2">Registration Date</th>
-							<th class="px-4 py-2">Role</th>
+							<th class="px-2 py-2">Id</th>
+							<th class="px-2 py-2">Username</th>
+							<th class="px-2 py-2">Email</th>
+							<th class="px-2 py-2">Registration Date</th>
+							<th class="px-2 py-2">Role</th>
                             {% if is_granted('ROLE_SUPER_ADMIN') %}
-								<th class="px-4 py-2">Change Role</th>
+								<th class="px-2 py-2">Change Role</th>
 							{% endif %}
 							{% if is_granted('ROLE_ADMIN') %}
-								<th class="px-4 py-2">Personify</th>
+								<th class="px-2 py-2">Personify</th>
+								<th class="px-2 py-2">Profile</th>
 							{% endif %}
 						</tr>
 					</thead>
@@ -45,29 +46,34 @@
 						</style>
 						{% for user in pagination.items %}
 							<tr>
-								<td class=" px-4 ">{{ user.id }}</td>
-								<td class=" px-4 ">{{ user.name }}</td>
-								<td class=" px-4 ">{{ user.email }}</td>
-								<td class=" px-4 ">{{ user.registerDateToString }}</td>
-								<td class=" px-4 ">{{ user.role }}</td>
+								<td class=" px-2 ">{{ user.id }}</td>
+								<td class=" px-2 ">{{ user.name }}</td>
+								<td class=" px-2 ">{{ user.email }}</td>
+								<td class=" px-2 ">{{ user.registerDateToString }}</td>
+								<td class=" px-2 ">{{ user.role }}</td>
 
                                 {#Afficher le bouton pour changer le role si l'utilisateur est super admin#}
                                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-									<td class=" px-4 ">
+									<td class=" px-2 ">
 										<form action="{{ path('app_admin_change_role',{'id':user.id}) }}" method="post">
 											{% if 'ROLE_ADMIN' in user.roles %}
-												<button type="submit" class="text-white bg-green-500 rounded-full px-2 py-2 hover:text-gray-300">Make User</button>
+												<button type="submit" class="text-white bg-green-500 rounded-full px-2 py-2 hover:text-green-500 hover:bg-white">Make User</button>
 											{% elseif 'ROLE_USER' in user.roles %}
-												<button type="submit" class="text-white bg-red-500 rounded-full px-2 py-2 hover:text-gray-300">Make Admin</button>
+												<button type="submit" class="text-white bg-red-500 rounded-full px-2 py-2 hover:text-red-500 hover:bg-white">Make Admin</button>
 											{% endif %}
 										</form>
 									</td>
 								{% endif %}
                                 {#Afficher le bouton pour incarner l'utilisateur si le role est admin #}
 								{% if is_granted('ROLE_ADMIN') %}
-									<td class=" px-4 ">
+									<td class=" px-2 ">
 										{% if 'ROLE_USER' in user.roles or ('ROLE_ADMIN' in user.roles and is_granted('ROLE_SUPER_ADMIN')) %}
-											<a href="{{ path('app_admin_personify', {'id': user.id}) }}" class="text-white bg-blue-500 rounded-full px-2 py-2 hover:text-gray-300">Personify</a>
+											<a href="{{ path('app_admin_personify', {'id': user.id}) }}" class="text-white bg-blue-500 rounded-full px-2 py-2 hover:text-blue-500 hover:bg-white">Personify</a>
+										{% endif %}
+									</td>
+									<td class=" px-2 ">
+										{% if 'ROLE_USER' in user.roles or ('ROLE_ADMIN' in user.roles and is_granted('ROLE_SUPER_ADMIN')) %}
+											<a href="{{ path('app_user', {'id_user': user.id}) }}" class="text-white border border-white bg-black rounded-full px-2 py-2 hover:text-black hover:bg-white hover:border-black">Profile</a>
 										{% endif %}
 									</td>
 								{% endif %}
