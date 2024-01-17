@@ -18,23 +18,27 @@ class ProfileFormType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Nouveau nom',
+                'required' => true,
+                'mapped' => true
             ])
             ->add('country', EntityType::class, [
                 'class' => Country::class,
                 'choice_label' => 'name',
                 'attr' => ['class' => 'bg-white text-black p-2 mb-4'],
                 'placeholder' => 'Select your country',
-                'required' => false,
+                'required' => true,
+                'mapped' => true
             ])
             ->add('oldPassword', PasswordType::class, [
                 'label' => 'Ancien mot de passe',
                 'mapped' => false,
+                'required' => false,
             ])
             ->add('newPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'invalid_message' => 'Les mots de passe doivent correspondre.',
                 'options' => ['attr' => ['class' => 'password-field']],
-                'required' => true,
+                'required' => false,
                 'first_options'  => ['label' => 'Nouveau mot de passe'],
                 'second_options' => ['label' => 'Répétez le nouveau mot de passe'],
                 'mapped' => false,
@@ -47,5 +51,4 @@ class ProfileFormType extends AbstractType
             'data_class' => User::class,
         ]);
     }
-    
 }

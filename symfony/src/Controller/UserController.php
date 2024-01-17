@@ -38,8 +38,8 @@ class UserController extends AbstractController
         if ($user) {
             $series_suivies = $paginator->paginate(
                 $entityManager
-                ->getRepository(Series::class)
-                ->querySeriesSuiviesTrieParVisionnage($user->getId()),
+                    ->getRepository(Series::class)
+                    ->querySeriesSuiviesTrieParVisionnage($user->getId()),
                 $page_series,
                 10
             );
@@ -97,7 +97,7 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('/profile', name: 'profile',methods: ['GET', 'POST'])]
+    #[Route('/profile', name: 'profile', methods: ['GET', 'POST'])]
     public function profile(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
@@ -113,32 +113,34 @@ class UserController extends AbstractController
         $form2 = $this->createForm(ProfileFormType::class, $user);
         $form2->handleRequest($request);
         $test = $form2->isSubmitted();
-        dump(date('H:i:s'));
-        dump($test);
-        dump($form2);
         if ($form2->isSubmitted() && $form2->isValid()) {
-            dump($user);
-            $firstPassword = $form2->get('newPassword')->get('first')->getData();
-            $secondPassword = $form2->get('newPassword')->get('second')->getData();
-            $oldpassword = $form2->get('oldPassword')->getData();
-            dump($oldpassword);
-            if ($firstPassword === $secondPassword && $userPasswordHasher->isPasswordValid($user, $oldpassword)) {
-                // encode the plain password
-                $user->setPassword(
-                    $userPasswordHasher->hashPassword(
-                        $user,
-                        $firstPassword
-                    )
-                );
-                $user->setName($form2->get('name')->getData());
-                $user->setCountry($form2->get('country')->getData());
-
-                $entityManager->persist($user);
-                $entityManager->flush();
+            if ($form2->get('name')->getData() == null) {
             }
+            if ($form2->get('country')->getData() == null) {
+            }
+
+            $oldpassword = $form2->get('oldPassword')->getData();
+
+            if ($oldpassword != null) {
+                $firstPassword = $form2->get('newPassword')->get('first')->getData();
+                $secondPassword = $form2->get('newPassword')->get('second')->getData();
+                if ($firstPassword === $secondPassword && $userPasswordHasher->isPasswordValid($user, $oldpassword)) {
+                    // encode the plain password
+                    $user->setPassword(
+                        $userPasswordHasher->hashPassword(
+                            $user,
+                            $firstPassword
+                        )
+                    );
+                }
+            }
+            $user->setName($form2->get('name')->getData());
+            $user->setCountry($form2->get('country')->getData());
+            $entityManager->persist($user);
+            $entityManager->flush();
         }
 
-        return $this->render('user/pprofile.html.twig',[
+        return $this->render('user/profile.html.twig', [
             'form2' => $form2->createView(),
             'user' => $user,
             'show_search_form' => false
