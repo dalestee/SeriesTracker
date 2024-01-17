@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Series;
+use App\Entity\Rating; // Add this line to import the Rating class
 
 class UserController extends AbstractController
 {
@@ -27,7 +28,7 @@ class UserController extends AbstractController
         }
 
         $user = $userRepository->find($id_user);
-
+        $ratingRepository = $entityManager->getRepository(Rating::class);
         $page_series = $request->query->getInt('page_series', 1);
         $page_ratings = $request->query->getInt('page_ratings', 1);
 
@@ -39,7 +40,7 @@ class UserController extends AbstractController
                 $page_series,
                 10
             );
-            $rating = $userRepository->queryFindRatingFromUser($user);
+            $rating = $ratingRepository->queryFindRatingFromUser($user);
 
             $series_id = [];
             foreach ($series_suivies->getItems() as $serie) {

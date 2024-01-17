@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Rating;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
 
 class RatingRepository extends ServiceEntityRepository
 {
@@ -21,5 +22,16 @@ class RatingRepository extends ServiceEntityRepository
             ->setParameter('seriesId', $seriesId)
             ->getQuery()
         ;
+    }
+
+    public function queryFindRatingFromUser(User $user)
+    {
+        return $this->createQueryBuilder('u')
+            ->select('r')
+            ->from('App:Rating', 'r')
+            ->where('r.user = :user')
+            ->orderBy('r.date', 'DESC')
+            ->setParameter('user', $user)
+            ->getQuery();
     }
 }
