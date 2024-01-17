@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Repository\UserRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,9 +14,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\ProfileFormType;
 
+#[Route('/user')]
 class UserController extends AbstractController
 {
-    #[Route('/user/{id_user}/', name: 'app_user')]
+    #[Route('/show/{id_user}/', name: 'app_user')]
     public function index(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,

@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Series;
 use App\Entity\User;
 use App\Entity\Rating;
-use App\Form\SeriesType;
 use App\Form\SeriesSearchType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,11 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\SeriesRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\Entity;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
-#[Route('/')]
+#[Route('/series')]
 class SeriesController extends AbstractController
 {
     public function isUserLoggedIn(): bool
@@ -26,7 +22,7 @@ class SeriesController extends AbstractController
         return $this->getUser() != null;
     }
 
-    #[Route('/{page_series}', name: 'app_series_index', methods: ['GET'], requirements: ['page_series' => '\d+'])]
+    #[Route('/index/{page_series}', name: 'app_series_index', methods: ['GET'], requirements: ['page_series' => '\d+'])]
     public function index(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -140,7 +136,7 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/listSeriesFollow/{page_series}', name: 'app_series_list_follow', methods: ['GET'])]
+    #[Route('/followed/{page_series}', name: 'app_series_list_follow', methods: ['GET'])]
     public function listFollow(
         Request $request,
         SeriesRepository $seriesRepository,
@@ -308,27 +304,7 @@ class SeriesController extends AbstractController
         }
     }
 
-    #[Route('/new', name: 'app_series_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $series = new Series();
-        $form = $this->createForm(SeriesType::class, $series);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($series);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_series_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('series/new.html.twig', [
-            'series' => $series,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/showSerie/{id}/{page_ratings}', name: 'app_series_show', methods: ['GET'])]
+    #[Route('/show/{id}/{page_ratings}', name: 'app_series_show', methods: ['GET'])]
     public function show(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
@@ -376,51 +352,4 @@ class SeriesController extends AbstractController
             'userRate' => $userRate ?? null,
         ]);
     }
-
-    #[Route('/{id}/edit', name: 'app_series_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Series $series, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(SeriesType::class, $series);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_series_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('series/edit.html.twig', [
-            'series' => $series,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_series_delete', methods: ['POST'])]
-    public function delete(Request $request, Series $series, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete' . $series->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($series);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_series_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    // #[Route('/search', name: 'app_series_search', methods: ['GET'])]
-    // public function search(Request $request, EntityManagerInterface $entityManager): Response
-    // {
-    //     $search = $request->query->get('search');
-    //     $seriesRepository = $entityManager->getRepository(Series::class);
-    //     var_dump($search);
-    //     $series = $seriesRepository->createQueryBuilder('s')
-    //         ->where('s.title LIKE :search')
-    //         ->setParameter('search', '%' . $search . '%')
-    //         ->getQuery()
-    //         ->getResult();
-
-    //     return $this->render('series/search.html.twig', [
-    //         'series' => $series,
-    //         'search' => $search,
-    //     ]);
-    // }
 }
