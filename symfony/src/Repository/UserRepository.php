@@ -24,4 +24,17 @@ class UserRepository extends ServiceEntityRepository
             ->setParameter('user', $user)
             ->getQuery();
     }
+
+    public function queryBanUsers($comment, $userId)
+    {
+        return $this->createQueryBuilder('u')
+            ->update(User::class, 'u')
+            ->set('u.ban', ':ban')
+            ->where('u.id = :userId') // Assurez-vous de comparer avec l'identifiant correct (id dans cet exemple)
+            ->setParameter('ban', $comment)
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }

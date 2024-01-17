@@ -8,12 +8,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
+use App\Repository\UserRepository;
 
 #[Route('/admin')]
 class AdminPanelController extends AbstractController
 {
     #[Route('/{page}', name: 'app_admin_panel', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
     {
         if (isset($_GET['email'])) {
             $mail = $_GET['email'];
@@ -86,4 +88,44 @@ class AdminPanelController extends AbstractController
 
         return $this->redirectToRoute('app_admin_panel');
     }
+
+    #[Route('/ban/{userId}', name: 'app_admin_ban_user', methods: ['POST'])]
+    public function banUser(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, $userId): Response
+    {
+        $user = $userRepository->find($userId);
+
+        if (!$user) {
+            throw $this->createNotFoundException('User not found');
+        }
+
+        $comment = $request->request->get('comment');
+        
+        if (!$comment) {
+            $userRepository->queryBanUsers("no reason given", $userId);
+        }else{
+            $userRepository->queryBanUsers($comment, $userId);
+        }
+
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_admin_panel');
+    }
+
+    #[Route('/unban/{userId}', name: 'app_admin_unban_user', methods: ['POST'])]
+    public function unbanUser(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, $userId): Response
+    {
+        $user = $userRepository->find($userId);
+
+        if (!$user) {
+            throw $this->createNotFoundException('User not found');
+        }
+
+        $userRepository->queryBanUsers(null, $userId);
+
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_admin_panel');
+    }
+
+    
 }

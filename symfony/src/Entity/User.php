@@ -42,6 +42,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "admin", type: "integer", nullable: false)]
     private $admin = 0;
 
+    #[ORM\Column(name: "ban", type: "string", length: 255, nullable: true)]
+    private $ban;
+
     #[ORM\Column(name: "user_id", type: "string", length: 128, nullable: true)]
     private $userId;
 
@@ -281,5 +284,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getAdmin(): ?int
     {
         return $this->admin;
+    }
+
+    public function getBan(): ?string
+    {
+        return $this->ban;
     }
 }
