@@ -74,8 +74,11 @@ class UserController extends AbstractController
     }
 
     #[Route('/admin_panel/changePassword', name: 'app_admin_change_password', methods: ['GET'])]
-    function changePassword(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
-    {
+    public function changePassword(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
         if (!$this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('app_login');
         }
