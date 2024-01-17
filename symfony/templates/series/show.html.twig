@@ -21,6 +21,7 @@
             <div class="flex lg:flex-row items-center flex-col">
 
                 <div class="w-2/3 flex flex-col lg:self-start items-center lg:w-1/3">
+                    <p class="text-white font-bold">{{ path('app_series_poster', {'id': series.id }) }}</p>
                     <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="pb-20 object-cover rounded-t-lg">
                     <div class="hidden lg:block">
                     {% include 'ratings/_show.html.twig' with { 
