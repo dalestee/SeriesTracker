@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+{% endblock %}
+{% block body %}
+    {{ form_start(form2) }}
+        {{ form_row(form2.name) }}
+        {{ form_row(form2.oldPassword) }}
+        {{ form_row(form2.newPassword.first) }}
+        {{ form_row(form2.newPassword.second) }}
+        {{ form_row(form2.country) }}
+        <button type="submit" class="w-2/12 ml-12 px-4 py-2 bg-red-500 justify-self-center text-white rounded-full">Valider</button>
+    {{ form_end(form2) }}
+{% endblock %}

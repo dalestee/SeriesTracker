@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Series;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Form\ProfileFormType;
 
 class UserController extends AbstractController
 {
@@ -92,5 +93,54 @@ class UserController extends AbstractController
         $user->setPassword($hashedPassword);
         $entityManager->flush();
         return $this->redirectToRoute('app_user', ['id_user' => $userId]);
+    }
+
+
+    #[Route('/profile', name: 'profile')]
+    public function profile(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $user = $this->getUser();
+        if ($this->getUser() == null) {
+            $user = null;
+        } else {
+            $user = $entityManager->getRepository(User::class)
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        }
+        $form2 = $this->createForm(ProfileFormType::class, $user);
+        $form2->handleRequest($request);
+        $test = $form2->isSubmitted();
+        dump(date('H:i:s'));
+        dump($test);
+        dump($form2);
+        if ($form2->isSubmitted() && $form2->isValid()) {
+            dump($user);
+            $firstPassword = $form2->get('newPassword')->get('first')->getData();
+            $secondPassword = $form2->get('newPassword')->get('second')->getData();
+            $oldpassword = $form2->get('oldPassword')->getData();
+            dump($oldpassword);
+            if ($firstPassword === $secondPassword && $userPasswordHasher->isPasswordValid($user, $oldpassword)) {
+                // encode the plain password
+                $user->setPassword(
+                    $userPasswordHasher->hashPassword(
+                        $user,
+                        $firstPassword
+                    )
+                );
+                $user->setName($form2->get('name')->getData());
+                $user->setCountry($form2->get('country')->getData());
+
+                $entityManager->persist($user);
+                $entityManager->flush();
+            }
+        }
+
+        return $this->render('user/profile.html.twig',[
+            'form2' => $form2->createView(),
+            'user' => $user,
+            'show_search_form' => false
+        ]);
     }
 }
