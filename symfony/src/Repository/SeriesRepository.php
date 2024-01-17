@@ -24,7 +24,7 @@ class SeriesRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Series::class);
     }
-    
+
     public function queryFindRatingFromSeries(Series $series)
     {
         return $this->createQueryBuilder('s')
@@ -65,7 +65,7 @@ class SeriesRepository extends ServiceEntityRepository
                 WHERE series.id IN (:arraySeriesId)";
 
         if ($seed) {
-            $sql = $sql."ORDER BY RAND(:seed)";
+            $sql = $sql . "ORDER BY RAND(:seed)";
         }
 
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
@@ -76,7 +76,7 @@ class SeriesRepository extends ServiceEntityRepository
             $query->setParameter('seed', $seed);
         }
 
-        return $query->getResult() ;
+        return $query->getResult();
     }
 
     public function querySeriesSuiviesTrieParVisionnage(int $userId, array $arraySeriesId = [])
@@ -84,7 +84,7 @@ class SeriesRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata('App\Entity\Series', 's');
         $rsm->addScalarResult('percentage_seen', 'percentage_seen');
-    
+
         $sql = "
             SELECT series.*, 
                    ROUND(IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
@@ -104,14 +104,13 @@ class SeriesRepository extends ServiceEntityRepository
                 GROUP BY S.series_id
             ) seen ON series.id = seen.series_id
             INNER JOIN user_series US ON series.id = US.series_id
-            WHERE US.user_id = :userId"
-        ;
+            WHERE US.user_id = :userId";
 
         if ($arraySeriesId) {
-            $sql =  $sql." AND series.id IN (:arraySeriesId)";
+            $sql =  $sql . " AND series.id IN (:arraySeriesId)";
         }
-        $sql = $sql." ORDER BY percentage_seen DESC";
-    
+        $sql = $sql . " ORDER BY percentage_seen DESC";
+
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
         if ($arraySeriesId) {
@@ -119,13 +118,19 @@ class SeriesRepository extends ServiceEntityRepository
         }
 
         $ormQuery = $query;
-    
-        return $ormQuery->getResult() ;
+
+        return $ormQuery->getResult();
     }
     public function findByCriteria(array $criteria, $search)
     {
         $qb = $this->buildQuerryfindByCriteria($criteria, $search);
-        return $qb;
+        $query = $qb->getQuery();
+
+        $count = count($query->getResult());
+
+        $query->setHint('knp_paginator.count', $count);
+
+        return $query;
     }
 
     public function buildQuerryfindByCriteria(array $criteria, $search)
@@ -145,16 +150,16 @@ class SeriesRepository extends ServiceEntityRepository
 
         if (!empty($criteria['startDate'])) {
             $qb->andWhere('s.yearStart = :startDate')
-               ->setParameter('startDate', $criteria['startDate']);
+                ->setParameter('startDate', $criteria['startDate']);
         }
 
         if (!empty($criteria['endDate'])) {
             $qb->andWhere('s.yearEnd = :endDate')
-               ->setParameter('endDate', $criteria['endDate']);
+                ->setParameter('endDate', $criteria['endDate']);
         }
         if (!empty($search)) {
             $qb->andWhere('s.title LIKE :search OR s.plot LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
+                ->setParameter('search', '%' . $search . '%');
         }
         if (!empty($criteria['ratings'])) {
             $sub = $this->createQueryBuilder('s2')
@@ -174,15 +179,21 @@ class SeriesRepository extends ServiceEntityRepository
         $qb->leftJoin('s.user', 'u')
             ->andWhere('u.id = :userId')
             ->setParameter('userId', $user->getId());
+
+        $query = $qb->getQuery();
+        $count = count($query->getResult());
+
+        $query->setHint('knp_paginator.count', $count);
+
         return $qb;
     }
 
     public function findUniqueGenres()
     {
         $qb = $this->createQueryBuilder('s')
-                ->select('g.name')
-                ->distinct()
-                ->leftJoin('s.genre', 'g');
+            ->select('g.name')
+            ->distinct()
+            ->leftJoin('s.genre', 'g');
 
         return $qb;
     }

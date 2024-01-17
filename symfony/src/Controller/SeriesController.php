@@ -47,7 +47,8 @@ class SeriesController extends AbstractController
             if (!$criteria) {
                 $criteria = [];
             }
-            $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery();
+            $query = $seriesRepository
+            ->findByCriteria($criteria, $search);
         } else {
             $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
@@ -162,7 +163,8 @@ class SeriesController extends AbstractController
                 }
                 $seriesQuery = $seriesRepository
                 ->findByCriteriaFollow($user, $criteria, $search)
-                ->getQuery()->getResult();
+                ->getQuery();
+                $seriesQuery->setHint('knp_paginator.count', count($seriesQuery->getResult()));
             } else {
                 $seriesQuery = $entityManager->getRepository(Series::class)
                     ->querySeriesSuiviesTrieParVisionnage($user->getId());
