@@ -24,6 +24,17 @@ class SeriesRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Series::class);
     }
+    
+    public function queryFindRatingFromSeries(Series $series)
+    {
+        return $this->createQueryBuilder('s')
+            ->select('r')
+            ->from('App:Rating', 'r')
+            ->where('r.series = :series')
+            ->orderBy('r.date', 'DESC')
+            ->setParameter('series', $series)
+            ->getQuery();
+    }
 
     public function queryRandom(int $seed)
     {
@@ -32,30 +43,6 @@ class SeriesRepository extends ServiceEntityRepository
         return $queryBuilder;
     }
 
-    public function findByKeyWordInAll($keyWord)
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.title LIKE :keyWord')
-            ->orWhere('s.plot LIKE :keyWord')
-            ->setParameter('keyWord', '%' . $keyWord . '%')
-            ->getQuery();
-    }
-    public function findByKeyWordInSeriesFollowing(User $user, $keyWord)
-    {
-        $qb = $this->createQueryBuilder('s');
-
-        $query = $qb->select('s')
-            ->where('s.user = :user')
-            ->andWhere($qb->expr()->orX(
-                $qb->expr()->like('s.title', ':keyWord'),
-                $qb->expr()->like('s.plot', ':keyWord')
-            ))
-            ->setParameter('user', $user)
-            ->setParameter('keyWord', '%' . $keyWord . '%')
-            ->getQuery();
-
-        return $query->getResult();
-    }
     public function queryVisionage(int $userId, array $arraySeriesId, int $seed)
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
@@ -87,17 +74,17 @@ class SeriesRepository extends ServiceEntityRepository
         return $ormQuery->getResult() ;
     }
 
-    public function querySeriesSuiviesTrieParVisionnage(int $userId)
+    public function querySeriesSuiviesTrieParVisionnage(int $userId, array $arraySeriesId = [])
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata('App\Entity\Series', 's');
         $rsm->addScalarResult('percentage_seen', 'percentage_seen');
-
+    
         $sql = "
             SELECT series.*, 
                    ROUND(IFNULL(seen_episodes, 0) * 100.0 / IFNULL(total_episodes, 1), 2) AS percentage_seen
             FROM series
-            RIGHT JOIN (
+            LEFT JOIN (
                 SELECT S.series_id, COUNT(*) AS total_episodes
                 FROM episode E
                 INNER JOIN season S ON E.season_id = S.id
@@ -112,15 +99,22 @@ class SeriesRepository extends ServiceEntityRepository
                 GROUP BY S.series_id
             ) seen ON series.id = seen.series_id
             INNER JOIN user_series US ON series.id = US.series_id
-            WHERE US.user_id = :userId
-            ORDER BY percentage_seen DESC
-        ";
+            WHERE US.user_id = :userId"
+        ;
 
+        if ($arraySeriesId) {
+            $sql =  $sql." AND series.id IN (:arraySeriesId)";
+        }
+        $sql = $sql." ORDER BY percentage_seen DESC";
+    
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
+        if ($arraySeriesId) {
+            $query->setParameter('arraySeriesId', $arraySeriesId);
+        }
 
         $ormQuery = $query;
-
+    
         return $ormQuery->getResult() ;
     }
     public function findByCriteria(array $criteria, $search)
