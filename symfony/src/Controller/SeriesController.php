@@ -160,7 +160,9 @@ class SeriesController extends AbstractController
                 if (!$criteria) {
                     $criteria = [];
                 }
-                $seriesQuery = $seriesRepository->findByCriteriaFollow($user, $criteria, $search);
+                $seriesQuery = $seriesRepository
+                ->findByCriteriaFollow($user, $criteria, $search)
+                ->getQuery()->getResult();
             } else {
                 $seriesQuery = $entityManager->getRepository(Series::class)
                     ->querySeriesSuiviesTrieParVisionnage($user->getId());
