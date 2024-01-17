@@ -64,7 +64,7 @@ class SeriesRepository extends ServiceEntityRepository
                 ) seen ON series.id = seen.series_id
                 WHERE series.id IN (:arraySeriesId)";
 
-        if ($seed){
+        if ($seed) {
             $sql = $sql."ORDER BY RAND(:seed)";
         }
 
@@ -72,7 +72,7 @@ class SeriesRepository extends ServiceEntityRepository
         $query->setParameter('userId', $userId);
         $query->setParameter('arraySeriesId', $arraySeriesId);
 
-        if ($seed){
+        if ($seed) {
             $query->setParameter('seed', $seed);
         }
 
