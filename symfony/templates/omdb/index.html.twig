@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}OMDB{% endblock %}
+
+{% block body %}
+
+<form action="{{ path('app_admin_series') }}" method="get" class="mb-5 ml-4">
+    <input type="text" name="name" placeholder="Nom de la série" class="text-black">
+    <input type="text" name="imdb" placeholder="ID IMDb" class="text-black">
+    <input type="submit" value="Rechercher" class="text-white font-bold">
+</form>
+
+<div class="mb-16">
+    {% if series is defined %}
+        {% if series is not null %}
+            {% if series.Response == 'True' %}
+                {% if series.Search is defined and series.Search|length > 0 %}
+                    <h2 class="text-2xl text-white font-bold mb-4">Series:</h2>
+                    {% for serie in series.Search %}
+                        {% if serie["Title"] is defined %}
+                            {% set title = serie["Title"] %}
+                            <a href="{{ path('app_admin_series', {'imdb': serie["imdbID"]}) }}" >
+                                <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+                                    <div class="px-4 py-5 border-b border-gray-200">
+                                        <h3 class="text-lg leading-6 font-medium text-gray-900">{{ title }}</h3>
+                                        <p class="text-gray-900"><strong>Year:</strong> {{ serie["Year"] }}</p>
+                                        <p class="text-gray-900"><strong>IMDb:</strong> {{ serie["imdbID"] }}</p>
+                                    </div>   
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                {% if series["Title"] is defined %}
+                    {% set title = series["Title"] %}
+                    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-4">
+                        <div class="px-4 py-5 border-b border-gray-200">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">{{ title }}</h3>
+                            <p class="text-gray-900"><strong>Year:</strong> {{ series["Year"] }}</p>
+                            <p class="text-gray-900"><strong>IMDb ID:</strong> {{ series["imdbID"] }}</p>
+                            <p class="text-gray-900"><strong>Type:</strong> {{ series["Type"] }}</p>
+                            <p class="text-gray-900"><strong>Genre:</strong> {{ series["Genre"] }}</p>
+                            <p class="text-gray-900"><strong>Director:</strong> {{ series["Director"] }}</p>
+                            <p class="text-gray-900"><strong>Actors:</strong> {{ series["Actors"] }}</p>
+                            <p class="text-gray-900"><strong>Plot:</strong> {{ series["Plot"] }}</p>
+                            {% if series["imdbRating"] is defined %}
+                                <p class="text-gray-900"><strong>IMDb Rating:</strong> {{ series["imdbRating"] }}/10</p>
+                            {% endif %}
+                            {% if series["Poster"] is defined and series["Poster"] != "N/A" %}
+                                <img src="{{ series["Poster"] }}" alt="{{ title }} poster">
+                            {% endif %}
+                            <!-- Ajoutez d'autres détails que vous souhaitez afficher ici -->
+                        </div>
+                    </div>
+                {% endif %}
+                {% endif %}
+            {% elseif series.Response == 'False' %}
+                <p class="text-red-500 font-bold mb-2">{{ series.Error }}</p>
+            {% endif %}
+        {% endif %}
+        {% if series is null %}
+            <p class="text-red-500 font-bold mb-2">Incorrect IMDb ID.</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
