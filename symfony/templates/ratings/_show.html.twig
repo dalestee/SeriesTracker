@@ -59,7 +59,7 @@
 {% if pagination.items|length != 0 %}
 	{% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
 	{% set current_page = pagination.getCurrentPageNumber() %}
-	<div class="flex justify-center mt-8">
+	<div class="flex  justify-center my-12">
 		{% if current_page != 1 %}
 
 			<a href="{{ path(app_action, {'page_ratings': current_page - 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>

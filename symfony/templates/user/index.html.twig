@@ -11,14 +11,14 @@
 {% endblock %}
 
 {% block body %}
-
+    <div class="flex flex-col items-center">
     {% if user %}
-        <div class="container mx-auto py-8">
-            <h1 class="text-4xl text-white font-bold mb-8">Fiche de l'utilisateur {{ user.name }}</h1>
+        <div class="container mx-auto py-8 text-center">
+            <h1 class="p-8 border-y-2 border-gray-600 backdrop-blur text-4xl text-gray-300 font-bold mb-8">Fiche de l'utilisateur {{ user.name }}</h1>
         </div>
         
         <div class="container mx-auto py-8">
-                <h1 class="text-4xl text-center text-white font-bold mb-12">Séries suivies</h1>
+                <h1 class="text-3xl text-center text-white font-bold mb-12">Followed shows</h1>
                 {% include 'series/_show_series.html.twig' with { 
                     'user': user,
                     'series_view' : series_view,
@@ -28,6 +28,8 @@
                     }
                 %}
         </div>
+                        <h1 class="text-3xl text-center text-white font-bold mb-12">All ratings from {{ user.name }}</h1>
+
         {% include 'ratings/_show_user_page.html.twig' with { 
                     'app_action' : "app_user",
                     'param_action' : {'id_user' : user.id}|merge({'page_series':param_action['page_series']}),
@@ -39,5 +41,6 @@
             <h1 class="text-4xl text-white font-bold mb-8">Il n'existe aucun utilisateur avec cet identifiant</h1>
         </div>
     {% endif %}
+    </div>
 {% endblock %}
 
