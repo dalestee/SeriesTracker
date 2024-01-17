@@ -47,7 +47,7 @@ class SeriesController extends AbstractController
             if (!$criteria) {
                 $criteria = [];
             }
-            $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery()->getResult();
+            $query = $seriesRepository->findByCriteria($criteria, $search)->getQuery();
         } else {
             $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
@@ -172,12 +172,24 @@ class SeriesController extends AbstractController
                 10/*limit per page*/
             );
 
+            if ($pagination->getItems()[0] instanceof Series) {
+                $series_id = [];
+                foreach ($pagination->getItems() as $serie) {
+                    $series_id[] = $serie->getId();
+                }
+    
+                $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id);
+            }
+
+            
+
             return $this->render('series/series_follow.html.twig', [
                 'user' => $this->getUser(),
                 'app_action' => 'app_series_list_follow',
                 'pagination' => $pagination,
                 'form' => $form->createView(),
                 'param_action' => ['search' => $search],
+                'series_view' => $series_view ?? [],
             ]);
         }
     }
