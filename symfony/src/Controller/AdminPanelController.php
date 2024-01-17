@@ -6,13 +6,15 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/admin')]
 class AdminPanelController extends AbstractController
 {
-    #[Route('/{page}', name: 'app_admin_panel', methods: ['GET'])]
+    #[Route('/dashboard/{page}', name: 'app_admin_panel', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, $page = 1): Response
     {
         if (isset($_GET['email'])) {
@@ -85,5 +87,25 @@ class AdminPanelController extends AbstractController
         }
 
         return $this->redirectToRoute('app_admin_panel');
+    }
+
+    #[Route('/changePassword', name: 'app_admin_change_password', methods: ['GET'])]
+    public function changePassword(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $userId = $request->query->get('userId');
+        $password = $request->query->get('password');
+
+        $user = $entityManager->getRepository(User::class)->find($userId);
+        $hashedPassword = $passwordHasher->hashPassword($user, $password);
+        $user->setPassword($hashedPassword);
+        $entityManager->flush();
+        return $this->redirectToRoute('app_user', ['id_user' => $userId]);
     }
 }
