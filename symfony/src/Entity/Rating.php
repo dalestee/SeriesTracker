@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(
     name: "rating",
     uniqueConstraints: [
-        new ORM\UniqueConstraint(name: "unique_rating", columns: ["series_id", "users_id"])
+        new ORM\UniqueConstraint(name: "unique_rating", columns: ["series_id", "user_id"])
     ],
     indexes: [
         new ORM\Index(name: "IDX_D88926225278319C", columns: ["series_id"]),
@@ -118,5 +118,10 @@ class Rating
         $this->series = $series;
 
         return $this;
+    }
+
+    public function isModerate(): ?bool
+    {
+        return $this->moderate;
     }
 }
