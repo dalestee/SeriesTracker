@@ -8,12 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(
     name: "rating",
     uniqueConstraints: [
-        new ORM\UniqueConstraint(name: "unique_rating", columns: ["series_id", "users_id"])
+        new ORM\UniqueConstraint(name: "UNIQ_RATING_USER_SERIES", columns: ["user_id", "series_id"])
     ],
-    indexes: [
-        new ORM\Index(name: "IDX_D88926225278319C", columns: ["series_id"]),
-        new ORM\Index(name: "IDX_D8892622A76ED395", columns: ["user_id"])
-    ]
 )]
 #[ORM\Entity(repositoryClass: "App\Repository\RatingRepository")]
 class Rating
@@ -26,14 +22,14 @@ class Rating
     #[ORM\Column(name: "value", type: "integer", nullable: false)]
     private $value;
 
-    #[ORM\Column(name:"comment", type:"text", length:0, nullable:false)]
+    #[ORM\Column(name:"comment", type:"text", length:0, nullable:true)]
     private $comment;
 
     #[ORM\Column(name:"date", type:"datetime", nullable:false)]
     private $date;
 
     #[ORM\ManyToOne(targetEntity:"User")]
-    #[ORM\JoinColumn(name:"user_id", referencedColumnName:"id", unique:true)]
+    #[ORM\JoinColumn(name:"user_id", referencedColumnName:"id")]
     private $user;
 
     #[ORM\ManyToOne(targetEntity:"Series", inversedBy:"ratings")]
