@@ -171,16 +171,15 @@ class SeriesController extends AbstractController
                 $page_series/*page number*/,
                 10/*limit per page*/
             );
-
-            if ($pagination->getItems()[0] instanceof Series) {
-                $series_id = [];
-                foreach ($pagination->getItems() as $serie) {
-                    $series_id[] = $serie->getId();
+            if ($pagination->getItems()) {
+                if ($pagination->getItems()[0] instanceof Series) {
+                    $series_id = [];
+                    foreach ($pagination->getItems() as $serie) {
+                        $series_id[] = $serie->getId();
+                    }
+                    $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id);
                 }
-    
-                $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id);
             }
-
             
 
             return $this->render('series/series_follow.html.twig', [
