@@ -43,7 +43,7 @@ class SeriesRepository extends ServiceEntityRepository
         return $queryBuilder;
     }
 
-    public function queryVisionage(int $userId, array $arraySeriesId, int $seed)
+    public function queryVisionage(int $userId, array $arraySeriesId, int $seed = 0)
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addScalarResult('percentage_seen', 'percentage_seen');
@@ -62,16 +62,21 @@ class SeriesRepository extends ServiceEntityRepository
                     INNER JOIN season S ON E.season_id = S.id
                     GROUP BY S.series_id
                 ) seen ON series.id = seen.series_id
-                WHERE series.id IN (:arraySeriesId)
-                ORDER BY RAND(:seed)";
+                WHERE series.id IN (:arraySeriesId)";
+
+        if ($seed) {
+            $sql = $sql."ORDER BY RAND(:seed)";
+        }
+
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         $query->setParameter('userId', $userId);
         $query->setParameter('arraySeriesId', $arraySeriesId);
-        $query->setParameter('seed', $seed);
 
-        $ormQuery = $query;
+        if ($seed) {
+            $query->setParameter('seed', $seed);
+        }
 
-        return $ormQuery->getResult() ;
+        return $query->getResult() ;
     }
 
     public function querySeriesSuiviesTrieParVisionnage(int $userId, array $arraySeriesId = [])
