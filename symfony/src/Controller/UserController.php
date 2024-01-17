@@ -137,7 +137,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $this->render('user/profile.html.twig',[
+        return $this->render('user/pprofile.html.twig',[
             'form2' => $form2->createView(),
             'user' => $user,
             'show_search_form' => false
