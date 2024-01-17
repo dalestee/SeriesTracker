@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Series;
+use App\Entity\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\ProfileFormType;
@@ -96,7 +97,7 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('/profile', name: 'profile')]
+    #[Route('/profile', name: 'profile',methods: ['GET', 'POST'])]
     public function profile(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
