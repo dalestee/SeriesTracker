@@ -4,6 +4,11 @@ namespace App\Repository;
 
 use App\Entity\Series;
 use App\Entity\User;
+use App\Entity\Actor;
+use App\Entity\Country;
+use App\Entity\Episode;
+use App\Entity\Genre;
+use App\Entity\Season;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
@@ -196,5 +201,127 @@ class SeriesRepository extends ServiceEntityRepository
             ->leftJoin('s.genre', 'g');
 
         return $qb;
+    }
+
+
+    public function updateSeries($imdb, $imdb_api_key): bool
+    {
+        $entityManager = $this->getEntityManager();
+        $series = $this->findOneBy(['imdb' => $imdb]);
+
+        if (!$series) {
+            return false;
+        }
+
+        $newData = file_get_contents('http://www.omdbapi.com/?i=' . $imdb . '&apikey=' . $imdb_api_key);
+        $newData = json_decode($newData, true);
+
+
+        $series->setTitle($newData['Title']);
+        $series->setPoster($newData['Poster']);
+        $series->setPlot($newData['Plot']);
+        $series->setDirector($newData['Director']);
+        $series->setAwards($newData['Awards']);
+        if ($newData['Year']) {
+            $years = explode('–', $newData['Year']);
+            $series->setYearStart($years[0]);
+            if (!empty($years[1])) {
+                $series->setYearEnd($years[1]);
+            }
+        }
+        if ($newData['Genre']) {
+            $genres_imdb = explode(', ', $newData['Genre']);
+            foreach ($genres_imdb as $genre_imdb) {
+                $genre = $entityManager->getRepository(Genre::class)->findOneBy(['name' => $genre_imdb]);
+                if (!$genre) {
+                    $genre = new Genre();
+                    $genre->setName($genre_imdb);
+                    $entityManager->persist($genre);
+                }
+                $series->addGenre($genre);
+            }
+        }
+
+        if ($newData['Actors']) {
+            $actorNames = explode(', ', $newData['Actors']);
+            foreach ($actorNames as $actorName) {
+                $actor = $entityManager->getRepository(Actor::class)->findOneBy(['name' => $actorName]);
+                if (!$actor) {
+                    $actor = new Actor();
+                    $actor->setName($actorName);
+                    $entityManager->persist($actor);
+                }
+                $series->addActor($actor);
+            }
+        }
+
+        if ($newData['Country']) {
+            $countryNames = explode(', ', $newData['Country']);
+            foreach ($countryNames as $countryName) {
+                $country = $entityManager->getRepository(Country::class)->findOneBy(['name' => $countryName]);
+                if (!$country) {
+                    $country = new Country();
+                    $country->setName($countryName);
+                    $entityManager->persist($country);
+                }
+                $series->addCountry($country);
+            }
+        }
+
+        $seriesDetails = file_get_contents('http://www.omdbapi.com/?i=' . $imdb . '&apikey=' . $imdb_api_key);
+        $seriesDetails = json_decode($seriesDetails, true);
+
+        $totalSeasons = $seriesDetails['totalSeasons'];
+
+        for ($seasonNumber = 1; $seasonNumber <= $totalSeasons; $seasonNumber++) {
+            $seasonDetails = file_get_contents('http://www.omdbapi.com/?i=' . $imdb . '&season=' .
+                $seasonNumber . '&apikey=' . $imdb_api_key);
+            $seasonDetails = json_decode($seasonDetails, true);
+
+            if (!is_array($seasonDetails)) {
+                continue;
+            }
+
+            $season = $entityManager->getRepository(Season::class)
+                ->findOneBy(['number' => $seasonNumber, 'series' => $series]);
+
+            if (!$season) {
+                $season = new Season();
+                $season->setNumber($seasonNumber);
+                $season->setSeries($series);
+                $entityManager->persist($season);
+            }
+
+            if (array_key_exists('Episodes', $seasonDetails)) {
+                foreach ($seasonDetails['Episodes'] as $episodeDetails) {
+                    $episode = $entityManager->getRepository(Episode::class)
+                        ->findOneBy(['number' => $episodeDetails['Episode'], 'season' => $season]);
+                    if (!$episode) {
+                        $episode = new Episode();
+                        $episode->setTitle($episodeDetails['Title']);
+                        $episode->setNumber($episodeDetails['Episode']);
+                        $episode->setImdb($episodeDetails['imdbID']);
+                        $episode->setImdbRating(floatval($episodeDetails['imdbRating']));
+                        if ($episodeDetails['Released'] !== 'N/A') {
+                            $episode->setDate(new \DateTime($episodeDetails['Released']));
+                        } else {
+                            $episode->setDate(null);
+                        }
+                        $episode->setSeason($season);
+                        $entityManager->persist($episode);
+
+                        $season->addEpisode($episode);
+                        $season->setSeries($series);
+                    }
+                }
+            }
+            $series->addSeason($season);
+            $entityManager->persist($season);
+        }
+
+        $entityManager->persist($series);
+        $entityManager->flush();
+
+        return true;
     }
 }

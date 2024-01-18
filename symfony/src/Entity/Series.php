@@ -24,7 +24,7 @@ class Series
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
 
-    #[ORM\Column(name: "title", type: "string", length: 128, nullable: false)]
+    #[ORM\Column(name: "title", type: "string", length: 256, nullable: false)]
     private $title;
 
     #[ORM\Column(name: "plot", type: "text", length: 0, nullable: true)]
