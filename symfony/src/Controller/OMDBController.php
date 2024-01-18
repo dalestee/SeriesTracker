@@ -39,7 +39,7 @@ class OMDBController extends AbstractController
         $client = HttpClient::create();
 
         $query = [
-            'apikey' => '5140c72f',
+            'apikey' => OMDBController::$OMDB_API_KEY,
             'type' => 'series'
         ];
 
