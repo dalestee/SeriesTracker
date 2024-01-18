@@ -84,7 +84,7 @@
 									</td>
 									<td class=" px-2 ">
 										{% if 'ROLE_USER' in user.roles or ('ROLE_ADMIN' in user.roles and is_granted('ROLE_SUPER_ADMIN')) %}
-											<a href="{{ path('app_user', {'id_user': user.id}) }}" class="text-white border border-white bg-black rounded-full px-2 py-2 hover:text-black hover:bg-white hover:border-black">Profile</a>
+											<a href="{{ path('app_user_show', {'id_user': user.id}) }}" class="text-white border border-white bg-black rounded-full px-2 py-2 hover:text-black hover:bg-white hover:border-black">Profile</a>
 										{% endif %}
 									</td>
 									<td class=" px-2 ">

@@ -18,7 +18,7 @@ use App\Form\ProfileFormType;
 #[Route('/user')]
 class UserController extends AbstractController
 {
-    #[Route('/show/{id_user}/', name: 'app_user')]
+    #[Route('/show/{id_user}/', name: 'app_user_show')]
     public function index(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
@@ -26,9 +26,6 @@ class UserController extends AbstractController
         Request $request,
         int $id_user
     ): Response {
-        if (!$this->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('app_login');
-        }
 
         $user = $userRepository->find($id_user);
 
@@ -70,32 +67,10 @@ class UserController extends AbstractController
             'series_suivies' => $series_suivies,
             'series_view' => $series_view,
             'ratings_user' => $ratings_user,
-            'app_action' => 'app_user',
+            'app_action' => 'app_user_show',
             'param_action' => ['page_series' => $page_series, 'page_ratings' => $page_ratings]
         ]);
     }
-
-    #[Route('/admin_panel/changePassword', name: 'app_admin_change_password', methods: ['GET'])]
-    public function changePassword(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
-    ): Response {
-        if (!$this->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        $userId = $request->query->get('userId');
-        $password = $request->query->get('password');
-        dump($password);
-
-        $user = $entityManager->getRepository(User::class)->find($userId);
-        $hashedPassword = $passwordHasher->hashPassword($user, $password);
-        $user->setPassword($hashedPassword);
-        $entityManager->flush();
-        return $this->redirectToRoute('app_user', ['id_user' => $userId]);
-    }
-
 
     #[Route('/profile', name: 'profile', methods: ['GET', 'POST'])]
     public function profile(
@@ -137,5 +112,48 @@ class UserController extends AbstractController
             'user' => $user,
             'show_search_form' => false
         ]);
+    }
+    #[Route('/follow/{id_user}', name: 'app_user_follow', methods: ['GET'])]
+    public function followUser(
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        int $id_user
+    ): Response {
+
+        $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $user_followed = $userRepository->find($id_user);
+
+        dump($user);
+        dump($user_followed);
+
+        if ($user->getId() != $id_user && !$user->isFollowing($user_followed)) {
+            $user->addFollowing($user_followed);
+            $entityManager->persist($user);
+            $entityManager->persist($user_followed);
+            $entityManager->flush();
+        }
+
+        dump($user);
+        dump($user_followed);
+        return $this->redirectToRoute('app_user_show', ['id_user' => $id_user]);
+    }
+
+    #[Route('/unfollow/{id_user}', name: 'app_user_unfollow', methods: ['GET'])]
+    public function unfollowUser(
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        int $id_user
+    ): Response {
+        $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $user_followed = $userRepository->find($id_user);
+
+        if ($user->getId() != $id_user && $user->isFollowing($user_followed)) {
+            $user->removeFollowing($user_followed);
+            $entityManager->persist($user);
+            $entityManager->persist($user_followed);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_user_show', ['id_user' => $id_user]);
     }
 }
