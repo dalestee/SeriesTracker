@@ -20,6 +20,8 @@ class RatingRepository extends ServiceEntityRepository
             ->andWhere('r.series = :seriesId')
             ->orderBy('r.date', 'DESC')
             ->andWhere('r.moderate = true')
+            ->orWhere('r.comment IS NULL')
+            ->orWhere('r.comment = \'\'')
             ->setParameter('seriesId', $seriesId)
             ->getQuery()
         ;
@@ -29,6 +31,8 @@ class RatingRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.moderate = false')
+            ->andWhere('r.comment IS NOT NULL')
+            ->andWhere('r.comment <> \'\'')
             ->orderBy('r.date', 'DESC')
             ->getQuery()
         ;
