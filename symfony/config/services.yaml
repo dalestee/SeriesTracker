@@ -19,8 +19,14 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            
     App\EventListener\SwitchUserSubscriber:
         tags:
             - { name: 'kernel.event_subscriber' }
+            
+    App\EventListener\LogoutListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'Symfony\Component\Security\Http\Event\LogoutEvent', method: 'onLogoutSuccess' }
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

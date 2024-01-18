@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -43,6 +44,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "user_id", type: "string", length: 128, nullable: true)]
     private $userId;
 
+    #[ORM\Column(name: "lastConnexion", type: "datetime", nullable: true)]
+    private $lastConnexion;
+
+    #[ORM\ManyToMany(targetEntity: "User", inversedBy: "followers")]
+    #[ORM\JoinTable(
+        name: "user_followers",
+        joinColumns: [new ORM\JoinColumn(name: "user_follower", referencedColumnName: "id")],
+        inverseJoinColumns: [new ORM\JoinColumn(name: "user_followed", referencedColumnName: "id")]
+    )]
+    private $following;
+
+    #[ORM\ManyToMany(targetEntity: "User", mappedBy: "following")]
+    private $followers;
+
+
     #[ORM\ManyToOne(targetEntity: "Country")]
     #[ORM\JoinColumn(name: "country_id", referencedColumnName: "id")]
     private $country;
@@ -73,11 +89,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->series = new \Doctrine\Common\Collections\ArrayCollection();
         $this->episode = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->ratings = new ArrayCollection();
+        $this->following = new ArrayCollection();
+        $this->followers = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getLastConnexion()
+    {
+        return $this->lastConnexion;
+    }
+
+    public function setLastConnexion($lastConnexion): self
+    {
+        $this->lastConnexion = $lastConnexion;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -279,5 +310,60 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getAdmin(): ?int
     {
         return $this->admin;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getFollowing(): Collection
+    {
+        return $this->following;
+    }
+
+    public function addFollowing(User $following): static
+    {
+        if (!$this->following->contains($following)) {
+            $this->following->add($following);
+        }
+
+        return $this;
+    }
+
+    public function removeFollowing(User $following): static
+    {
+        $this->following->removeElement($following);
+
+        return $this;
+    }
+    public function isFollowing(User $user): bool
+    {
+        return $this->getFollowing()->contains($user);
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getFollowers(): Collection
+    {
+        return $this->followers;
+    }
+
+    public function addFollower(User $follower): static
+    {
+        if (!$this->followers->contains($follower)) {
+            $this->followers->add($follower);
+            $follower->addFollowing($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFollower(User $follower): static
+    {
+        if ($this->followers->removeElement($follower)) {
+            $follower->removeFollowing($this);
+        }
+
+        return $this;
     }
 }

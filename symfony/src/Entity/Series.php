@@ -54,7 +54,7 @@ class Series
     #[ORM\ManyToMany(targetEntity: "User", mappedBy: "series")]
     private $user = array();
 
-    #[ORM\ManyToMany(targetEntity: "Genre", mappedBy: "series", fetch:"EAGER")]
+    #[ORM\ManyToMany(targetEntity: "Genre", mappedBy: "series")]
     #[ORM\JoinTable(name: "genre_series")]
     private $genre = array();
 
@@ -71,7 +71,7 @@ class Series
     #[ORM\OneToMany(mappedBy: "series", targetEntity: "ExternalRating")]
     private $externalRatings;
 
-    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating", fetch:"EAGER")]
+    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating")]
     private $ratings;
 
     /**
