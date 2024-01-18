@@ -8,7 +8,8 @@ use App\Entity\Genre;
 use App\Entity\Season;
 use App\Entity\Country;
 use App\Entity\Episode;
-use DoctrineExtensions\Query\Postgresql\Year;
+use App\Repository\SeriesRepository;
+use App\Tools\OmdbTools;
 
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,8 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/omdb')]
 class OMDBController extends AbstractController
 {
+    private static $OMDB_API_KEY = '1d9c204f';
+
     #[Route('/', name: 'app_admin_series_index')]
     public function index(): Response
     {
@@ -36,7 +39,7 @@ class OMDBController extends AbstractController
         $client = HttpClient::create();
 
         $query = [
-            'apikey' => '5140c72f',
+            'apikey' => OMDBController::$OMDB_API_KEY,
             'type' => 'series'
         ];
 
@@ -68,12 +71,12 @@ class OMDBController extends AbstractController
     }
 
     #[Route('/series/import/{imdb}', name: 'app_admin_series_import', methods: ['GET'])]
-    public function import(EntityManagerInterface $entityManager, Request $request, $imdb): Response
+    public function import(EntityManagerInterface $entityManager, $imdb): Response
     {
         $client = HttpClient::create();
 
         $query = [
-            'apikey' => '5140c72f',
+            'apikey' => OMDBController::$OMDB_API_KEY,
             'type' => 'series',
             'i' => $imdb
         ];
@@ -132,7 +135,7 @@ class OMDBController extends AbstractController
             }
         }
         $seriesDetails = file_get_contents('http://www.omdbapi.com/?i=' .
-         $imdb . '&apikey=' . '5140c72f');
+         $imdb . '&apikey=' . OMDBController::$OMDB_API_KEY);
         $seriesDetails = json_decode($seriesDetails, true);
 
         
@@ -141,11 +144,10 @@ class OMDBController extends AbstractController
         
         for ($seasonNumber = 1; $seasonNumber <= $totalSeasons; $seasonNumber++) {
             $seasonDetails = file_get_contents('http://www.omdbapi.com/?i='
-            . $imdb . '&season=' . $seasonNumber . '&apikey=' . '5140c72f');
+            . $imdb . '&season=' . $seasonNumber . '&apikey=' . OMDBController::$OMDB_API_KEY);
             $seasonDetails = json_decode($seasonDetails, true);
         
             if (!is_array($seasonDetails)) {
-                // Handle the error here, e.g. continue to the next iteration of the loop
                 continue;
             }
         
@@ -167,6 +169,7 @@ class OMDBController extends AbstractController
                     $entityManager->persist($episode);
             
                     $season->addEpisode($episode);
+                    $season->setSeries($newSeries);
                 }
             }
         
@@ -176,6 +179,15 @@ class OMDBController extends AbstractController
 
         $entityManager->persist($newSeries);
         $entityManager->flush();
+
+        return $this->redirectToRoute('app_admin_series_index');
+    }
+
+    #[Route('/series/miseAJour/{imdb}', name: 'app_admin_series_mise_a_jour', methods: ['GET'])]
+    public function miseAJour(SeriesRepository $seriesRepository, $imdb): Response
+    {
+
+        $seriesRepository->updateSeries($imdb, OMDBController::$OMDB_API_KEY);
 
         return $this->redirectToRoute('app_admin_series_index');
     }

@@ -55,6 +55,12 @@ class UserController extends AbstractController
                 $page_ratings,
                 12
             );
+
+            $users_following = $entityManager
+                ->getRepository(User::class)
+                ->queryFindUsersFollowing($user->getId());
+
+            dump($users_following->getResult());
         } else {
             $series_suivies = null;
             $ratings_user = null;
@@ -67,6 +73,38 @@ class UserController extends AbstractController
             'ratings_user' => $ratings_user,
             'app_action' => 'app_user_show',
             'param_action' => ['page_series' => $page_series, 'page_ratings' => $page_ratings]
+        ]);
+    }
+    
+    #[Route('/followed', name: 'app_user_followed_users')]
+    public function followedUsers(
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+        Request $request,
+    ): Response {
+        $user = $entityManager->getRepository(User::class)
+                ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+    
+        $page = $request->query->getInt('page', 1);
+    
+        if ($user) {
+            $pagination = $paginator->paginate(
+                $entityManager
+                    ->getRepository(User::class)
+                    ->queryFindUsersFollowing($user->getId())->getResult(),
+                $page,
+                10
+            );
+        } else {
+            $pagination = null;
+        }
+    
+        return $this->render('user/followed_users.html.twig', [
+            'user' => $user,
+            'pagination' => $pagination,
+            'app_action' => 'app_user_followed_users',
+            'param_action' => [],
+            'page' => $page
         ]);
     }
 
