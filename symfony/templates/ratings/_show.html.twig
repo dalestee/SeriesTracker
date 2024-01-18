@@ -44,30 +44,21 @@
 					</a>
 					</div>
 					{% if rating.comment != null %}
-						<dd class="mt-1 text-sm text-gray-900 flex-col justify-center">
-							<div class="w-full  bg-white p-4 rounded shadow h-52 lg:max-h-52"> 
+						<dd class="mt-1 text-sm text-gray-900 flex justify-center">
+							<div class="w-full  bg-white p-4 rounded shadow h-52 lg:max-h-52"> <!-- Ajustez la hauteur ici, par exemple, h-32 pour une hauteur de 32 pixels -->
 								<textarea readonly class="text-gray-900 w-full h-full bg-transparent border-none resize-none focus:outline-none">{{ rating.comment }}</textarea>
 							</div>
+							
 						</dd>
-							{% if is_moderate is defined and is_moderate %}
-							<div class="flex flex-row justify-center mt-2">
-								    <form method="post" action="{{ path('app_admin_panel_moderate', {'id': rating.id}) }}">
-										<input type="hidden" name="moderate" value="true">
-										<button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-4">Validate</button>
-									</form>
-									<form method="post" action="{{ path('app_admin_panel_moderate', {'id': rating.id}) }}">
-										<input type="hidden" name="moderate" value="false">
-										<button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full mb-4">Delete</button>
-									</form>
-								{% endif %}
-							</div>
-						
+						{% block moderation %}
+							{% endblock %}
 					{% endif %}
 				</dl>
 			</div>
 		</div>
 	{% endfor %}
 </div>
+
 {% if pagination.items|length != 0 %}
 	{% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
 	{% set current_page = pagination.getCurrentPageNumber() %}
@@ -92,4 +83,5 @@
 		{% if current_page != total_pages %}
 			<a href="{{ path(app_action, {'page_ratings': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
 		{% endif %}
+	</div>
 {% endif %}

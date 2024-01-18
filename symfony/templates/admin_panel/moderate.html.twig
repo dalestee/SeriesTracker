@@ -5,15 +5,14 @@
 {% endblock %}
 
 {% block body %}
-
-
-    {% include 'ratings/_show_user_page.html.twig' with { 
+    <div class="container mx-auto">
+            {% include 'ratings/_show_user_page.html.twig' with { 
             'app_action' : "app_admin_panel_moderate",
             'param_action' : {},
             'page_ratings' : page_ratings,
             'pagination' : ratings,
             'is_moderate' : true
     } %}
-
+    </div>
 
 {% endblock %}

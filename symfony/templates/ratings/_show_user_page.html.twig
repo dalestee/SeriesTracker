@@ -12,3 +12,18 @@
 {% block link_rating_card %}
     <a href="{{ path('app_series_show', {'id': rating.series.id}) }}" class="hover:bg-gray-100 block focus:outline-none focus:bg-gray-50 transition duration-150 ease-in-out">
 {% endblock %}
+
+{% block moderation %}
+    {% if is_moderate is defined and is_moderate %}
+        <div class="flex flex-row justify-center mt-2">
+            <form method="post" action="{{ path('app_admin_panel_moderate', {'id': rating.id}) }}">
+                <input type="hidden" name="moderate" value="true">
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-4">Validate</button>
+            </form>
+            <form method="post" action="{{ path('app_admin_panel_moderate', {'id': rating.id}) }}">
+                <input type="hidden" name="moderate" value="false">
+                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full mb-4">Delete</button>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
