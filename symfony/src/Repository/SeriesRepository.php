@@ -322,4 +322,22 @@ class SeriesRepository extends ServiceEntityRepository
 
         return true;
     }
+
+    public function episodeOfSeries($seriesId)
+    {
+        $conn = $this->_em->getConnection();
+
+        $sql = '
+            SELECT series.id AS series_id, series.title AS series_title, season.id AS season_id, season.number AS season_number, episode.id AS episode_id, episode.number AS episode_number, episode.title AS episode_title
+            FROM series
+            JOIN season ON season.series_id = series.id
+            JOIN episode ON episode.season_id = season.id
+            WHERE series.id = :seriesId
+            ORDER BY season.number, episode.number
+        ';
+
+        $stmt = $conn->executeQuery($sql, ['seriesId' => $seriesId]);
+
+        return $stmt->fetchAllAssociative();
+    }
 }
