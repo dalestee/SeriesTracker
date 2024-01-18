@@ -4,6 +4,38 @@ Ce tutoriel de déploiement est destiné au déploiement de l'application dans u
 
 Il est destiné au super-administrateur de l'application ayant accès à une base de donnée.
 
+## Table des matières
+
+- [SAE3.01 Développement d'application](#sae301-développement-dapplication)
+  - [Table des matières](#table-des-matières)
+  - [Equipe](#equipe)
+  - [Environnement](#environnement)
+  - [Installation du code de l'application](#installation-du-code-de-lapplication)
+- [Installation des dépendances du projet](#installation-des-dépendances-du-projet)
+    - [Installation de php](#installation-de-php)
+    - [Installation de MySQL](#installation-de-mysql)
+        - [Verification de l'installation](#verification-de-linstallation)
+        - [Création d'un utilisateur MySQL](#création-dun-utilisateur-mysql)
+    - [Installation de symfony](#installation-de-symfony)
+        - [Dans la console tapez les commandes suivantes](#dans-la-console-tapez-les-commandes-suivantes)
+        - [Vérification de l'installation de symfony](#vérification-de-linstallation-de-symfony)
+    - [Installation des dépendances symfony](#installation-des-dépendances-symfony)
+    - [Base de données](#base-de-données)
+        - [Base de données de l'IUT](#base-de-données-de-liut)
+        - [Base de donnée installé "From Scratch"](#base-de-donnée-installé-from-scratch)
+        - [Importation de la base de données](#importation-de-la-base-de-données)
+        - [Paramètrage de la base de données dans symfony](#paramètrage-de-la-base-de-données-dans-symfony)
+    - [Lancement du serveur de test de symfony](#lancement-du-serveur-de-test-de-symfony)
+        - [dans le dossier /s3.01-devapp-equipe12/symfony](#dans-le-dossier-s301-devapp-equipe12symfony)
+    - [Accès à l'application](#accès-à-lapplication)
+    - [Commandes super-administrateur](#commandes-super-administrateur)
+        - [Création d'un super-administrateur](#création-dun-super-administrateur)
+        - [Création d'utilisateurs aléatoires](#création-dutilisateurs-aléatoires)
+        - [Création de critiques aléatoires](#création-de-critiques-aléatoires)
+        - [Users follow et regardent des séries aléatoires](#users-follow-et-regardent-des-séries-aléatoires)
+        - [Actualisation des series](#actualisation-des-series)
+    
+
 ## Equipe
 
 - DESSUP Lyam
@@ -35,7 +67,7 @@ Déplacez vous dans le dossier /s3.01-devapp-equipe12/symfony pour la suite du g
 cd s3.01-devapp-equipe12/symfony
 ```
 
-## Installation des dépendances du projet
+# Installation des dépendances du projet
 
 ## Installation de php
 
@@ -56,6 +88,14 @@ Pour installer MySQL, vous pouvez utiliser la commande suivante dans votre termi
 ```console
 sudo apt-get install mysql-server
 ```
+
+### Verification de l'installation
+
+```console
+sudo systemctl status mysql
+```
+
+Si le service est actif, vous pouvez passer à l'étape suivante.
 
 ### Création d'un utilisateur MySQL
 
@@ -82,14 +122,6 @@ Attribution des droits à l'utilisateur sur la base de données
 ```sql
 GRANT ALL PRIVILEGES ON <nom_de_la_base_de_données>.* TO '<nouveau_utilisateur>'@'localhost';
 ```
-
-### Verification de l'installation
-
-```console
-sudo systemctl status mysql
-```
-
-Si le service est actif, vous pouvez passer à l'étape suivante.
 
 ## Installation de symfony
 
@@ -199,7 +231,7 @@ symfony console app:new-super-admin <email>
 
 ### Création d'utilisateurs aléatoires
 
-crée un nombre parametrable d'utilisateurs aléatoires.
+Permet de créer un nombre parametrable d'utilisateurs aléatoires.
 Leur mot de passe est son mail, et leur nombre admin dans la base de données est -1.
 
 ```bash
@@ -209,12 +241,33 @@ par défaut le nombre d'utilisateurs est 10 si vous ne mettez pas de nombre d'ut
 
 ### Création de critiques aléatoires
 
-crée des critiques aléatoires pour chaque utilisateur,
-avec un nombre de critiques par utilisateur compris dans une plage parametrable. Et des notes aléatoires pour chaque critique et série.
+Permet de créer des critiques aléatoires pour chaque serie,
+avec un nombre de critiques par serie compris dans une plage parametrable. Et des notes aléatoires pour chaque critique et série.
+
+*Éviter de lancer la commande quand il existe déjà des critiques dans la base de données.*
 
 ```bash
-symfony console app:create-rating <nombre minimum de critiques par utilisateur> <nombre maximum de critiques par utilisateur>
+symfony console app:create-ratings <nombre minimum de critiques par series> <nombre maximum de critiques par series>
 ```
-par défaut le nombre minimum de critiques par utilisateur est 10 et le nombre maximum de critiques par utilisateur est 150 si vous ne mettez pas de nombre minimum et maximum de critiques par utilisateur.
+par défaut le nombre minimum de critiques par series est 10 et le nombre maximum de critiques par series est 150 si vous ne mettez pas de nombre minimum et maximum de critiques par series.
+
+### Users follow et regardent des séries aléatoires
+
+Permet de créer des relations follow et watch aléatoires pour chaque utilisateur,
+avec un nombre de relations follow et watch par utilisateur compris dans une plage parametrable.
+Par défault le nombre minimum de series est 0 et le nombre maximum de series est 10 si vous ne mettez pas de nombre minimum et maximum de series.
+
+```bash
+symfony console app:follow-view-series <nombre minimum de series> <nombre maximum de series>
+```
+
+### Actualisation des series
+
+actualise les series de la base de données avec les données de l'api.
+Par défaut le nombre de series est 10 et l'off-set est 0 si vous ne mettez pas de nombre de series et d'off-set.
+
+```bash
+symfony console app:update-all-series <nombre de series, -1 fait toutes les series> <off-set des series>
+```
 
 
