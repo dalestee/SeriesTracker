@@ -209,11 +209,10 @@ class UserController extends AbstractController
         $allRatings = [];
 
         if ($user) {
-
             $friends = $user->getFollowing();
             foreach ($friends as $friend) {
                 $friendRatings = $entityManager->getRepository(Rating::class)->findBy(['user' => $friend]);
-                if ($friend->getId() != $user->getId()){
+                if ($friend->getId() != $user->getId()) {
                     $allRatings = array_merge($allRatings, $friendRatings);
                 };
             }
