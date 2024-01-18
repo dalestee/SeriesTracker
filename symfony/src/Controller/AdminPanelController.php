@@ -91,8 +91,12 @@ class AdminPanelController extends AbstractController
     }
 
     #[Route('/ban/{userId}', name: 'app_admin_ban_user', methods: ['POST'])]
-    public function banUser(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, $userId): Response
-    {
+    public function banUser(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        $userId
+    ): Response {
         $user = $userRepository->find($userId);
 
         if (!$user) {
@@ -103,18 +107,22 @@ class AdminPanelController extends AbstractController
         
         if (!$comment) {
             $userRepository->queryBanUsers("no reason given", $userId);
-        }else{
+        } else {
             $userRepository->queryBanUsers($comment, $userId);
         }
-
+        $userRepository->queryRemoveCommentUser($userId);
         $entityManager->flush();
 
         return $this->redirectToRoute('app_admin_panel');
     }
 
     #[Route('/unban/{userId}', name: 'app_admin_unban_user', methods: ['POST'])]
-    public function unbanUser(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, $userId): Response
-    {
+    public function unbanUser(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        $userId
+    ): Response {
         $user = $userRepository->find($userId);
 
         if (!$user) {

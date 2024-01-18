@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Entity\Rating; // Add this line to import the Rating class
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,6 +34,16 @@ class UserRepository extends ServiceEntityRepository
             ->set('u.ban', ':ban')
             ->where('u.id = :userId') // Assurez-vous de comparer avec l'identifiant correct (id dans cet exemple)
             ->setParameter('ban', $comment)
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->execute();
+    }
+
+    public function queryRemoveCommentUser($userId)
+    {
+        return $this->createQueryBuilder('r')
+            ->delete(Rating::class, 'r')
+            ->where('r.user = :userId')
             ->setParameter('userId', $userId)
             ->getQuery()
             ->execute();

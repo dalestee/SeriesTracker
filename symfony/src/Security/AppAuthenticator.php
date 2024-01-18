@@ -29,8 +29,11 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager, private UserRepository $userRepository)
-    {
+    public function __construct(
+        UrlGeneratorInterface $urlGenerator,
+        EntityManagerInterface $entityManager,
+        private UserRepository $userRepository
+    ) {
         $this->urlGenerator = $urlGenerator;
         $this->entityManager = $entityManager;
     }
@@ -41,7 +44,7 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
-        if ($user->getBan() != null){
+        if ($user->getBan() != null) {
             throw new CustomUserMessageAuthenticationException("Your account has been banned, ".$user->getBan());
         }
         
@@ -69,7 +72,7 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        if ($token->getUser()->getBan() != null){
+        if ($token->getUser()->getBan() != null) {
             return new RedirectResponse($this->urlGenerator->generate('app_logout'));
         }
 
