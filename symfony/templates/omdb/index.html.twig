@@ -66,6 +66,10 @@
                                                 {% if serieImdb is defined %}
                                                     <a href="{{ path('app_admin_series_import', {'imdb': serieImdb}) }}" class="text-red-500 font-bold mb-2">Import</a>
                                                 {% endif %}
+                                            {% else %}
+                                                {% if serieImdb is defined %}
+                                                    <a href="{{ path('app_admin_series_mise_a_jour', {'imdb': serieImdb}) }}" class="text-red-500 font-bold mb-2">Update</a>
+                                                {% endif %}
                                             {% endif %}
 											<p class="text-gray-200">
 												<strong>Year :
