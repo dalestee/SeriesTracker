@@ -11,10 +11,27 @@
 {% endblock %}
 
 {% block body %}
-    <div class="flex flex-col items-center">
+    <div class="flex mx-4 flex-col items-center">
     {% if user %}
         <div class="container mx-auto py-8 text-center">
             <h1 class="p-8 border-y-2 border-gray-600 backdrop-blur text-4xl text-gray-300 font-bold mb-8">Fiche de l'utilisateur {{ user.name }}</h1>
+            {% if user == app.user %}
+             {# TODO : ajouter un bouton pour éditer son profil
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mb-4">
+                    <a href="{{ path('app_user_edit', {'id_user' : user.id}) }}">Edit</a>
+                </button>
+            #}
+            {% else %}
+                {% if user in app.user.following %}
+                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full mb-4">
+                    <a href="{{ path('app_user_unfollow', {'id_user' : user.id}) }}">Unfollow</a>
+                </button>
+                {% else %}
+                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-4">
+                    <a href="{{ path('app_user_follow', {'id_user' : user.id}) }}">Follow</a>
+                </button>
+                {% endif %}
+            {% endif %}
         </div>
         
         <div class="container mx-auto py-8">
@@ -22,7 +39,7 @@
                 {% include 'series/_show_series.html.twig' with { 
                     'user': user,
                     'series_view' : series_view,
-                    'app_action' : "app_user",
+                    'app_action' : "app_user_show",
                     'param_action' : {'id_user' : user.id}|merge({'page_ratings':param_action['page_ratings']}),
                     'pagination' : series_suivies
                     }
@@ -31,7 +48,7 @@
                         <h1 class="text-3xl text-center text-white font-bold mb-12">All ratings from {{ user.name }}</h1>
 
         {% include 'ratings/_show_user_page.html.twig' with { 
-                    'app_action' : "app_user",
+                    'app_action' : "app_user_show",
                     'param_action' : {'id_user' : user.id}|merge({'page_series':param_action['page_series']}),
                     'pagination' : ratings_user
                     }

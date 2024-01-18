@@ -9,6 +9,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: "series", uniqueConstraints: [
     new ORM\UniqueConstraint(name: "UNIQ_3A10012D85489131", columns: ["imdb"])
+], indexes: [
+    new ORM\Index(name: "I_SERIES_TITLE", columns: ["title"]),
+    new ORM\Index(name: "I_SERIES_PLOT", columns: ["plot"]),
+    new ORM\Index(name: "I_SERIES_GENRE_ID", columns: ["genre_id"]),
+    new ORM\Index(name: "I_SERIES_YEAR_START", columns: ["year_start"]),
+    new ORM\Index(name: "I_SERIES_YEAR_END", columns: ["year_end"])
 ])]
 #[ORM\Entity(repositoryClass: "App\Repository\SeriesRepository")]
 class Series
@@ -48,7 +54,7 @@ class Series
     #[ORM\ManyToMany(targetEntity: "User", mappedBy: "series")]
     private $user = array();
 
-    #[ORM\ManyToMany(targetEntity: "Genre", mappedBy: "series", fetch:"EAGER")]
+    #[ORM\ManyToMany(targetEntity: "Genre", mappedBy: "series")]
     #[ORM\JoinTable(name: "genre_series")]
     private $genre = array();
 
@@ -65,7 +71,7 @@ class Series
     #[ORM\OneToMany(mappedBy: "series", targetEntity: "ExternalRating")]
     private $externalRatings;
 
-    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating", fetch:"EAGER")]
+    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating")]
     private $ratings;
 
     /**
@@ -281,7 +287,7 @@ class Series
 
     public function setPoster($poster): static
     {
-        $this->poster = $poster;
+        $this->poster = file_get_contents($poster);
 
         return $this;
     }

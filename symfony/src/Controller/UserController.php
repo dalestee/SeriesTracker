@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Repository\UserRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,11 +10,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Series;
-use App\Entity\Rating; // Add this line to import the Rating class
+use App\Entity\User;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Form\ProfileFormType;
 
+#[Route('/user')]
 class UserController extends AbstractController
 {
-    #[Route('/user/{id_user}/', name: 'app_user')]
+    #[Route('/show/{id_user}/', name: 'app_user_show')]
     public function index(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
@@ -23,9 +26,6 @@ class UserController extends AbstractController
         Request $request,
         int $id_user
     ): Response {
-        if (!$this->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('app_login');
-        }
 
         $user = $userRepository->find($id_user);
         $ratingRepository = $entityManager->getRepository(Rating::class);
@@ -35,8 +35,8 @@ class UserController extends AbstractController
         if ($user) {
             $series_suivies = $paginator->paginate(
                 $entityManager
-                ->getRepository(Series::class)
-                ->querySeriesSuiviesTrieParVisionnage($user->getId()),
+                    ->getRepository(Series::class)
+                    ->querySeriesSuiviesTrieParVisionnage($user->getId()),
                 $page_series,
                 10
             );
@@ -67,8 +67,93 @@ class UserController extends AbstractController
             'series_suivies' => $series_suivies,
             'series_view' => $series_view,
             'ratings_user' => $ratings_user,
-            'app_action' => 'app_user',
+            'app_action' => 'app_user_show',
             'param_action' => ['page_series' => $page_series, 'page_ratings' => $page_ratings]
         ]);
+    }
+
+    #[Route('/profile', name: 'profile', methods: ['GET', 'POST'])]
+    public function profile(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository
+    ): Response {
+
+        $user = $userRepository
+            ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+
+        $form2 = $this->createForm(ProfileFormType::class, $user);
+        $form2->handleRequest($request);
+
+        if ($form2->isSubmitted() && $form2->isValid()) {
+            $oldpassword = $form2->get('oldPassword')->getData();
+            if ($oldpassword != null) {
+                $firstPassword = $form2->get('newPassword')->get('first')->getData();
+                $secondPassword = $form2->get('newPassword')->get('second')->getData();
+                if ($firstPassword === $secondPassword && $userPasswordHasher->isPasswordValid($user, $oldpassword)) {
+                    // encode the plain password
+                    $user->setPassword(
+                        $userPasswordHasher->hashPassword(
+                            $user,
+                            $firstPassword
+                        )
+                    );
+                }
+            }
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+        }
+        $entityManager->refresh($user);
+
+        return $this->render('user/profile.html.twig', [
+            'form2' => $form2->createView(),
+            'user' => $user,
+            'show_search_form' => false
+        ]);
+    }
+    #[Route('/follow/{id_user}', name: 'app_user_follow', methods: ['GET'])]
+    public function followUser(
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        int $id_user
+    ): Response {
+
+        $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $user_followed = $userRepository->find($id_user);
+
+        dump($user);
+        dump($user_followed);
+
+        if ($user->getId() != $id_user && !$user->isFollowing($user_followed)) {
+            $user->addFollowing($user_followed);
+            $entityManager->persist($user);
+            $entityManager->persist($user_followed);
+            $entityManager->flush();
+        }
+
+        dump($user);
+        dump($user_followed);
+        return $this->redirectToRoute('app_user_show', ['id_user' => $id_user]);
+    }
+
+    #[Route('/unfollow/{id_user}', name: 'app_user_unfollow', methods: ['GET'])]
+    public function unfollowUser(
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        int $id_user
+    ): Response {
+        $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $user_followed = $userRepository->find($id_user);
+
+        if ($user->getId() != $id_user && $user->isFollowing($user_followed)) {
+            $user->removeFollowing($user_followed);
+            $entityManager->persist($user);
+            $entityManager->persist($user_followed);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_user_show', ['id_user' => $id_user]);
     }
 }
