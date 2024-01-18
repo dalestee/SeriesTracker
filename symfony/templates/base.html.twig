@@ -428,6 +428,10 @@
 								Profile
 							</a>
 
+							<a href="{{ path('app_user_followed_users') }}" class="text-black px-4 py-2 relative inline-block group">
+								Followed users
+							</a>
+
 							{% if is_granted('IS_IMPERSONATOR') %}
 								<a href="{{ path('app_series_index',{'_switch_user': '_exit'}) }}" class="text-black px-4 py-2 relative inline-block group">
 									Exit Personification

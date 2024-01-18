@@ -117,9 +117,7 @@ class SeriesRepository extends ServiceEntityRepository
             $query->setParameter('arraySeriesId', $arraySeriesId);
         }
 
-        $ormQuery = $query;
-
-        return $ormQuery->getResult();
+        return $query->getResult();
     }
     public function findByCriteria(array $criteria, $search)
     {
