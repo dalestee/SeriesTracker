@@ -53,6 +53,9 @@ class CreateUserCommand extends Command
         // Récupérez tous les pays de la base de données
         $countries = $this->entityManager->getRepository(Country::class)->findAll();
 
+        $io->title(sprintf('Creating %s users', $nbUsers));
+        $io->progressStart($nbUsers);
+
         for ($i = 0; $i < $nbUsers; $i++) {
             $user = new User();
             $email = $faker->unique()->safeEmail;
@@ -75,9 +78,11 @@ class CreateUserCommand extends Command
             if (($i + 1) % 50 == 0) {
                 $this->entityManager->flush();
             }
+            $io->progressAdvance();
         }
 
         $this->entityManager->flush();
+        $io->progressFinish();
 
         $io->success(sprintf('%s users have been successfully generated.', $nbUsers));
 

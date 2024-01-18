@@ -53,6 +53,7 @@ class UpdateAllSeriesCommand extends Command
         if ($nbSeriesUpdated != -1) {
             $series = array_slice($series, 0, $nbSeriesUpdated);
         }
+        $io->title('Updating ' . count($series) . ' series');
         $io->progressStart(count($series));
         foreach ($series as $serie) {
             if (!$seriesRepository->updateSeries(
