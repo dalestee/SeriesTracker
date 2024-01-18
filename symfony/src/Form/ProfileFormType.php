@@ -8,9 +8,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Validator\Constraints\Length;
 use App\Entity\Country;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Composer\Semver\Constraint\Constraint;
 
 class ProfileFormType extends AbstractType
 {
@@ -53,6 +55,13 @@ class ProfileFormType extends AbstractType
                 'first_options'  => ['label' => 'New password'],
                 'second_options' => ['label' => 'Repeat new password'],
                 'mapped' => false,
+                'constraints' => [
+                    new Length([
+                        'min' => 6,
+                        'minMessage' => 'Your password should be at least {{ limit }} characters',
+                        // max length allowed by Symfony for security reasons
+                        'max' => 4096,
+                    ]), ]
             ]);
     }
 
