@@ -19,7 +19,17 @@ class RatingRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('r')
             ->andWhere('r.series = :seriesId')
             ->orderBy('r.date', 'DESC')
+            ->andWhere('r.moderate = true')
             ->setParameter('seriesId', $seriesId)
+            ->getQuery()
+        ;
+    }
+
+    public function queryRatingNoModerate()
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.moderate = false')
+            ->orderBy('r.date', 'DESC')
             ->getQuery()
         ;
     }

@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Rating;
+use App\Repository\RatingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Repository\UserRepository;
 
 #[Route('/admin')]
 class AdminPanelController extends AbstractController
@@ -108,4 +111,47 @@ class AdminPanelController extends AbstractController
         $entityManager->flush();
         return $this->redirectToRoute('app_admin_panel');
     }
+
+    #[Route('/moderate/{page_ratings}', name: 'app_admin_panel_moderate')]
+    public function moderate(
+        RatingRepository $ratingRepository,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+        int $page_ratings = 1
+    ): Response {
+        $id = $request->get('id');
+        $moderate = $request->get('moderate');
+        if($id != null) {
+            if($moderate) {
+                $rating = $ratingRepository->find($id);
+                $rating->setModerate(true);
+                $entityManager->persist($rating);
+                $entityManager->flush();
+            } else {
+                $rating = $ratingRepository->find($id);
+                $entityManager->remove($rating);
+                $entityManager->flush();
+            }
+        }
+        $ratingquery = $ratingRepository->queryRatingNoModerate();
+        $ratings = $paginator->paginate(
+            $ratingquery,
+            $page_ratings,
+            10
+        );
+
+        return $this->render('admin_panel/moderate.html.twig', [
+            'ratings' => $ratings,
+            'app_action' => 'app_admin_panel_moderate',
+            'page_ratings' => $page_ratings
+        ]);
+    }
+
+
+
+
+
+
+
 }
