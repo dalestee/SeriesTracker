@@ -55,14 +55,14 @@ class ProfileFormType extends AbstractType
                 'first_options'  => ['label' => 'New password'],
                 'second_options' => ['label' => 'Repeat new password'],
                 'mapped' => false,
-                'constraints' => [ 
+                'constraints' => [
                     new Length([
                         'min' => 6,
                         'minMessage' => 'Your password should be at least {{ limit }} characters',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]), ]
-            ]); 
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
