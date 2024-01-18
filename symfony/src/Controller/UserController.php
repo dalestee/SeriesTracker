@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Rating;
+
 use App\Repository\UserRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -193,5 +195,50 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_user_show', ['id_user' => $id_user]);
+    }
+
+    #[Route('/newsFeed', name: 'app_user_news_feed', methods: ['GET'])]
+    public function newsFeed(
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+        UserRepository $userRepository,
+        Request $request
+    ): Response {
+
+        $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $allRatings = [];
+
+        if ($user) {
+
+            $friends = $user->getFollowing();
+            foreach ($friends as $friend) {
+                $friendRatings = $entityManager->getRepository(Rating::class)->findBy(['user' => $friend]);
+                if ($friend->getId() != $user->getId()){
+                    $allRatings = array_merge($allRatings, $friendRatings);
+                };
+            }
+            usort($allRatings, function ($a, $b) {
+                return $a->getDate() < $b->getDate();
+            });
+        }
+
+        $limit = 10;
+
+        $page = $request->query->getInt('page', 1);
+
+        $pagination = $paginator->paginate(
+            $allRatings,
+            $request->query->getInt('page', 1),
+            $limit
+        );
+
+        return $this->render('user/news_feed.html.twig', [
+            'user' => $user,
+            'allRatings' => $allRatings,
+            'pagination' => $pagination,
+            'app_action' => 'app_user_news_feed',
+            'param_action' => [],
+            'page' => $page
+        ]);
     }
 }
