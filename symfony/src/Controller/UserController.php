@@ -191,7 +191,7 @@ class UserController extends AbstractController
             $entityManager->persist($user_followed);
             $entityManager->flush();
         }
-
+        
         return $this->redirectToRoute('app_user_show', ['id_user' => $id_user]);
     }
 }
