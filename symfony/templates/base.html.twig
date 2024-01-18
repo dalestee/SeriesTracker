@@ -372,7 +372,7 @@
 				</li>
 
 				<style></style>
-				{% if path('app_admin_panel') not in app.request.uri and 'showSerie' not in app.request.uri and 'login' not in app.request.uri and 'register' not in app.request.uri %}
+				{% if form is defined %}
 					<li class="w-96 h-full flex items-center bg-black rounded-full">
 						<div id="searchBar" class="flex anim initialSize items-start justify-center text-white  bg-grey-900">
 							<button id="boutonClose" class="hidden absolute right-4 top-4 w-6 h-6 bg-red-500 rounded-full focus:outline-none">

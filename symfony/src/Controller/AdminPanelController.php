@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Repository\UserRepository;
 
 #[Route('/admin')]
 class AdminPanelController extends AbstractController
@@ -89,6 +90,53 @@ class AdminPanelController extends AbstractController
         return $this->redirectToRoute('app_admin_panel');
     }
 
+    #[Route('/ban/{userId}', name: 'app_admin_ban_user', methods: ['POST'])]
+    public function banUser(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        $userId
+    ): Response {
+        $user = $userRepository->find($userId);
+
+        if (!$user) {
+            throw $this->createNotFoundException('User not found');
+        }
+
+        $comment = $request->request->get('comment');
+        
+        if (!$comment) {
+            $userRepository->queryBanUsers("no reason given", $userId);
+        } else {
+            $userRepository->queryBanUsers($comment, $userId);
+        }
+        $userRepository->queryRemoveCommentUser($userId);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_admin_panel');
+    }
+
+    #[Route('/unban/{userId}', name: 'app_admin_unban_user', methods: ['POST'])]
+    public function unbanUser(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        $userId
+    ): Response {
+        $user = $userRepository->find($userId);
+
+        if (!$user) {
+            throw $this->createNotFoundException('User not found');
+        }
+
+        $userRepository->queryBanUsers(null, $userId);
+
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_admin_panel');
+    }
+
+    
     #[Route('/changePassword', name: 'app_admin_change_password', methods: ['GET'])]
     public function changePassword(
         Request $request,
