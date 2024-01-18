@@ -37,4 +37,16 @@ class RatingRepository extends ServiceEntityRepository
             ->getQuery()
         ;
     }
+
+    public function queryRatingsBySeriesAndNote($seriesId, $note)
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.series = :seriesId')
+            ->andWhere('r.value = :note')
+            ->andWhere('r.moderate = true')
+            ->setParameter('seriesId', $seriesId)
+            ->setParameter('note', $note)
+            ->getQuery()
+        ;
+    }
 }
