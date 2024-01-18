@@ -80,4 +80,15 @@ class UserRepository extends ServiceEntityRepository
         return $this->getEntityManager()->createNativeQuery($sql, $rsm)
             ->setParameter('userId', $userId);
     }
+
+    public function queryFindAllUsers()
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u')
+            ->addOrderBy('u.registerDate', 'DESC')
+            ->orderBy('u.admin', 'DESC')
+            
+            ->addOrderBy('u.id', 'DESC')
+            ->getQuery();
+    }
 }
