@@ -106,6 +106,6 @@ class AdminPanelController extends AbstractController
         $hashedPassword = $passwordHasher->hashPassword($user, $password);
         $user->setPassword($hashedPassword);
         $entityManager->flush();
-        return $this->redirectToRoute('app_user', ['id_user' => $userId]);
+        return $this->redirectToRoute('app_admin_panel');
     }
 }
