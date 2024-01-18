@@ -101,24 +101,24 @@
 									</td>
 									<td class=" px-2 ">
 										{% if 'ROLE_USER' in user.roles or ('ROLE_ADMIN' in user.roles and is_granted('ROLE_SUPER_ADMIN')) %}
-											<a id="changePassword" href="#" onclick="askPassword({{user.id}})" class="text-white bg-yellow-500 rounded-full px-2 py-2 hover:text-yellow-500 hover:bg-white">Change password</a>
+											<a id="changePassword" href="#" onclick="askPassword({{user.id}})" ><p class="text-white bg-yellow-500 rounded-full px-2 py-2 hover:text-yellow-500 hover:bg-white">Change password<p></a>
 										{% endif %}
 									</td>
 									<td class="pw-2">
 										{% if 'ROLE_USER' in user.roles or ('ROLE_ADMIN' in user.roles and is_granted('ROLE_SUPER_ADMIN')) %}
 											{% if user.Ban is not null %}
 											<div  >
-												<form action="{{ path('app_admin_unban_user', {'userId': user.id}) }}" method="post" class="flex flex-row-reverse items-center w-96 ">
+												<form action="{{ path('app_admin_unban_user', {'userId': user.id}) }}" method="post" class="flex flex-row-reverse items-center w-fit ">
 													<input type="hidden" name="user_id" value="{{ user.id }}">
 													<button type="submit" class="text-white self-end bg-green-500 rounded-full px-2 py-2 hover:text-green-500 hover:bg-white">Unban</button>
-												<p class="overflow-x-scroll text-wrap text-red-500 justify-self-start mr-8">{{ user.Ban }}</p>
+												<p class="overflow-x-scroll max-w-32 text-wrap text-red-500 justify-self-start mr-8">{{ user.Ban }}</p>
 												</form>
 												</div>
 											{% else %}
 											
 												<form action="{{ path('app_admin_ban_user', {'userId': user.id}) }}" method="post">
 													<input type="hidden" name="user_id" value="{{ user.id }}" >
-													<input type="text" name="comment" placeholder="Ban Comment" class="bg-gray-900 text-white p-2 rounded border-2 border-gray-800" maxlength="255">
+													<input type="text" name="comment" placeholder="Ban Comment" class="bg-gray-900 text-white p-2 rounded border-2 border-gray-800 w-36" maxlength="255">
 													<button type="submit" class="text-white bg-red-500 rounded-full px-2 py-2 hover:text-red-500 hover:bg-white">Ban</button>
 												</form>
 
