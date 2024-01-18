@@ -19,6 +19,9 @@ class Rating
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
 
+    #[ORM\Column(name: "moderate", type: "boolean")]
+    private $moderate = false;
+
     #[ORM\Column(name: "value", type: "integer", nullable: false)]
     private $value;
 
@@ -35,6 +38,18 @@ class Rating
     #[ORM\ManyToOne(targetEntity:"Series", inversedBy:"ratings")]
     #[ORM\JoinColumn(name:"series_id", referencedColumnName:"id")]
     private $series;
+
+    public function getModerate(): ?bool
+    {
+        return $this->moderate;
+    }
+
+    public function setModerate(bool $moderate): self
+    {
+        $this->moderate = $moderate;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {
@@ -99,5 +114,10 @@ class Rating
         $this->series = $series;
 
         return $this;
+    }
+
+    public function isModerate(): ?bool
+    {
+        return $this->moderate;
     }
 }

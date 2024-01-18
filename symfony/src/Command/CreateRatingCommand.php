@@ -74,6 +74,7 @@ class CreateRatingCommand extends Command
 
             shuffle($users);
 
+
             foreach ($users as $key => $user) {
                 $rating = $this->entityManager
                 ->getRepository(Rating::class)
@@ -88,16 +89,22 @@ class CreateRatingCommand extends Command
                     $rating->setValue($ratingValue);
                     $rating->setComment($this->faker->text);
                     $this->entityManager->persist($rating);
-
                     $ratingsCreated++;
                     if ($ratingsCreated >= $nbRatings) {
                         break;
                     }
+                    continue;
                 }
+                $output->writeln(sprintf(
+                    'Rating already exists for user %s and series %s',
+                    $user->getUserIdentifier(),
+                    $serie->getTitle()
+                ));
             }
+            $this->entityManager->flush();
             $totalCreatedRatings += $ratingsCreated;
         }
-        $this->entityManager->flush();
+        
 
 
 

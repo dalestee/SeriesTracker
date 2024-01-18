@@ -48,11 +48,18 @@
 							<div class="w-full  bg-white p-4 rounded shadow h-52 lg:max-h-52"> <!-- Ajustez la hauteur ici, par exemple, h-32 pour une hauteur de 32 pixels -->
 								<textarea readonly class="text-gray-900 w-full h-full bg-transparent border-none resize-none focus:outline-none">{{ rating.comment }}</textarea>
 							</div>
+							
 						</dd>
+						{% block moderation %}
+							{% endblock %}
 					{% endif %}
 				</dl>
 			</div>
 		</div>
+	{% else %}
+		{% block no_rating %}
+			<h1 class = "text-center text-white text-2xl">Aucun avis</h1>
+		{% endblock %}
 	{% endfor %}
 </div>
 

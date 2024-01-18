@@ -22,6 +22,7 @@ class UserRepository extends ServiceEntityRepository
             ->select('r')
             ->from('App:Rating', 'r')
             ->where('r.user = :user')
+            ->andWhere('r.moderate = true')
             ->orderBy('r.date', 'DESC')
             ->setParameter('user', $user)
             ->getQuery();
