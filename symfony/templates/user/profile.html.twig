@@ -2,6 +2,31 @@
 {% block title %}
 {% endblock %}
 {% block body %}
+    <style>
+        #divFormProfileInfo form{
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+            grid-gap: 10px;
+        }
+        #divFormProfileInfo form div{
+            display:grid;
+            grid-template-columns: 1fr;
+        }
+        #divFormProfileInfo form div input, #divFormProfileInfo form div select{
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            color: #000;
+        }
+
+
+
+
+    </style>
+    <div class="flex flex-col items-center w-screen">
+    <div id="divFormProfileInfo" class="w-fit ml-12 p-8 bg-gray-800 flex flex-col items-center text-white rounded mt-24 p-12">
+        <h1 class="mb-8 text-2xl">Modify your profile info</h1>
+        
     {{ form_start(form2) }}
         {{ form_row(form2.email) }}
         {{ form_row(form2.name) }}
@@ -9,6 +34,8 @@
         {{ form_row(form2.newPassword.first) }}
         {{ form_row(form2.newPassword.second) }}
         {{ form_row(form2.country) }}
-        <button type="submit" class="w-2/12 ml-12 px-4 py-2 bg-red-500 justify-self-center text-white rounded-full">Valider</button>
+        <button type="submit" class="w-fit px-4 py-2 bg-red-500 justify-self-center text-white rounded-full">Send</button>
     {{ form_end(form2) }}
+    </div>
+    </div>
 {% endblock %}

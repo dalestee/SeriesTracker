@@ -1,39 +1,71 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} followed users {% endblock %}
+{% block title %}
+	followed users
+{% endblock %}
 
 {% block body %}
+	<style>
+        
+		#userFollowed a {
 
-    {% for user in pagination %}
-        <div class="user">
-        <p class="text-white">ID: {{ user.name }}</p>
-            <h2><a href="{{ path(app_action, {id_user: user.id}) }}">{{ user.name }}</a></h2>
-        </div>
-    {% endfor %}
 
-    {% if pagination.items|length != 0 %}
-        {% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
-        {% set current_page = pagination.getCurrentPageNumber() %}
-        <div class="flex justify-center mt-8">
-            {% if current_page != 1 %}
-                <a href="{{ path(app_action, {'page': current_page - 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
-            {% endif %}
+			transition: all 0.5s ease-out;
+            margin-left: 10px;
+			color: white;
+			
+		}
+		#userFollowed a:hover {
+			
+			transition: all 0.5s ease-out;
+		}
+	</style>
+	<div class="flex flex-col items-center">
+		<div id="userFollowed" class="w-1/2 flex flex-col items-center mt-12 rounded p-8 bg-gray-800">
 
-            {% for page in 1..total_pages %}
-                {% if page == current_page %}
-                    <span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
-                {% elseif page == current_page - 1 or page == current_page + 1 %}
-                    <a href="{{ path(app_action, {'page': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
-                {% elseif page == 1 or page == total_pages %}
-                    <a href="{{ path(app_action, {'page': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
-                {% elseif page == current_page - 2 or page == current_page + 2 %}
-                    <span class="text-white px-5">...</span>
+			<h1 class="text-white text-4xl text-center">Followed users</h1>
+
+			<div class="mt-12 p-8 bg-gray-700 rounded shadow-2xl w-11/12">
+                {% if pagination.items|length == 0 %}
+                    <h2 class="text-gray-200 mb-2 p-2 rounded">You don't follow anyone yet</h2>
                 {% endif %}
-            {% endfor %}
 
-            {% if current_page != total_pages %}
-                <a href="{{ path(app_action, {'page': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
-            {% endif %}
-        </div>
-    {% endif %}
+				{% for user in pagination %}
+                    <div class="grid grid-cols-3 items-center space-between w-full">
+
+					<h2 class="text-gray-200 mb-2 p-2 rounded">{{ user.name }}</h2>
+					<a class="w-fit justify-self-end px-2 rounded bg-gray-800 border border-gray-200 " href="{{ path('app_user_show', {id_user: user.id}) }}">View Profile</a>
+					<a class="w-fit justify-self-end px-2 rounded bg-red-500 border border-gray-200 " href="{{ path('app_user_unfollow', {id_user: user.id}) }}">Unfollow</a>
+                    </div>
+				{% endfor %}
+			</div>
+
+
+			{% if pagination.items|length != 0 %}
+				{% set total_pages = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
+				{% set current_page = pagination.getCurrentPageNumber() %}
+				<div class="flex justify-center mt-8">
+					{% if current_page != 1 %}
+						<a href="{{ path(app_action, {'page': current_page - 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&laquo;</a>
+					{% endif %}
+
+					{% for page in 1..total_pages %}
+						{% if page == current_page %}
+							<span class="text-white bg-red-500 rounded-full font-bold px-5">{{ page }}</span>
+						{% elseif page == current_page - 1 or page == current_page + 1 %}
+							<a href="{{ path(app_action, {'page': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+						{% elseif page == 1 or page == total_pages %}
+							<a href="{{ path(app_action, {'page': page}|merge(param_action) ) }}" class="text-white hover:text-gray-300 px-5">{{ page }}</a>
+						{% elseif page == current_page - 2 or page == current_page + 2 %}
+							<span class="text-white px-5">...</span>
+						{% endif %}
+					{% endfor %}
+
+					{% if current_page != total_pages %}
+						<a href="{{ path(app_action, {'page': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
+					{% endif %}
+				</div>
+			{% endif %}
+		</div>
+	</div>
 {% endblock %}
