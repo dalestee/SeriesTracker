@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\Comment;
 use App\Entity\User;
 use App\Entity\Series;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,17 +9,16 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Faker\Factory;
 use App\Entity\Rating;
 
 #[AsCommand(
-    name: 'app:create-rating',
-    description: 'Create random comments for users',
+    name: 'app:create-ratings',
+    description: 'Create random ratings for users',
 )]
-class CreateRatingCommand extends Command
+class CreateRatingsCommand extends Command
 {
     private $entityManager;
     private $faker;
@@ -60,6 +58,9 @@ class CreateRatingCommand extends Command
         $users = $this->entityManager->getRepository(User::class)->findBy(['admin' => -1]);
         $series = $this->entityManager->getRepository(Series::class)->findAll();
 
+        $io->title(sprintf('Creating random ratings for %s users and %s series', count($users), count($series)));
+        $io->progressStart(count($series));
+
         $totalCreatedRatings = 0;
         // Mélanger la liste des series
         shuffle($series);
@@ -88,6 +89,7 @@ class CreateRatingCommand extends Command
                     $ratingValue = max(0, min(5, $ratingValue));
                     $rating->setValue($ratingValue);
                     $rating->setComment($this->faker->text);
+                    $rating->setModerate(true);
                     $this->entityManager->persist($rating);
                     $ratingsCreated++;
                     if ($ratingsCreated >= $nbRatings) {
@@ -95,19 +97,18 @@ class CreateRatingCommand extends Command
                     }
                     continue;
                 }
-                $output->writeln(sprintf(
+                $io->warning(sprintf(
                     'Rating already exists for user %s and series %s',
                     $user->getUserIdentifier(),
                     $serie->getTitle()
                 ));
             }
             $this->entityManager->flush();
+            $io->progressAdvance();
             $totalCreatedRatings += $ratingsCreated;
         }
-        
-
-
-
+    
+        $io->progressFinish();
 
         $io->success(sprintf('Successfully created %d ratings.', $totalCreatedRatings));
 
