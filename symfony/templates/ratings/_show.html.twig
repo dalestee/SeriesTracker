@@ -48,6 +48,7 @@
 							<div class="w-full  bg-white p-4 rounded shadow h-52 lg:max-h-52"> 
 								<textarea readonly class="text-gray-900 w-full h-full bg-transparent border-none resize-none focus:outline-none">{{ rating.comment }}</textarea>
 							</div>
+						</dd>
 							{% if is_moderate is defined and is_moderate %}
 							<div class="flex flex-row justify-center mt-2">
 								    <form method="post" action="{{ path('app_admin_panel_moderate', {'id': rating.id}) }}">
@@ -60,7 +61,7 @@
 									</form>
 								{% endif %}
 							</div>
-						</dd>
+						
 					{% endif %}
 				</dl>
 			</div>
@@ -91,5 +92,4 @@
 		{% if current_page != total_pages %}
 			<a href="{{ path(app_action, {'page_ratings': current_page + 1}|merge(param_action)) }}" class="text-white hover:text-gray-300 px-5">&raquo;</a>
 		{% endif %}
-	</div>
 {% endif %}

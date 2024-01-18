@@ -1,493 +1,481 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ series.title }}{% endblock %}
+{% block title %}
+	{{ series.title }}
+{% endblock %}
 {% set index = 0 %}
 {% if user %}
-    {# Test pour savoir si séries est un Array#}
-    {% if series is iterable %}
-        {% set percentage_seen = series['percentage_seen'] %}
-        {% set series = series[0] %}
-    {% else %}
-        {% set percentage_seen = series_view[index]['percentage_seen'] %}
-        {% set index = index + 1 %}
-    {% endif %}
+	{# Test pour savoir si séries est un Array#}
+	{% if series is iterable %}
+		{% set percentage_seen = series['percentage_seen'] %}
+		{% set series = series[0] %}
+	{% else %}
+		{% set percentage_seen = series_view[index]['percentage_seen'] %}
+		{% set index = index + 1 %}
+	{% endif %}
 {% endif %}
 
 {% block body %}
-    <div class="">
-        <div class="container mx-auto py-8">
-            <h1 class="text-4xl text-white font-bold mb-8 text-center">{{series.title}}</h1>
+	<div class="">
+		<div class="container mx-auto py-8">
+			<h1 class="text-4xl text-white font-bold mb-8 text-center">{{series.title}}</h1>
 
-            <div class="flex lg:flex-row items-center flex-col">
+			<div class="flex lg:flex-row items-center flex-col">
 
-                <div class="w-2/3 flex flex-col lg:self-start items-center lg:w-1/3">
-                    <img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="pb-20 object-cover rounded-t-lg">
-                    <div class="hidden lg:block">
-                    {% include 'ratings/_show.html.twig' with { 
+				<div class="w-2/3 flex flex-col lg:self-start items-center lg:w-1/3">
+					<img src="{{ path('app_series_poster', {'id': series.id }) }}" alt="{{ series.title }}" class="pb-20 object-cover rounded-t-lg">
+					<div class="hidden lg:block">
+						{% include 'ratings/_show.html.twig' with { 
+                    'pagination' : pagination,
+                    'app_action' : app_action,
+                    'param_action' : param_action
+                    }%}
+					</div>
+                </div>
+				<div class="w-full  lg:ml-8 bg-gray-900 rounded-lg shadow-lg p-5">
+					<div class="flex flex-col">
+						<span class="text-white font-bold">Title:</span>
+						<span class="my-2 text-white ml-2">{{ series.title }}</span>
+						<pan class="text-white font-bold">Genres:</pan>
+						<div class="my-2 flex flex-wrap">
+							{% for genre in series.genre %}
+								<span class="inline-block bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold text-gray-300 mx-2 mb-2 w-fit">{{ genre.name }}</span>
+							{% endfor %}
+						</div>
+						<span class="text-white font-bold">All notes in the series:</span>
+						{% set allSerieRate = series.ratings|length %}
+						{% set ratingsHistogram = [] %}
+						{% for note in 0..5 %}
+							{% set noteCount = 0 %}
+							{% for rating in series.ratings %}
+								{% if rating.getValue() == note %}
+									{% set noteCount = noteCount + 1 %}
+								{% endif %}
+							{% endfor %}
+							{% set ratingsHistogram = ratingsHistogram|merge([noteCount]) %}
+						{% endfor %}
+						<div class="histogram w-9/12 md:w-1/4 h-fit flex flex-col">
+							{% set numIndex = 0 %}
+							{% for count in ratingsHistogram %}
+								<a href="{{path('app_series_show', {'id': series.id, 'note': numIndex})}}">
+									<div>
+										{% for note in 0..4 %}
+											<button class="text-white focus:outline-none mr-1" data-note="{{ note }}">
+												<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 1280.000000 1181.000000" preserveaspectratio="xMidYMid meet" class="inline-block fill-current text-yellow-500 cursor-default">
+													<g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current {% if note < numIndex %} text-yellow-500 {% else %} text-gray-300 {% endif %} cursor-default" fill="#000000" stroke="none">
+														<path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
+														                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
+														                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
+														                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
+														                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
+														                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
+														                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
+														                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
+														                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
+														                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
+														                                                    -4 5 -55 -139 -114 -320z"/>
+													</g>
+												</svg>
+											</button>
+										{% endfor %}
+										<div class="relative pt-1 mt-2">
+											<div class="overflow-hidden h-fit mb-4 text-xs flex rounded bg-gray-200">
+												<div style="width:{{ (allSerieRate > 0 ? (count/allSerieRate)*100 : 0) }}%" class="shadow-none flex flex-col text-start whitespace-nowrap text-black-500 justify-center bg-yellow-500 font-bold">{{count}}</div>
+											</div>
+										</div>
+									</div>
+								</a>
+								{% set numIndex = numIndex + 1 %}
+							{% endfor %}
+						</div>
+						<span class="text-white font-bold">Number of rate:
+							{{series.ratings|length}}</span>
+						{% set usersRating = 0 %}
+						{% for rating in series.ratings %}
+							{% set usersRating = usersRating + rating.value %}
+						{% endfor %}
+						{% if series.ratings|length > 0 %}
+							{% set usersRating = usersRating / series.ratings|length %}
+						{% endif %}
+						<div class="flex">
+							<p class="text-white mb-2">Users rating:</p>
+							<div class="flex ml-2">
+								{% set usersRatingInt = usersRating|round(0, 'floor') %}
+								{% for note in 1..5 %}
+									<div class="text-white focus:outline-none mr-1 ">
+										<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 1280.000000 1181.000000" preserveaspectratio="xMidYMid meet" class="inline-block fill-current">
+											<g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current {% if note <= usersRatingInt %} text-yellow-500 {% else %} text-gray-300 {% endif %}" fill="#000000" stroke="none">
+												<path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
+												                                                                        -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
+												                                                                        -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
+												                                                                        -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
+												                                                                        -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
+												                                                                        1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
+												                                                                        -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
+												                                                                        -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
+												                                                                        750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
+												                                                                        -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
+												                                                                        -4 5 -55 -139 -114 -320z"/>
+											</g>
+										</svg>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+					</br>
+
+					{% if app.user %}
+						<span class="text-white font-bold">Rate the series:</span>
+						{% set userAlreadyRateSerie = false %}
+						{% set userSerieRating = 0 %}
+						{% for rating in app.user.getRatings() %}
+							{% if rating.getSeries() == series %}
+								{% set userAlreadyRateSerie = true %}
+								{% set userSerieRating = rating.getValue() %}
+							{% endif %}
+						{% endfor %}
+						{% if not userAlreadyRateSerie %}
+							<div class="flex">
+								{% for note in 1..5 %}
+									<form action="{{ path('app_series_rate', {'id': series.id, 'note': note}) }}" method="post" class="rating-form">
+										<button class="star text-white hover:text-yellow-500 focus:outline-none mr-1" data-note="{{ note }}">
+											<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 1280.000000 1181.000000" preserveaspectratio="xMidYMid meet" class="inline-block fill-current">
+												<g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current" fill="#000000" stroke="none">
+													<path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
+													                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
+													                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
+													                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
+													                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
+													                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
+													                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
+													                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
+													                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
+													                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
+													                                                    -4 5 -55 -139 -114 -320z"/>
+												</g>
+											</svg>
+										</button>
+									</form>
+								{% endfor %}
+							</div>
+							<form action="{{ path('app_series_rate_comment', {'id': series.id}) }}" method="post" class="mt-4 flex flex-col">
+								<textarea id="comment" name="comment" class="rounded py-2 px-3 text-gray-700 leading-tight focus:shadow-outline w-1/2"></textarea>
+								<button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 w-fit">Submit</button>
+							</form>
+						{% else %}
+							{% set userRateComment = "" %}
+							{% set userRate = null %}
+							{% for rating in app.user.getRatings() %}
+								{% if rating.getSeries() == series %}
+									{% set userRateComment = rating.getComment() %}
+									{% set userRate = rating %}
+								{% endif %}
+							{% endfor %}
+							<div class="flex group">
+								{% for note in 1..5 %}
+									{% if note <= userSerieRating %}
+										<button class="text-white focus:outline-none mr-1" data-note="{{ note }}">
+											<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 1280.000000 1181.000000" preserveaspectratio="xMidYMid meet" class="inline-block fill-current text-yellow-500 cursor-default">
+												<g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current text-yellow-500 cursor-default" fill="#000000" stroke="none">
+													<path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
+													                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
+													                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
+													                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
+													                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
+													                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
+													                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
+													                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
+													                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
+													                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
+													                                                    -4 5 -55 -139 -114 -320z"/>
+												</g>
+											</svg>
+										</button>
+									{% else %}
+										<button class="text-white focus:outline-none mr-1" data-note="{{ note }}">
+											<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 1280.000000 1181.000000" preserveaspectratio="xMidYMid meet" class="inline-block fill-current focus:outline-none cursor-default">
+												<g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current focus:outline-none cursor-default" fill="#000000" stroke="none">
+													<path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
+													                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
+													                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
+													                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
+													                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
+													                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
+													                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
+													                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
+													                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
+													                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
+													                                                    -4 5 -55 -139 -114 -320z"/>
+												</g>
+											</svg>
+										</button>
+									{% endif %}
+								{% endfor %}
+								<form action="{{ path('app_series_unrate', {'id': series.id}) }}" method="post" class="ml-4">
+									<button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">unrate</button>
+								</form>
+							</div>
+							{% if userRateComment != NULL %}
+								<p class="text-white font-bold">Comment:</p>
+								<dd class="mt-1 text-sm text-gray-900 flex">
+									<div
+										class="w-1/2 bg-white p-4 rounded shadow h-32">
+										<!-- Ajustez la hauteur ici, par exemple, h-32 pour une hauteur de 32 pixels -->
+										<textarea readonly class="text-gray-900 w-full h-full bg-transparent border-none resize-none focus:outline-none">{{ userRateComment }}</textarea>
+									</div>
+								</dd>
+							{% endif %}
+							{% set dateRate = userRate.date|time_diff %}
+							<p class="text-white font-bold">{{ dateRate }}</p>
+
+						{% endif %}
+					{% endif %}
+					<span class="text-white my-2 font-bold">IMDb ID:</span>
+					<a href="https://www.imdb.com/title/{{ series.imdb }}" target="_blank" class="my-2 text-blue-500 hover:underline ml-2">{{ series.imdb }}</a>
+					<span class="text-white my-2 font-bold">Plot:</span>
+					<span class="text-white my-2 ml-2">{{ series.plot }}</span>
+					<iframe width="100%" id="trailer" height="100%" allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" class="h-[32rem]"></iframe>
+					<span class="my-2 text-white font-bold">Awards:</span>
+					<span class="my-2 text-white ml-2">{{ series.awards }}</span>
+					{% if user %}
+						{% if percentage_seen != 0 %}
+							<span class="my-2 text-white font-bold">seen:</span>
+							<div class="relative pt-1">
+								<div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+									<div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+								</div>
+							</div>
+						{% endif %}
+					{% endif %}
+					<span class="my-2 text-white font-bold">Date:</span>
+					<span class="my-2 text-white ml-2">{{ series.yearStart }}
+						{% if series.yearEnd %}
+							to
+							{{ series.yearEnd }}
+						{% else %}
+							and ongoing
+						{% endif %}
+					</span>
+					{% if app.user %}
+						{% set seriesnWatched = true %}
+						{% for season in series.seasons %}
+							{% for episode in season.episodes %}
+								{% if episode not in app.user.episode %}
+									{% set seriesnWatched = false %}
+								{% endif %}
+							{% endfor %}
+						{% endfor %}
+						{% if seriesnWatched %}
+							<a href="{{ path('app_series_unview_all', {'id': series.id}) }}">
+								<div class="inline-block bg-green-500 rounded-lg ml-5 mr-5 hover:bg-red-500">
+									<span class="text-white px-4 py-2 justify-center">unview all seasons</span>
+								</div>
+							</a>
+						{% else %}
+							<a href="{{ path('app_series_view_all', {'id': series.id}) }}">
+								<div class="inline-block bg-red-500 rounded-lg ml-5 mr-5 hover:bg-red-500">
+									<span class="text-white px-4 py-2 justify-center">view all seasons</span>
+								</div>
+							</a>
+						{% endif %}
+					{% endif %}
+					<span class="text-white font-bold">Seasons:</span>
+					<div class="flex mb-2 flex-col lg:w-2/3">
+						{% if not app.user %}
+							{% for season in series.seasons %}
+								<details>
+									<summary class="rounded-lg ml-5 mb-4 px-4 w-1/3">
+										<span class="text-white px-4 py-2 justify-center cursor-pointer font-bold">Season :
+											{{ season.number }}</span>
+									</summary>
+									<div w-full>
+										<p>
+											{% for episode in season.episodes %}
+												<li class="text-white px-4 py-2 list-none flex items-center">
+													<div class="text-center h-full">
+														#{{ episode.number }}
+														{{episode.title }}
+													</div>
+												</li>
+											{% endfor %}
+										</p>
+									</div>
+								</details>
+							{% endfor %}
+						{% else %}
+							{% for season in series.seasons %}
+								{% set seasonWatched = true %}
+								{% for episode in season.episodes %}
+									{% if episode not in app.user.episode %}
+										{% set seasonWatched = false %}
+									{% endif %}
+								{% endfor %}
+								<details>
+									{% if seasonWatched %}
+										<summary class="bg-green-500 rounded-lg ml-5 mb-4 px-4 w-6/12">
+											<span class="text-white px-4 py-2 justify-center cursor-pointer">Season :
+												{{ season.number }}</span>
+										</summary>
+									{% else %}
+										<summary class="bg-red-500 rounded-lg ml-5 mb-4 px-4 w-6/12">
+											<span class="text-white px-4 py-2 justify-center cursor-pointer">Season :
+												{{ season.number }}</span>
+										</summary>
+									{% endif %}
+									<div w-full>
+										<p>
+											{% if app.user %}
+												{% set allSeasonEpisodesView = true %}
+												{% for episode in season.episodes %}
+													{% if episode not in app.user.episode %}
+														{% set allSeasonEpisodesView = false %}
+													{% endif %}
+												{% endfor %}
+												{% if app.user and allSeasonEpisodesView %}
+													<form action="{{ path('season_unview', {'id': season.id}) }}" method="post">
+														<button type="submit" class="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Unview all episodes season</button>
+													</form>
+												{% else %}
+													<form action="{{ path('season_view', {'id': season.id}) }}" method="post">
+														<button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">View all episodes season</button>
+													</form>
+												{% endif %}
+											{% endif %}
+											{% for episode in season.episodes %}
+												<li class="text-white px-4 py-2 list-none flex items-center">
+													<div>
+														{% for episode2 in season.episodes %}
+															{% if episode == episode2 %}
+																<div class="bg-gray rounded-lg p-4">
+																	{% if episode in app.user.episode %}
+																		<form action="{{ path('episode_unview', {'id': episode.id}) }}" method="post">
+																			<button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex">
+																				Unview
+																			</button>
+																		</form>
+																	{% else %}
+																		<form id="episode_view_form_{{episode.id}}" action="{{ path('episode_view', {'id': episode.id}) }}" method="post">
+																			<button type="submit" class="bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex" onclick="return confirmAndSubmit('{{ episode.id }}');">
+																				View
+																			</button>
+																		</form>
+																		<form id="episode_view_precedent_form_{{episode.id}}" action="{{ path('episode_view_precedent', {'id': episode.id}) }}" method="post" style="display: none;">
+																			<button type="submit"></button>
+																		</form>
+																	{% endif %}
+																</div>
+															{% endif %}
+														{% endfor %}
+													</div>
+													<div class="text-center h-full">
+														#{{ episode.number }}
+														{{episode.title }}
+													</div>
+												</li>
+											{% endfor %}
+										</p>
+									</div>
+								</details>
+							{% endfor %}
+						{% endif %}
+					</div>
+				</div>
+				<div class="block lg:hidden">
+					{% include 'ratings/_show.html.twig' with { 
                     'pagination' : pagination,
                     'app_action' : app_action,
                     'param_action' : param_action
                     }
-            %}
-            </div>
-
-                </div>
-                <div class="w-full  lg:ml-8 bg-gray-900 rounded-lg shadow-lg p-5">
-                    <div class="flex flex-col">
-                        <span class="text-white font-bold">Title:</span>
-                        <span class="my-2 text-white ml-2">{{ series.title }}</span>
-                        <pan class="text-white font-bold">Genres:</pan>
-                        <div class="my-2 flex flex-wrap">
-                            {% for genre in series.genre %}
-                                <span class="inline-block bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold text-gray-300 mx-2 mb-2 w-fit">{{ genre.name }}</span>
-                            {% endfor %}
-                        </div>
-                        <span class="text-white font-bold">All notes in the series:</span>
-                        {% set allSerieRate = series.ratings|length %}
-                        {% set ratingsHistogram = [] %}
-                        {% for note in 0..5 %}
-                            {% set noteCount = 0 %}
-                            {% for rating in series.ratings %}
-                                {% if rating.getValue() == note %}
-                                    {% set noteCount = noteCount + 1 %}
-                                {% endif %}
-                            {% endfor %}
-                            {% set ratingsHistogram = ratingsHistogram|merge([noteCount]) %}
-                        {% endfor %}
-                        <div class="histogram w-9/12 md:w-1/4 h-fit flex flex-col">
-                            {% set numIndex = 0 %}
-                            {% for count in ratingsHistogram %}
-                                <a href="{{path('app_series_show', {'id': series.id, 'note': numIndex})}}">
-                                    <div>
-                                        {% for note in 0..4 %}
-                                            <button class="text-white focus:outline-none mr-1" data-note="{{ note }}">
-                                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                                    width="24" height="24" viewBox="0 0 1280.000000 1181.000000"
-                                                    preserveAspectRatio="xMidYMid meet" class="inline-block fill-current text-yellow-500 cursor-default">
-                                                    <g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current {% if note < numIndex %} text-yellow-500 {% else %} text-gray-300 {% endif %} cursor-default"
-                                                    fill="#000000" stroke="none">
-                                                    <path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
-                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
-                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
-                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
-                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
-                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
-                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
-                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
-                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
-                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
-                                                    -4 5 -55 -139 -114 -320z"/>
-                                                    </g>
-                                                </svg>
-                                            </button>
-                                        {% endfor %}
-                                        <div class="relative pt-1 mt-2">
-                                            <div class="overflow-hidden h-fit mb-4 text-xs flex rounded bg-gray-200">
-                                                <div style="width:{{ (allSerieRate > 0 ? (count/allSerieRate)*100 : 0) }}%" class="shadow-none flex flex-col text-start whitespace-nowrap text-black-500 justify-center bg-yellow-500 font-bold">{{count}}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                {% set numIndex = numIndex + 1 %}
-                            {% endfor %}
-                        </div>
-                        <span class="text-white font-bold">Number of rate:  {{series.ratings|length}}</span>
-                        {% set usersRating = 0 %}
-                        {% for rating in series.ratings %}
-                            {% set usersRating = usersRating + rating.value %}
-                        {% endfor %}
-                        {% if series.ratings|length > 0 %}
-						    {% set usersRating = usersRating / series.ratings|length %}
-                        {% endif %}
-                        <div class="flex">
-                            <p class="text-white mb-2">Users rating:</p>
-                            <div class="flex ml-2">
-                                {% set usersRatingInt = usersRating|round(0, 'floor') %}
-                                {% for note in 1..5 %}
-                                    <div class="text-white focus:outline-none mr-1 ">
-                                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 1280.000000 1181.000000" preserveaspectratio="xMidYMid meet" class="inline-block fill-current">
-                                            <g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current {% if note <= usersRatingInt %} text-yellow-500 {% else %} text-gray-300 {% endif %}" fill="#000000" stroke="none">
-                                                <path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
-                                                                        -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
-                                                                        -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
-                                                                        -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
-                                                                        -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
-                                                                        1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
-                                                                        -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
-                                                                        -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
-                                                                        750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
-                                                                        -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
-                                                                        -4 5 -55 -139 -114 -320z"/>
-                                            </g>
-                                        </svg>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div></br>
-
-                        {% if app.user %}
-                            <span class="text-white font-bold">Rate the series:</span>
-                            {% set userAlreadyRateSerie = false %}
-                            {% set userSerieRating = 0 %}
-                            {% for rating in app.user.getRatings() %}
-                                {% if rating.getSeries() == series %}
-                                    {% set userAlreadyRateSerie = true %}
-                                    {% set userSerieRating = rating.getValue() %}
-                                {% endif %}
-                            {% endfor %}
-                            {% if not userAlreadyRateSerie %}
-                                <div class="flex">
-                                    {% for note in 1..5 %}
-                                        <form action="{{ path('app_series_rate', {'id': series.id, 'note': note}) }}" method="post" class="rating-form">
-                                            <button class="star text-white hover:text-yellow-500 focus:outline-none mr-1" data-note="{{ note }}">
-                                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                                    width="24" height="24" viewBox="0 0 1280.000000 1181.000000"
-                                                    preserveAspectRatio="xMidYMid meet" class="inline-block fill-current">
-                                                    <g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current"
-                                                    fill="#000000" stroke="none">
-                                                    <path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
-                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
-                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
-                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
-                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
-                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
-                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
-                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
-                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
-                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
-                                                    -4 5 -55 -139 -114 -320z"/>
-                                                    </g>
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    {% endfor %}
-                                </div>
-                                <form action="{{ path('app_series_rate_comment', {'id': series.id}) }}" method="post" class="mt-4 flex flex-col">
-                                    <textarea id="comment" name="comment" class="rounded py-2 px-3 text-gray-700 leading-tight focus:shadow-outline w-1/2"></textarea>
-                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 w-fit">Submit</button>
-                                </form>
-                            {% else %}
-                                {% set userRateComment = "" %}
-                                {% set userRate = null %}
-                                {% for rating in app.user.getRatings() %}
-                                    {% if rating.getSeries() == series %}
-                                        {% set userRateComment = rating.getComment() %}
-                                        {% set userRate = rating %}
-                                    {% endif %}
-                                {% endfor %}
-                                <div class="flex group">
-                                    {% for note in 1..5 %}
-                                        {% if note <= userSerieRating %}
-                                            <button class="text-white focus:outline-none mr-1" data-note="{{ note }}">
-                                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                                    width="24" height="24" viewBox="0 0 1280.000000 1181.000000"
-                                                    preserveAspectRatio="xMidYMid meet" class="inline-block fill-current text-yellow-500 cursor-default">
-                                                    <g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)" class="inline-block fill-current text-yellow-500 cursor-default"
-                                                    fill="#000000" stroke="none">
-                                                    <path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
-                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
-                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
-                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
-                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
-                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
-                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
-                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
-                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
-                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
-                                                    -4 5 -55 -139 -114 -320z"/>
-                                                    </g>
-                                                </svg>
-                                            </button>
-                                        {% else %}
-                                            <button class="text-white focus:outline-none mr-1" data-note="{{ note }}">
-                                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                                    width="24" height="24" viewBox="0 0 1280.000000 1181.000000"
-                                                    preserveAspectRatio="xMidYMid meet" class="inline-block fill-current focus:outline-none cursor-default">
-                                                    <g transform="translate(0.000000,1181.000000) scale(0.100000,-0.100000)"class="inline-block fill-current focus:outline-none cursor-default"
-                                                    fill="#000000" stroke="none">
-                                                    <path class="h-6 w-6" d="M6327 11292 c-60 -180 -161 -489 -227 -687 -65 -198 -233 -709 -373
-                                                    -1135 -141 -426 -367 -1114 -503 -1527 l-248 -753 -2358 0 c-1297 0 -2358 -3
-                                                    -2358 -7 0 -5 170 -130 378 -279 207 -149 1057 -758 1887 -1353 831 -596 1518
-                                                    -1091 1528 -1100 20 -19 55 94 -420 -1346 -187 -570 -344 -1047 -628 -1910
-                                                    -141 -429 -286 -869 -322 -978 -36 -109 -63 -201 -60 -204 7 -6 -236 -180
-                                                    1912 1362 1012 726 1855 1331 1872 1343 l33 23 762 -548 c2447 -1758 3053
-                                                    -2191 3056 -2188 2 2 -46 153 -106 337 -61 183 -216 655 -346 1048 -511 1556
-                                                    -712 2168 -811 2470 -145 440 -185 563 -185 575 0 6 855 623 1900 1373 1045
-                                                    750 1900 1368 1900 1373 0 5 -909 10 -2357 11 l-2356 3 -164 500 c-90 275
-                                                    -272 826 -403 1225 -131 399 -383 1166 -560 1705 -177 539 -325 983 -329 987
-                                                    -4 5 -55 -139 -114 -320z"/>
-                                                    </g>
-                                                </svg>
-                                            </button>
-                                        {% endif %}
-                                    {% endfor %}
-                                    <form action="{{ path('app_series_unrate', {'id': series.id}) }}" method="post" class="ml-4">
-                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">unrate</button>
-                                    </form>
-                                </div>
-                                {% if userRateComment != NULL %}
-                                    <p class="text-white font-bold">Comment:</p>
-                                    <dd class="mt-1 text-sm text-gray-900 flex">
-                                        <div class="w-1/2 bg-white p-4 rounded shadow h-32"> <!-- Ajustez la hauteur ici, par exemple, h-32 pour une hauteur de 32 pixels -->
-                                            <textarea readonly class="text-gray-900 w-full h-full bg-transparent border-none resize-none focus:outline-none">{{ userRateComment }}</textarea>
-                                        </div>
-                                    </dd>
-                                {% endif %}
-                                {% set dateRate = userRate.date|time_diff %}
-                                <p class="text-white font-bold" >{{ dateRate }}</p>
-
-                            {% endif %}
-                        {% endif %}
-                        <span class="text-white my-2 font-bold">IMDb ID:</span>
-                        <a href="https://www.imdb.com/title/{{ series.imdb }}" target="_blank" class="my-2 text-blue-500 hover:underline ml-2">{{ series.imdb }}</a>
-                        <span class="text-white my-2 font-bold">Plot:</span>
-                        <span class="text-white my-2 ml-2">{{ series.plot }}</span>
-                        <iframe width="100%" id="trailer" height="100%"   allow="autoplay" src="{{series.youtubeTrailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" class="h-[32rem]" ></iframe>
-                        <span class="my-2 text-white font-bold">Awards:</span>
-                        <span class="my-2 text-white ml-2">{{ series.awards }}</span>
-                        {% if user %}
-                            {% if percentage_seen != 0 %}
-                                <span class="my-2 text-white font-bold">seen:</span>
-                                <div class="relative pt-1">
-                                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                                        <div style="width:{{ percentage_seen }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endif %}
-                        <span class="my-2 text-white font-bold">Date:</span>
-                        <span class="my-2 text-white ml-2">{{ series.yearStart }} {% if series.yearEnd %} to {{ series.yearEnd }}{% else %} and ongoing{% endif %}</span>
-                        {% if app.user %}
-                            {% set seriesnWatched = true %}
-                            {% for season in series.seasons %}
-                                {% for episode in season.episodes %}
-                                    {% if episode not in app.user.episode %}
-                                        {% set seriesnWatched = false %}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endfor %}
-                            {% if seriesnWatched %}
-                                <a href="{{ path('app_series_unview_all', {'id': series.id}) }}">
-                                    <div class="inline-block bg-green-500 rounded-lg ml-5 mr-5 hover:bg-red-500">
-                                        <span class="text-white px-4 py-2 justify-center">unview all seasons</span>
-                                    </div>
-                                </a>
-                            {% else %}
-                                <a href="{{ path('app_series_view_all', {'id': series.id}) }}">
-                                    <div class="inline-block bg-red-500 rounded-lg ml-5 mr-5 hover:bg-red-500">
-                                        <span class="text-white px-4 py-2 justify-center">view all seasons</span>
-                                    </div>
-                                </a>
-                            {% endif %}
-                        {% endif %}
-                        <span class="text-white font-bold">Seasons:</span> 
-                        <div class="flex mb-2 flex-col lg:w-2/3"> 
-                            {% if not app.user %}
-                                {% for season in series.seasons %}
-                                    <details>
-                                        <summary class="rounded-lg ml-5 mb-4 px-4 w-1/3">
-                                            <span class="text-white px-4 py-2 justify-center cursor-pointer font-bold">Season : {{ season.number }}</span>
-                                        </summary>
-                                        <div w-full>
-                                            <p>
-                                                {% for episode in season.episodes %}
-                                                    <li class="text-white px-4 py-2 list-none flex items-center">
-                                                        <div class="text-center h-full">
-                                                            #{{ episode.number }} {{episode.title }}
-                                                        </div>
-                                                    </li>
-                                                {% endfor %}
-                                            </p>
-                                        </div>
-                                    </details>
-                                {% endfor %}
-                            {% else %}
-                                {% for season in series.seasons %}
-                                    {% set seasonWatched = true %}
-                                    {% for episode in season.episodes %}
-                                        {% if episode not in app.user.episode %}
-                                            {% set seasonWatched = false %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    <details>
-                                        {% if seasonWatched %}
-                                            <summary class="bg-green-500 rounded-lg ml-5 mb-4 px-4 w-6/12">
-                                                <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
-                                            </summary>
-                                        {% else %}
-                                            <summary class="bg-red-500 rounded-lg ml-5 mb-4 px-4 w-6/12">
-                                                <span class="text-white px-4 py-2 justify-center cursor-pointer">Season : {{ season.number }}</span>
-                                            </summary>
-                                        {% endif %}
-                                        <div w-full>
-                                            <p>
-                                                {% if app.user %}
-                                                    {% set allSeasonEpisodesView = true %}
-                                                    {% for episode in season.episodes %}
-                                                        {% if episode not in app.user.episode %}
-                                                            {% set allSeasonEpisodesView = false %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    {% if app.user and allSeasonEpisodesView %}
-                                                        <form action="{{ path('season_unview', {'id': season.id}) }}" method="post">
-                                                            <button type="submit" class="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Unview all episodes season</button>
-                                                        </form>
-                                                    {% else %}
-                                                        <form action="{{ path('season_view', {'id': season.id}) }}" method="post">
-                                                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">View all episodes season</button>
-                                                        </form>
-                                                    {% endif %}
-                                                {% endif %}
-                                                {% for episode in season.episodes %}
-                                                    <li class="text-white px-4 py-2 list-none flex items-center">
-                                                        <div>
-                                                            {% for episode2 in season.episodes %}
-                                                                {% if episode == episode2 %}
-                                                                    <div class="bg-gray rounded-lg p-4">
-                                                                        {% if episode in app.user.episode %}
-                                                                            <form action="{{ path('episode_unview', {'id': episode.id}) }}" method="post">
-                                                                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex">
-                                                                                    Unview
-                                                                                </button>
-                                                                            </form>
-                                                                        {% else %}
-                                                                            <form id="episode_view_form_{{episode.id}}" action="{{ path('episode_view', {'id': episode.id}) }}" method="post">
-                                                                                <button type="submit" class="bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex" onclick="return confirmAndSubmit('{{ episode.id }}');">
-                                                                                    View
-                                                                                </button>
-                                                                            </form>
-                                                                            <form id="episode_view_precedent_form_{{episode.id}}" action="{{ path('episode_view_precedent', {'id': episode.id}) }}" method="post" style="display: none;">
-                                                                                <button type="submit"></button>
-                                                                            </form>
-                                                                        {% endif %}
-                                                                    </div>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </div>
-                                                        <div class="text-center h-full">
-                                                            #{{ episode.number }} {{episode.title }}
-                                                        </div>
-                                                    </li>
-                                                {% endfor %}
-                                            </p>
-                                        </div>
-                                    </details>
-                                {% endfor %}
-                            {% endif %}
-                        </div>                        
-                    </div>
-                    <div class="block lg:hidden">
-                    {% include 'ratings/_show.html.twig' with { 
-                    'pagination' : pagination,
-                    'app_action' : app_action,
-                    'param_action' : param_action
-                    }
-            %}
-            </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 <script>
 
-var stars = document.querySelectorAll(".star");
+	var stars = document.querySelectorAll(".star");
 
 stars.forEach((star, index) => {
-    star.addEventListener("mouseover", function() {
-        // Add active class to this star and all previous stars
-        for (let i = 0; i <= index; i++) {
-            stars[i].classList.add("text-yellow-500");
-            stars[i].classList.remove("text-white");
-        }
-    });
+star.addEventListener("mouseover", function () { // Add active class to this star and all previous stars
+for (let i = 0; i <= index; i++) {
+stars[i].classList.add("text-yellow-500");
+stars[i].classList.remove("text-white");
+}
+});
 
-    star.addEventListener("mouseout", function() {
-        // Remove active class from all stars
-        stars.forEach(s => {
-            if (!s.classList.contains('clicked')) {
-                s.classList.remove("text-yellow-500");
-                s.classList.add("text-white");
-            }
-        });
-    });
+star.addEventListener("mouseout", function () { // Remove active class from all stars
+stars.forEach(s => {
+if (!s.classList.contains('clicked')) {
+s.classList.remove("text-yellow-500");
+s.classList.add("text-white");
+}
+});
+});
 
-    star.addEventListener('click', event => {
-        event.preventDefault();
+star.addEventListener('click', event => {
+event.preventDefault();
 
-        // Change the color of the star
-        for (let i = 0; i <= index; i++) {
-            stars[i].classList.add('text-yellow-500', 'clicked');
-            stars[i].classList.remove('text-white');
-        }
+// Change the color of the star
+for (let i = 0; i <= index; i++) {
+stars[i].classList.add('text-yellow-500', 'clicked');
+stars[i].classList.remove('text-white');
+}
 
-        // Send the rating to the server
-        fetch(star.form.action, { method: 'POST' })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Handle the response
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-    });
+// Send the rating to the server
+fetch(star.form.action, {method: 'POST'}).then(response => {
+if (!response.ok) {
+throw new Error('Network response was not ok');
+}
+return response.json();
+}).then(data => { // Handle the response
+}).catch(error => {
+console.error('There has been a problem with your fetch operation:', error);
+});
+});
 });
 
 
 document.querySelectorAll('.star').forEach(button => {
-    button.addEventListener('click', event => {
-        event.preventDefault();
+button.addEventListener('click', event => {
+event.preventDefault();
 
-        // Change the color of the star
-        button.classList.remove('text-white');
-        button.classList.add('text-yellow-500');
+// Change the color of the star
+button.classList.remove('text-white');
+button.classList.add('text-yellow-500');
 
-        // Send the rating to the server
-        fetch(button.form.action, { method: 'POST' })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Handle the response
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-    });
+// Send the rating to the server
+fetch(button.form.action, {method: 'POST'}).then(response => {
+if (!response.ok) {
+throw new Error('Network response was not ok');
+}
+return response.json();
+}).then(data => { // Handle the response
+}).catch(error => {
+console.error('There has been a problem with your fetch operation:', error);
+});
+});
 });
 
 function confirmAndSubmit(id) {
-    if (confirm('Have you already seen the previous episodes?')) {
-        var form = document.getElementById('episode_view_precedent_form_' + id);
-    } else {
-        var form = document.getElementById('episode_view_form_' + id);
-    }
-
-    var request = new XMLHttpRequest();
-    request.open("POST", form.action);
-
-    request.onload = function () {
-        if (request.status >= 200 && request.status < 400) {
-            // La requête a réussi, vous pouvez recharger la page ici
-            location.reload();
-        } else {
-            // La requête a échoué, gérer les erreurs ici si nécessaire
-        }
-    };
-
-    request.send(new FormData(form));
-
-    return false;
+if (confirm('Have you already seen the previous episodes?')) {
+var form = document.getElementById('episode_view_precedent_form_' + id);
+} else {
+var form = document.getElementById('episode_view_form_' + id);
 }
 
+var request = new XMLHttpRequest();
+request.open("POST", form.action);
 
+request.onload = function () {
+if (request.status >= 200 && request.status < 400) { // La requête a réussi, vous pouvez recharger la page ici
+location.reload();
+} else { // La requête a échoué, gérer les erreurs ici si nécessaire
+}
+};
 
-</script>
-{% endblock %}
+request.send(new FormData(form));
+
+return false;
+}
+</script>{% endblock %}

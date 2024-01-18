@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Series;
+use App\Entity\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\ProfileFormType;
 
@@ -159,9 +160,6 @@ class UserController extends AbstractController
         $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $user_followed = $userRepository->find($id_user);
 
-        dump($user);
-        dump($user_followed);
-
         if ($user->getId() != $id_user && !$user->isFollowing($user_followed)) {
             $user->addFollowing($user_followed);
             $entityManager->persist($user);
@@ -169,8 +167,6 @@ class UserController extends AbstractController
             $entityManager->flush();
         }
 
-        dump($user);
-        dump($user_followed);
         return $this->redirectToRoute('app_user_show', ['id_user' => $id_user]);
     }
 
