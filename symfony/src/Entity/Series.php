@@ -54,7 +54,7 @@ class Series
     #[ORM\ManyToMany(targetEntity: "User", mappedBy: "series")]
     private $user = array();
 
-    #[ORM\ManyToMany(targetEntity: "Genre", mappedBy: "series", fetch:"EAGER")]
+    #[ORM\ManyToMany(targetEntity: "Genre", mappedBy: "series")]
     #[ORM\JoinTable(name: "genre_series")]
     private $genre = array();
 
@@ -71,7 +71,7 @@ class Series
     #[ORM\OneToMany(mappedBy: "series", targetEntity: "ExternalRating")]
     private $externalRatings;
 
-    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating", fetch:"EAGER")]
+    #[ORM\OneToMany(mappedBy: "series", targetEntity: "Rating")]
     private $ratings;
 
     /**
@@ -287,7 +287,7 @@ class Series
 
     public function setPoster($poster): static
     {
-        $this->poster = $poster;
+        $this->poster = file_get_contents($poster);
 
         return $this;
     }

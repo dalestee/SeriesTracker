@@ -22,6 +22,7 @@
 				<table class="table-auto w-full mt-12 divide-y divide-gray-200">
 					<thead>
 						<tr>
+							<th class="px-2 py-2">Connexion</th>
 							<th class="px-2 py-2">Id</th>
 							<th class="px-2 py-2">Username</th>
 							<th class="px-2 py-2">Email</th>
@@ -52,6 +53,11 @@
 						</style>
 						{% for user in pagination.items %}
 							<tr>
+								{% if user.lastConnexion is not null %}
+									<td class="text-green-500 px-2 ">Connected</td>
+								{% else %}
+									<td class="text-red-500 px-2 ">Disconnected</td>
+								{% endif %}
 								<td class=" px-2 ">{{ user.id }}</td>
 								<td class=" px-2 ">{{ user.name }}</td>
 								<td class=" px-2 ">{{ user.email }}</td>
@@ -79,7 +85,7 @@
 									</td>
 									<td class=" px-2 ">
 										{% if 'ROLE_USER' in user.roles or ('ROLE_ADMIN' in user.roles and is_granted('ROLE_SUPER_ADMIN')) %}
-											<a href="{{ path('app_user', {'id_user': user.id}) }}" class="text-white border border-white bg-black rounded-full px-2 py-2 hover:text-black hover:bg-white hover:border-black">Profile</a>
+											<a href="{{ path('app_user_show', {'id_user': user.id}) }}" class="text-white border border-white bg-black rounded-full px-2 py-2 hover:text-black hover:bg-white hover:border-black">Profile</a>
 										{% endif %}
 									</td>
 									<td class=" px-2 ">
@@ -153,8 +159,6 @@
 			alert("You must enter the new password");
 		} else if (newPassword.length < 6) {
 			alert("Password is too short");
-		} else if (newPassword.length > 20) {
-			alert("Password is too long");
 		} else {
 			var newPasswordConfirm = prompt("Please confirm the new password", "");
 			if (newPasswordConfirm == null || newPasswordConfirm == "" || newPasswordConfirm != newPassword) {

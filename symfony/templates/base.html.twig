@@ -122,6 +122,9 @@
 			nav li {
 				text-align: center;
 			}
+			.formulaire_register div {
+				width: 100%;
+			}
 
 			.bigSearchBar {
 				position: absolute;
@@ -298,7 +301,7 @@
 				</li>
 				{% if app.user %}
 					<li>
-					<a href="{{ path('app_user', {'id_user': app.user.id}) }}" class="text-white px-4 py-2 relative inline-block group">
+					<a href="{{ path('app_user_show', {'id_user': app.user.id}) }}" class="text-white px-4 py-2 relative inline-block group">
 								Profile
 					</a>
 					</li>
@@ -411,7 +414,7 @@
 					{# MENU COMPTE #}
 
 					<div
-						id="accountMenu" class="hidden absolute flex items-center flex-col w-fit shadow-2xl shadow-inner h-fit rounded-xl border-2 border-red-500 bg-gray-900 top-24 right-12 h-40 z-10 p-4">
+						id="accountMenu" class="hidden absolute flex items-center flex-col w-fit shadow-2xl shadow-inner h-fit rounded-xl border-2 border-red-500 bg-gray-900 top-24 right-12 z-10 p-4">
 						<!-- Liens pour le compte -->
 						{% if app.user %}
 
@@ -421,7 +424,7 @@
 									{{ app.user.getName }}</h2>
 							</div>
 
-							<a href="{{ path('app_user', {'id_user': app.user.id}) }}" class="text-black px-4 py-2 relative inline-block group">
+							<a href="{{ path('app_user_show', {'id_user': app.user.id}) }}" class="text-black px-4 py-2 relative inline-block group">
 								Profile
 							</a>
 
