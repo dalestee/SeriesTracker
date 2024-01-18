@@ -180,14 +180,13 @@ class OMDBController extends AbstractController
         return $this->redirectToRoute('app_admin_series_index');
     }
 
-    #[Route ('/series/miseAJour/{imdb}', name: 'app_admin_series_mise_a_jour', methods: ['GET'])]
+    #[Route('/series/miseAJour/{imdb}', name: 'app_admin_series_mise_a_jour', methods: ['GET'])]
     public function miseAJour(EntityManagerInterface $entityManager, Request $request, $imdb): Response
     {
         $repository = $entityManager->getRepository(Series::class);
         $series = $repository->findOneBy(['imdb' => $imdb]);
 
         if (!$series) {
-            
             return $this->redirectToRoute('app_admin_series_index');
         }
 
@@ -200,7 +199,7 @@ class OMDBController extends AbstractController
         $series->setPlot($newData['Plot']);
         $series->setDirector($newData['Director']);
         $series->setAwards($newData['Awards']);
-        if ($newData['Year']){
+        if ($newData['Year']) {
             $years = explode('–', $newData['Year']);
             $series->setYearStart($years[0]);
             if (!empty($years[1])) {
@@ -252,14 +251,16 @@ class OMDBController extends AbstractController
         $totalSeasons = $seriesDetails['totalSeasons'];
 
         for ($seasonNumber = 1; $seasonNumber <= $totalSeasons; $seasonNumber++) {
-            $seasonDetails = file_get_contents('http://www.omdbapi.com/?i=' . $imdb . '&season=' . $seasonNumber . '&apikey=' . '5140c72f');
+            $seasonDetails = file_get_contents('http://www.omdbapi.com/?i=' . $imdb . '&season=' .
+             $seasonNumber . '&apikey=' . '5140c72f');
             $seasonDetails = json_decode($seasonDetails, true);
 
             if (!is_array($seasonDetails)) {
                 continue;
             }
 
-            $season = $entityManager->getRepository(Season::class)->findOneBy(['number' => $seasonNumber, 'series' => $series]);
+            $season = $entityManager->getRepository(Season::class)
+            ->findOneBy(['number' => $seasonNumber, 'series' => $series]);
 
             if (!$season) {
                 $season = new Season();
@@ -270,7 +271,8 @@ class OMDBController extends AbstractController
 
             if (array_key_exists('Episodes', $seasonDetails)) {
                 foreach ($seasonDetails['Episodes'] as $episodeDetails) {
-                    $episode = $entityManager->getRepository(Episode::class)->findOneBy(['number' => $episodeDetails['Episode'], 'season' => $season]);
+                    $episode = $entityManager->getRepository(Episode::class)
+                    ->findOneBy(['number' => $episodeDetails['Episode'], 'season' => $season]);
                     if (!$episode) {
                         $episode = new Episode();
                         $episode->setTitle($episodeDetails['Title']);
