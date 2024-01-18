@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Series;
-use App\Entity\User;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\ProfileFormType;
 
@@ -28,7 +26,7 @@ class UserController extends AbstractController
     ): Response {
 
         $user = $userRepository->find($id_user);
-        $ratingRepository = $entityManager->getRepository(Rating::class);
+
         $page_series = $request->query->getInt('page_series', 1);
         $page_ratings = $request->query->getInt('page_ratings', 1);
 
@@ -40,7 +38,7 @@ class UserController extends AbstractController
                 $page_series,
                 10
             );
-            $rating = $ratingRepository->queryFindRatingFromUser($user);
+            $rating = $userRepository->queryFindRatingFromUser($user);
 
             $series_id = [];
             foreach ($series_suivies->getItems() as $serie) {
