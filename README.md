@@ -25,6 +25,7 @@ Il est destiné au super-administrateur de l'application ayant accès à une bas
         - [Base de donnée installé "From Scratch"](#base-de-donnée-installé-from-scratch)
         - [Importation de la base de données](#importation-de-la-base-de-données)
         - [Paramètrage de la base de données dans symfony](#paramètrage-de-la-base-de-données-dans-symfony)
+        - [Mettre à jour la base de données avec les entités](#mettre-à-jour-la-base-de-données-avec-les-entités)
     - [Lancement du serveur de test de symfony](#lancement-du-serveur-de-test-de-symfony)
         - [dans le dossier /s3.01-devapp-equipe12/symfony](#dans-le-dossier-s301-devapp-equipe12symfony)
     - [Accès à l'application](#accès-à-lapplication)
@@ -199,6 +200,17 @@ DATABASE_URL="mysql://<user>:<motDePasse>@localhost/<baseDeDonnées>"
 
 changez les valeurs entre <> par les valeurs de votre installation.
 
+### Mettre à jour la base de données avec les entités
+
+Dans le dossier `/s3.01-devapp-equipe12/symfony`
+
+Vous devez mettre à jour la base de données avec les entités que nous avons créé ou modifié.
+
+```console
+symfony console doctrine:schema:update --force
+```
+
+
 ## Lancement du serveur de test de symfony
 
 Ce serveur ne doit pas être utilisé comme un serveur de production.
@@ -223,21 +235,22 @@ Toutes les commandes suivantes sont à effectuer dans le dossier `/symfony`
 
 ### Création d'un super-administrateur
 
-met un utilisateur donné en super-administrateur.
+Permet de changer le role d'un utilisateur donné en super-administrateur, l'utilisateur doit déjà exister dans la base de données.
 
 ```bash
-symfony console app:new-super-admin <email>
+symfony console app:new-super-admin <user_email>
 ```
 
 ### Création d'utilisateurs aléatoires
 
 Permet de créer un nombre parametrable d'utilisateurs aléatoires.
-Leur mot de passe est son mail, et leur nombre admin dans la base de données est -1.
+Leur mot de passe est leur mail. Par défaut leur attribut admin dans la base de données est -1 ce qui permet de les différencier des utilisateurs normaux.
 
 ```bash
 symfony console app:create-users <nombre d'utilisateurs>
 ```
-par défaut le nombre d'utilisateurs est 10 si vous ne mettez pas de nombre d'utilisateurs.
+
+Par défaut le nombre d'utilisateurs est 10 si vous ne mettez pas de nombre d'utilisateurs.
 
 ### Création de critiques aléatoires
 
@@ -249,13 +262,14 @@ avec un nombre de critiques par serie compris dans une plage parametrable. Et de
 ```bash
 symfony console app:create-ratings <nombre minimum de critiques par series> <nombre maximum de critiques par series>
 ```
-par défaut le nombre minimum de critiques par series est 10 et le nombre maximum de critiques par series est 150 si vous ne mettez pas de nombre minimum et maximum de critiques par series.
+Par défaut le nombre minimum de critiques par series est 10 et le nombre maximum de critiques par series est 150 si vous ne mettez pas de nombre minimum et maximum de critiques par series.
+
+Si il n'y a pas assez d'utilisateurs dans la base de données, le nombre de critiques par series maximum sera le nombre d'utilisateur pouvant créer des critiques pour cette série.
 
 ### Users follow et regardent des séries aléatoires
 
-Permet de créer des relations follow et watch aléatoires pour chaque utilisateur,
-avec un nombre de relations follow et watch par utilisateur compris dans une plage parametrable.
-Par défault le nombre minimum de series est 0 et le nombre maximum de series est 10 si vous ne mettez pas de nombre minimum et maximum de series.
+Permet de créer des relations de type utilisateur suivant une séries avec un état d'avancement dans la vision des épisodes aléatoires pour chaque utilisateur, avec un nombre de relations de ce type paramétrable par utilisateur compris dans une plage parametrable.
+Par défault le nombre minimum de series qui seras suivit est 0 et le nombre maximum de series est 10 si vous ne mettez pas de nombre minimum et maximum de series.
 
 ```bash
 symfony console app:follow-view-series <nombre minimum de series> <nombre maximum de series>
@@ -263,11 +277,9 @@ symfony console app:follow-view-series <nombre minimum de series> <nombre maximu
 
 ### Actualisation des series
 
-actualise les series de la base de données avec les données de l'api.
-Par défaut le nombre de series est 10 et l'off-set est 0 si vous ne mettez pas de nombre de series et d'off-set.
+Actualise les series de la base de données avec les informations de l'API.
+Par défaut le nombre de series est -1 (corespondant à une mise à jour de toutes les séries de la base) et l'off-set est 0 si vous ne mettez pas de nombre de series et d'off-set.
 
 ```bash
 symfony console app:update-all-series <nombre de series, -1 fait toutes les series> <off-set des series>
 ```
-
-
