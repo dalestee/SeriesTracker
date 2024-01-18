@@ -90,15 +90,17 @@ class CreateRatingCommand extends Command
                     $rating->setComment($this->faker->text);
                     $this->entityManager->persist($rating);
                     $ratingsCreated++;
-          //          $output->writeln(sprintf('Created rating for user %s and series %s', $user->getUserIdentifier(), $serie->getTitle()));
                     if ($ratingsCreated >= $nbRatings) {
                         break;
                     }
                     continue;
                 }
-                $output->writeln(sprintf('Rating already exists for user %s and series %s', $user->getUserIdentifier(), $serie->getTitle()));
+                $output->writeln(sprintf(
+                    'Rating already exists for user %s and series %s',
+                    $user->getUserIdentifier(),
+                    $serie->getTitle()
+                ));
             }
-        //    $output->writeln(sprintf('Created %d ratings for series %s', $ratingsCreated, $serie->getTitle()));
             $this->entityManager->flush();
             $totalCreatedRatings += $ratingsCreated;
         }

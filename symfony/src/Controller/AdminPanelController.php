@@ -122,8 +122,8 @@ class AdminPanelController extends AbstractController
     ): Response {
         $id = $request->get('id');
         $moderate = $request->get('moderate');
-        if($id != null) {
-            if($moderate) {
+        if ($id != null) {
+            if ($moderate) {
                 $rating = $ratingRepository->find($id);
                 $rating->setModerate(true);
                 $entityManager->persist($rating);
@@ -147,11 +147,4 @@ class AdminPanelController extends AbstractController
             'page_ratings' => $page_ratings
         ]);
     }
-
-
-
-
-
-
-
 }
