@@ -18,8 +18,12 @@ use App\Repository\UserRepository;
 class AdminPanelController extends AbstractController
 {
     #[Route('/dashboard/{page}', name: 'app_admin_panel', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager, UserRepository $userRepository, PaginatorInterface $paginator, $page = 1): Response
-    {
+    public function index(
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        PaginatorInterface $paginator,
+        $page = 1
+    ): Response {
         if (isset($_GET['email'])) {
             $mail = $_GET['email'];
 
