@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 class UserRepository extends ServiceEntityRepository
 {
@@ -36,5 +37,23 @@ class UserRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute()
         ;
+    }
+
+    public function queryFindUsersFollowing(int $userId)
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(User::class, 'u');
+        $rsm->addFieldResult('u', 'id', 'id');
+        $rsm->addFieldResult('u', 'name', 'name');
+
+        $sql = '
+            SELECT user.name, user.id
+            FROM user
+            JOIN user_followers ON user_followers.user_followed = user.id
+            WHERE user_followers.user_follower = :userId
+        ';
+
+        return $this->getEntityManager()->createNativeQuery($sql, $rsm)
+            ->setParameter('userId', $userId);
     }
 }
