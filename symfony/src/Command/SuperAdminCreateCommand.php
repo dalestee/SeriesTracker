@@ -28,7 +28,7 @@ class SuperAdminCreateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('user', InputArgument::REQUIRED, 'User email')
+            ->addArgument('user_email', InputArgument::REQUIRED, 'User email')
         ;
     }
 
@@ -36,7 +36,7 @@ class SuperAdminCreateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $userEmail = $input->getArgument('user');
+        $userEmail = $input->getArgument('user_email');
 
         if ($userEmail) {
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $userEmail]);

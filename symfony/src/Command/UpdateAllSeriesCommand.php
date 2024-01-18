@@ -34,9 +34,9 @@ class UpdateAllSeriesCommand extends Command
             'nb_series_updated',
             InputArgument::OPTIONAL,
             'Number of series to update, -1 = all series',
-            '-1'
+            -1
         );
-        $this->addArgument('offset', InputArgument::OPTIONAL, 'Offset of series to update', '0');
+        $this->addArgument('offset', InputArgument::OPTIONAL, 'Offset of series to update', 0);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
