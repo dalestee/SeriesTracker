@@ -30,9 +30,14 @@ class SeriesController extends AbstractController
         SeriesRepository $seriesRepository,
         $page_series = 1
     ): Response {
+        $param_action = [];
+
         $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
         $form->handleRequest($request);
         $search = $request->query->get('search');
+        if ($search != '') {
+            $param_action = $param_action + ['search' => $search];
+        }
 
         $session = $request->getSession();
         // Check if the session already has a 'seed' value
@@ -47,8 +52,14 @@ class SeriesController extends AbstractController
             if (!$criteria) {
                 $criteria = [];
             }
+            foreach ($criteria as $key => $value) {
+                if ($value != null) {
+                    $param_action = $param_action +  ["series_search[$key]" => $value];
+                }
+            }
+
             $query = $seriesRepository
-            ->findByCriteria($criteria, $search);
+                ->findByCriteria($criteria, $search);
         } else {
             $query = $entityManager->getRepository(Series::class)->queryRandom($seed)->getQuery();
         }
@@ -80,7 +91,7 @@ class SeriesController extends AbstractController
             'app_action' => 'app_series_index',
             'pagination' => $pagination,
             'series_view' => $series_view ?? [],
-            'param_action' => ['search' => $search],
+            'param_action' => $param_action,
             'form' => $form->createView(),
         ]);
     }
@@ -105,7 +116,7 @@ class SeriesController extends AbstractController
             $suivies = $this->isfollow($user, $series);
             if (!$suivies) {
                 $user->addSeries($series);
-                $entityManager ->flush();
+                $entityManager->flush();
             }
 
             $route = $request->headers->get('referer');
@@ -129,7 +140,7 @@ class SeriesController extends AbstractController
             $suivies = $this->isfollow($user, $series);
             if ($suivies) {
                 $user->removeSeries($series);
-                $entityManager ->flush();
+                $entityManager->flush();
             }
 
             $route = $request->headers->get('referer');
@@ -149,21 +160,31 @@ class SeriesController extends AbstractController
         if (!$this->isUserLoggedIn()) {
             return $this->redirectToRoute('app_login');
         } else {
+            $param_action = [];
             $user = $entityManager->getRepository(User::class)
                 ->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
 
             $form = $this->createForm(SeriesSearchType::class, null, ['method' => 'GET']);
             $form->handleRequest($request);
 
-            $search = $request->query->get('search', '');
+            $search = $request->query->get('search');
+            if ($search != '') {
+                $param_action = $param_action + ['search' => $search];
+            }
+
             if ($form->isSubmitted() && $form->isValid() || !empty($search)) {
                 $criteria = $form->getData();
                 if (!$criteria) {
                     $criteria = [];
                 }
+                foreach ($criteria as $key => $value) {
+                    if ($value != null) {
+                        $param_action = $param_action +  ["series_search[$key]" => $value];
+                    }
+                }
                 $seriesQuery = $seriesRepository
-                ->findByCriteriaFollow($user, $criteria, $search)
-                ->getQuery();
+                    ->findByCriteriaFollow($user, $criteria, $search)
+                    ->getQuery();
                 $seriesQuery->setHint('knp_paginator.count', count($seriesQuery->getResult()));
             } else {
                 $seriesQuery = $entityManager->getRepository(Series::class)
@@ -184,14 +205,14 @@ class SeriesController extends AbstractController
                     $series_view = $seriesRepository->queryVisionage($user->getId(), $series_id);
                 }
             }
-            
+
 
             return $this->render('series/series_follow.html.twig', [
                 'user' => $this->getUser(),
                 'app_action' => 'app_series_list_follow',
                 'pagination' => $pagination,
                 'form' => $form->createView(),
-                'param_action' => ['search' => $search],
+                'param_action' => $param_action,
                 'series_view' => $series_view ?? [],
             ]);
         }
@@ -332,10 +353,10 @@ class SeriesController extends AbstractController
 
         if ($note != null) {
             $ratingQuery = $entityManager->getRepository(Rating::class)
-            ->queryRatingsBySeriesAndNote($series->getId(), $note);
+                ->queryRatingsBySeriesAndNote($series->getId(), $note);
         } else {
             $ratingQuery = $entityManager->getRepository(Rating::class)
-            ->queryRatingsBySeries($series->getId());
+                ->queryRatingsBySeries($series->getId());
         }
 
         $pagination = $paginator->paginate(
@@ -356,11 +377,11 @@ class SeriesController extends AbstractController
                 ->getRepository(Series::class)
                 ->queryVisionage($user->getId(), [$series->getId()], 0);
         }
-       
+
         return $this->render('series/show.html.twig', [
             'series' => $series,
             'app_action' => 'app_series_show',
-            'param_action' => ['id' => $series->getId(),'note' => $note],
+            'param_action' => ['id' => $series->getId(), 'note' => $note],
             'user' => $user,
             'series_view' => $series_view ?? [],
             'pagination' => $pagination,
