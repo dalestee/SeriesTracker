@@ -2,11 +2,13 @@
 
 namespace App\Security;
 
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
@@ -27,8 +29,11 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        UrlGeneratorInterface $urlGenerator,
+        EntityManagerInterface $entityManager,
+        private UserRepository $userRepository
+    ) {
         $this->urlGenerator = $urlGenerator;
         $this->entityManager = $entityManager;
     }
@@ -37,6 +42,12 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
     {
         $email = $request->request->get('email', '');
 
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+
+        if ($user->getBan() != null) {
+            throw new CustomUserMessageAuthenticationException("Your account has been banned, ".$user->getBan());
+        }
+        
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
         return new Passport(
@@ -59,6 +70,10 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
+        }
+
+        if ($token->getUser()->getBan() != null) {
+            return new RedirectResponse($this->urlGenerator->generate('app_logout'));
         }
 
         // For example:

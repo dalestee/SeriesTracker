@@ -465,14 +465,29 @@ document.querySelectorAll('.star').forEach(button => {
 
 function confirmAndSubmit(id) {
     if (confirm('Have you already seen the previous episodes?')) {
-        document.getElementById('episode_view_precedent_form_'+id).submit();
-        return true;
+        var form = document.getElementById('episode_view_precedent_form_' + id);
+    } else {
+        var form = document.getElementById('episode_view_form_' + id);
     }
-    else {
-        document.getElementById('episode_view_form_'+id).submit();
-    }
+
+    var request = new XMLHttpRequest();
+    request.open("POST", form.action);
+
+    request.onload = function () {
+        if (request.status >= 200 && request.status < 400) {
+            // La requête a réussi, vous pouvez recharger la page ici
+            location.reload();
+        } else {
+            // La requête a échoué, gérer les erreurs ici si nécessaire
+        }
+    };
+
+    request.send(new FormData(form));
+
     return false;
 }
+
+
 
 </script>
 {% endblock %}
