@@ -65,6 +65,7 @@ class SeriesRepository extends ServiceEntityRepository
                     FROM user_episode UE
                     INNER JOIN episode E ON UE.episode_id = E.id
                     INNER JOIN season S ON E.season_id = S.id
+                    WHERE UE.user_id = :userId
                     GROUP BY S.series_id
                 ) seen ON series.id = seen.series_id
                 WHERE series.id IN (:arraySeriesId)";
@@ -328,7 +329,14 @@ class SeriesRepository extends ServiceEntityRepository
         $conn = $this->_em->getConnection();
 
         $sql = '
-            SELECT series.id AS series_id, series.title AS series_title, season.id AS season_id, season.number AS season_number, episode.id AS episode_id, episode.number AS episode_number, episode.title AS episode_title
+            SELECT 
+            series.id AS series_id, 
+            series.title AS series_title, 
+            season.id AS season_id, 
+            season.number AS season_number, 
+            episode.id AS episode_id, 
+            episode.number AS episode_number, 
+            episode.title AS episode_title
             FROM series
             JOIN season ON season.series_id = series.id
             JOIN episode ON episode.season_id = season.id

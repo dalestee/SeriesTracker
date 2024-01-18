@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Command;
+
 use App\Entity\User;
 use App\Entity\Episode;
 use App\Entity\Series;
@@ -13,12 +14,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Faker\Factory;
 use Symfony\Component\Console\Helper\ProgressBar;
 
-
 #[AsCommand(
     name: 'app:follow-view-series',
     description: 'Make users follow and view random series',
 )]
-class  FollowViewSeriesCommand extends Command
+class FollowViewSeriesCommand extends Command
 {
     private $entityManager;
     private $faker;
@@ -52,13 +52,12 @@ class  FollowViewSeriesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new \Symfony\Component\Console\Style\SymfonyStyle($input, $output);
+
         $nbSeriesMin = $input->getArgument('nbSeriesMin');
         $nbSeriesMax = $input->getArgument('nbSeriesMax');
         $users = $this->entityManager->getRepository(User::class)->findBy(['admin' => -1]);
         $series = $this->entityManager->getRepository(Series::class)->findAll();
-        $counter = 0;
-
-        shuffle($series);
 
         // Create a new progress bar (50 units)
         $progressBar = new ProgressBar($output, count($users));
@@ -67,20 +66,22 @@ class  FollowViewSeriesCommand extends Command
         $progressBar->start();
 
         while (!empty($users)) {
+            shuffle($series);
             $user = array_pop($users);
             $nbSeries = $this->faker->numberBetween($nbSeriesMin, $nbSeriesMax);
-            $firstIndex = $this->faker->numberBetween(0, count($series) - $nbSeries);
-            $seriesToFollow = array_slice($series, $firstIndex, $nbSeries);
+            $seriesToFollow = array_slice($series, 0, $nbSeries);
             foreach ($seriesToFollow as $serie) {
-                $episodes = $this->entityManager->getRepository(Series::class)->episodeOfSeries($serie->getId());
-                $episodes = array_slice($episodes, 0, $this->faker->numberBetween(0, count($episodes)));
+                $episodesInfos = $this->entityManager->getRepository(Series::class)->episodeOfSeries($serie->getId());
+                $episodesInfos = array_slice($episodesInfos, 0, $this->faker->numberBetween(0, count($episodesInfos)));
                 $user->addSeries($serie);
-                foreach ($episodes as $episode) {
-                    $user->addEpisode($this->entityManager->getRepository(Episode::class)->find($episode['episode_id']));
+                foreach ($episodesInfos as $episodeInfos) {
+                    $episode = $this->entityManager->getRepository(Episode::class)->find($episodeInfos['episode_id']);
+                    $user->addEpisode($episode);
+                    $episode->addUser($user);
+                    $this->entityManager->persist($episode);
                 }
             }
             $this->entityManager->persist($user);
-            $output->writeln(count($users) . ' users left');
             if (count($users) % 100 == 0) {
                 $this->entityManager->flush();
             }
@@ -88,11 +89,11 @@ class  FollowViewSeriesCommand extends Command
             // Advance the progress bar by one "step"
             $progressBar->advance();
         }
-
+        $this->entityManager->flush();
         // Ensure that the progress bar is at 100%
         $progressBar->finish();
-        $output->writeln('');
+
+        $io->success('Users follow and view series successfully');
         return Command::SUCCESS;
     }
 }
-
