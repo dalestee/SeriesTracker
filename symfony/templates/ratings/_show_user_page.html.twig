@@ -18,13 +18,22 @@
         <div class="flex flex-row justify-center mt-2">
             <form method="post" action="{{ path('app_admin_panel_moderate', {'id': rating.id}) }}">
                 <input type="hidden" name="moderate" value="true">
-                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-4 mr-4">Validate</button>
+                <button  type="submit" class="btnModerateRating bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-4 mr-4">Validate</button>
             </form>
             <form method="post" action="{{ path('app_admin_panel_moderate', {'id': rating.id}) }}">
                 <input type="hidden" name="moderate" value="false">
-                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full mb-4 ml-4">Delete</button>
+                <button type="submit" class="btnModerateRating bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full mb-4 ml-4">Delete</button>
             </form>
         </div>
+        <script>
+            var btnModerateRating = document.getElementsByClassName("btnModerateRating");
+            //refresh the page when the rating btn is clicked
+            for (var i = 0; i < btnModerateRating.length; i++) {
+                btnModerateRating[i].addEventListener("click", function() {
+                    location.reload();
+                });
+            }
+        </script>
     {% endif %}
 {% endblock %}
 
