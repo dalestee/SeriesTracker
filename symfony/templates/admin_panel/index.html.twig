@@ -9,9 +9,20 @@
 		<div class="mx-12 py-2">	
 			<h1 class="text-4xl w-full border-b-2 border-white pb-2 font-bold mb-12">Admin Panel</h1>
 
-			<a href="{{ path('app_admin_series_index') }}">
-				<h2 class="text-2xl font-bold mb-4 bg-red-500 p-2 rounded hover:bg-green-500 w-fit">Search series</h2>
-			</a>
+			<div class="flex flex-row mb-12 items-center justify-around">
+				<div class="flex flex-col items-center">
+					<h2 class="text-2xl font-bold mb-4">OMDB API Series List:</h2>
+					<a href="{{ path('app_admin_series_index') }}">
+						<h2 class="text-2xl font-bold mb-4 bg-red-500 p-2 rounded hover:bg-green-500 w-fit">Search series</h2>
+					</a>
+				</div>
+				<div class="flex flex-col items-center">
+					<h2 class="text-2xl font-bold mb-4">Moderate reviews:</h2>
+					<a href="{{ path('app_admin_panel_moderate') }}">
+						<h2 class="text-2xl font-bold mb-4 bg-red-500 p-2 rounded hover:bg-green-500 w-fit">Moderate</h2>
+					</a>
+				</div>
+			</div>
 
 			<h2 class="text-2xl font-bold mb-4">User List:</h2>
 			<form action="{{ path('app_admin_panel')}}" method="get">
