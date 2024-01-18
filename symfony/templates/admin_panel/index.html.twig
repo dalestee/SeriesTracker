@@ -101,7 +101,7 @@
 									</td>
 									<td class=" px-2 ">
 										{% if 'ROLE_USER' in user.roles or ('ROLE_ADMIN' in user.roles and is_granted('ROLE_SUPER_ADMIN')) %}
-											<a id="changePassword" href="#" onclick="askPassword({{user.id}})" ><p class="text-white bg-yellow-500 rounded-full px-2 py-2 hover:text-yellow-500 hover:bg-white">Change password<p></a>
+											<a id="changePassword" href="#" onclick="askPassword({{user.id}})" ><p class="text-white bg-yellow-500 rounded-full px-2 py-2 hover:text-yellow-500 hover:bg-white text-center">Change password<p></a>
 										{% endif %}
 									</td>
 									<td class="pw-2">
